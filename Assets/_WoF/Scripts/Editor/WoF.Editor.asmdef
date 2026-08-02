@@ -1,0 +1,18 @@
+{
+    "name": "WoF.Editor",
+    "rootNamespace": "WoF.Editor",
+    "references": [
+        "WoF.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

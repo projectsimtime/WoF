@@ -9,8 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c479db9744114056ab670b7d0cd97c51, type: 3}
-  m_Name: WheelGold
+  m_Script: {fileID: 11500000, guid: 6ec1ea528f2247449cdc862438092e11, type: 3}
+  m_Name: reward_tier3_sniper
   m_EditorClassIdentifier: 
-  _wheelSprite: {fileID: 21300000, guid: aab94be0bab92964191f47ac62194901, type: 3}
-  _indicatorSprite: {fileID: 21300000, guid: 27d20e9af072c4a49973e868ca6f8aff, type: 3}
+  _sprite: {fileID: 21300000, guid: 765267b2d0aad4343a3cff3b9bbcea0b, type: 3}
+  _rarity: 2
+  _kind: 2

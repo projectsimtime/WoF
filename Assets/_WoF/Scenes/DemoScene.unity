@@ -324,17 +324,61 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!114 &796011362 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7927785593050494104, guid: 6692a3fe020a63b43b8106e99f992017, type: 3}
-  m_PrefabInstance: {fileID: 7927785592732639226}
+--- !u!1 &795434443
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 795434444}
+  - component: {fileID: 795434445}
+  m_Layer: 0
+  m_Name: GameSession
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &795434444
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 795434443}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 724.5, y: 407.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &795434445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 795434443}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21b58dbb2ddf246438ca21007395105a, type: 3}
+  m_Script: {fileID: 11500000, guid: af3929ad6fde49e8b58c33aa3023df49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _zoneRule: {fileID: 11400000, guid: e9b0ad3ca2bb7024cbb74e6bb05e21c1, type: 2}
+  _wheelTypes:
+  - {fileID: 11400000, guid: 5573a78120fee8c43b3c3e969f676f2a, type: 2}
+  - {fileID: 11400000, guid: c09b9c9aa27efc64791d878e10dcc206, type: 2}
+  - {fileID: 11400000, guid: 32fd61f297763ad44b96aa5bcc92716a, type: 2}
+  _wheelParent: {fileID: 1979633068}
+  SlotCount: 8
+  _bombReward: {fileID: 11400000, guid: 1269a7a91fca47c41bda480ae98d8396, type: 2}
+  _specialItems:
+  - {fileID: 11400000, guid: d810e62554e9f0248b2636cdbb263654, type: 2}
+  - {fileID: 11400000, guid: 10fb383e955695f4e8000b0aaf6eadc3, type: 2}
 --- !u!1 &906217472
 GameObject:
   m_ObjectHideFlags: 0
@@ -470,7 +514,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1d38ffbe1967bc47ac5d57b574a4b0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _wheelSpin: {fileID: 796011362}
+  _gameSession: {fileID: 795434445}
   _button: {fileID: 906217474}
 --- !u!1 &963194225
 GameObject:
@@ -759,6 +803,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1741737512}
   m_CullTransparentMesh: 1
+--- !u!114 &1979633068 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7927785592596197357, guid: 6692a3fe020a63b43b8106e99f992017, type: 3}
+  m_PrefabInstance: {fileID: 7927785592732639226}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7462b6bc50e34c0fafae6c8d514f2e42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7927785592732639226
 PrefabInstance:
   m_ObjectHideFlags: 0

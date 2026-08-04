@@ -9,7 +9,7 @@ namespace WoF
     public class SpinButton : MonoBehaviour
     {
         [SerializeField]
-        private WheelSpin _wheelSpin;
+        private GameSession _gameSession;
 
         [SerializeField]
         private Button _button;
@@ -33,7 +33,7 @@ namespace WoF
 
         private void OnButtonClicked()
         {
-            _wheelSpin.PlaySpin();
+            _gameSession.OnSpinClicked();
         }
     }
 }

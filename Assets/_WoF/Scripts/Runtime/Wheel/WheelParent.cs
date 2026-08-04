@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
+using UnityEngine;
+using WoF.Reward;
 
 namespace WoF
 {
@@ -9,9 +12,6 @@ namespace WoF
 		private WheelSpin _wheelSpin;
 		[SerializeField]
 		private WheelIndicator _wheelIndicator;
-
-		[SerializeField] 
-		private WheelType[] WheelTypes;
 		
 		private void OnValidate()
 		{
@@ -24,6 +24,20 @@ namespace WoF
 			_wheelSpin.ApplyStyle(wheelType);
 			_wheelIndicator.ApplyStyle(wheelType);
 		}
-		
+
+		public void ApplyWheelSlot(int index, RewardDefinition reward)
+		{
+			_wheelSpin.ApplySlotView(index, reward);
+		}
+
+		public void RestoreWheelRotation()
+		{
+			_wheelSpin.SetRotation(Vector3.zero);
+		}
+
+		public TweenerCore<Quaternion, Vector3, QuaternionOptions> PlaySpin(float targetAngle, float duration)
+		{
+			return _wheelSpin.PlaySpin(targetAngle, duration);
+		}
 	}
 }

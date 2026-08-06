@@ -54,10 +54,43 @@ namespace WoF
 		[SerializeField] 
 		private RewardPanelController _rewardPanelController;
 
+		[SerializeField]
+		private ZoneIndicatorPanelController _zoneIndicatorPanelController;
+
+		private ZoneCalculator _zoneCalculator;
+
+		private RewardDefinition[] _superZoneRewards;
+
 		private void Awake()
 		{
 			// TODO : is this okay ?
 			_rewardContainer = new EarnedRewardContainer();
+			_zoneCalculator = new ZoneCalculator(_gameSettings.SafeZoneFrequency, _gameSettings.SuperZoneFrequency);
+
+			
+		}
+
+		private void CalculateSuperZoneRewards()
+		{
+			int superZoneCount = _gameSettings.SuperZoneCount;
+
+			_superZoneRewards = new RewardDefinition[superZoneCount];
+			
+			int randomIndex = Random.Range(0, _specialItems.Length);
+
+			for (int i = 0; i < superZoneCount; ++i)
+			{
+				_superZoneRewards[i] = _specialItems[randomIndex];
+
+				randomIndex = (randomIndex + 1) % _specialItems.Length;
+			}
+		}
+
+		private RewardDefinition GetSuperZoneReward(int superZoneIndex)
+		{
+			int rewardIndex = (superZoneIndex / _gameSettings.SuperZoneFrequency) - 1;
+
+			return _superZoneRewards[rewardIndex];
 		}
 
 		private void OnValidate()
@@ -70,6 +103,7 @@ namespace WoF
 			}
 
 			_rewardPanelController = FindObjectOfType<RewardPanelController>();
+			_zoneIndicatorPanelController = FindObjectOfType<ZoneIndicatorPanelController>();
 		}
 
 		public void OnLevelStart()
@@ -203,6 +237,7 @@ namespace WoF
 			HideBombMenu();
 			ResetGame();
 			OnLevelStart();
+			RefreshZoneIndicators();
 		}
 
 		public void ResetGame()
@@ -213,12 +248,15 @@ namespace WoF
 			_rewardDefinitions.Clear();
 			_rewardPanelController.Clear();
 			_rewardContainer.Clear();
+
+			CalculateSuperZoneRewards();
 		}
 
 		void NextLevel()
 		{
 			++_currentZone;
 			OnLevelStart();
+			RefreshZoneIndicators();
 		}
 
 		private void Start()
@@ -226,6 +264,18 @@ namespace WoF
 			DOTween.Init();
 
 			OnLevelStart();
+			CalculateSuperZoneRewards();
+			RefreshZoneIndicators();
+		}
+
+		private void RefreshZoneIndicators()
+		{
+			int nextSuperZoneIndex = _zoneCalculator.GetNextSuperZoneIndex(_currentZone);
+
+			_zoneIndicatorPanelController.OnNewLevel(
+				_zoneCalculator.GetNextSafeZoneIndex(_currentZone),
+				nextSuperZoneIndex,
+				GetSuperZoneReward(nextSuperZoneIndex).Sprite);
 		}
 
 		private bool GetProbability(float alpha)
@@ -283,7 +333,7 @@ namespace WoF
 				reservedSlotIndex = hasBomb || hasSpecialItem ? Random.Range(0, _gameSettings.SlotCount) : Int32.MaxValue;
 
 				var zoneItems = GetZoneContents(currentWheelType);
-
+				
 				for (int i = 0; i < zoneItems.Count; ++i)
 				{
 					_wheelParent.ApplyWheelSlot(i, zoneItems[i]);
@@ -291,7 +341,7 @@ namespace WoF
 
 				if (reservedSlotIndex < zoneItems.Count)
 				{
-					RewardDefinition insertedReward = hasBomb ? _bombReward : _specialItems[0];
+					RewardDefinition insertedReward = hasBomb ? _bombReward : GetSuperZoneReward(_currentZone);
 					_wheelParent.ApplyWheelSlot(reservedSlotIndex, insertedReward);
 					zoneItems[reservedSlotIndex] = insertedReward;
 				}
@@ -375,36 +425,6 @@ namespace WoF
 			bool isRarityExists = wheelType.WheelTypeContent.RewardByRarity.TryGetValue(itemRarity, out var rewards);
 
 			return (isRarityExists && rewards.Count > 0);
-		}
-
-		public int GetNextSafeZone(int currentZoneIndex, int safeZoneFrequency = 5)
-		{
-			if (currentZoneIndex == 1)
-			{
-				return 1;
-			}
-			
-			int possibleNextSafeZoneIndex = GetNextSpecialZoneIndex(currentZoneIndex, safeZoneFrequency);
-
-			if (possibleNextSafeZoneIndex % 30 == 0)
-			{
-				return GetNextSpecialZoneIndex(possibleNextSafeZoneIndex + 1, safeZoneFrequency);
-			}
-
-			return possibleNextSafeZoneIndex;
-		}
-
-		public int GetNextSuperZone(int currentZoneIndex, int superZoneFrequency = 30)
-		{
-			return GetNextSpecialZoneIndex(currentZoneIndex, superZoneFrequency);
-		}
-		
-		public int GetNextSpecialZoneIndex(int currentZoneIndex, int zoneFrequency)
-		{
-			int possibleScaler = (currentZoneIndex / zoneFrequency) + 1;
-			int possibleNextSafeZoneIndex = possibleScaler * zoneFrequency;
-
-			return possibleNextSafeZoneIndex;
 		}
 	}
 }

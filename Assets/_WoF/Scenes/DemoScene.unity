@@ -384,6 +384,7 @@ MonoBehaviour:
   _gameSettings: {fileID: 11400000, guid: e59ea43fdb39b3b44bf9ed11823a7b8f, type: 2}
   _losePanelController: {fileID: 1956639990}
   _rewardPanelController: {fileID: 1500000144}
+  _zoneIndicatorPanelController: {fileID: 2054341033}
 --- !u!1 &906217472
 GameObject:
   m_ObjectHideFlags: 0
@@ -1633,6 +1634,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4570000000000000101, guid: 5d8c2f61e94a437bb0e3a75c18d6f2c4, type: 3}
   m_PrefabInstance: {fileID: 1192705511}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2054341033 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6181402472875203614, guid: 5d8c2f61e94a437bb0e3a75c18d6f2c4, type: 3}
+  m_PrefabInstance: {fileID: 1192705511}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e0ae9f03d054d7aba6a595bf5e870f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7927785592732639226
 PrefabInstance:
   m_ObjectHideFlags: 0

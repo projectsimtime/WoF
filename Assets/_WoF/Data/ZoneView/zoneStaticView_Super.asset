@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f4ac2256cac425f99ffca1b0a30ecfe, type: 3}
-  m_Name: gameSettings
+  m_Script: {fileID: 11500000, guid: f5c0783f44334087bc5e21f8a09a2d1b, type: 3}
+  m_Name: zoneStaticView_Super
   m_EditorClassIdentifier: 
-  _slotCount: 8
-  _safeZoneFrequency: 5
-  _superZoneFrequency: 30
-  _endGameZoneIndex: 60
+  _label: SUPER ZONE
+  _themeColor: {r: 1, g: 0.7490196, b: 0.2, a: 1}
+  _icon: {fileID: 0}

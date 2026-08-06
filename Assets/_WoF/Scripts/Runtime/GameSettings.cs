@@ -11,12 +11,16 @@ namespace WoF
 		[Header("Zone")]
 		[SerializeField] 
 		private int _safeZoneFrequency;
-		[Header("Zone")]
-		[SerializeField] 
+		[SerializeField]
 		private int _superZoneFrequency;
+		[SerializeField]
+		private int _endGameZoneIndex;
 
 		public int SlotCount => _slotCount;
 		public int SafeZoneFrequency => _safeZoneFrequency;
 		public int SuperZoneFrequency => _superZoneFrequency;
+		public int EndGameZoneIndex => _endGameZoneIndex;
+
+		public int SuperZoneCount => _endGameZoneIndex / _superZoneFrequency;
 	}
 }

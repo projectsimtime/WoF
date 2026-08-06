@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Codice.Client.BaseCommands;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
@@ -37,8 +35,11 @@ namespace WoF
 		[SerializeField]
 		private RewardDefinition[] _specialItems;
 
-		[SerializeField] 
+		[SerializeField]
 		private GameSettings _gameSettings;
+
+		[SerializeField]
+		private RewardAmountMap _rewardAmountMap;
 
 		private RewardDefinition _earnedReward;
 
@@ -201,9 +202,11 @@ namespace WoF
 			}
 			else
 			{
-				_rewardContainer.AddItem(_earnedReward, 1);
-				_rewardPanelController.AddItem(_earnedReward, 1);
-				
+				int earnedAmount = GetRewardAmount(_earnedReward);
+
+				_rewardContainer.AddItem(_earnedReward, earnedAmount);
+				_rewardPanelController.AddItem(_earnedReward, earnedAmount);
+
 				NextLevel();
 			}
 		}
@@ -211,6 +214,11 @@ namespace WoF
 		public bool IsBomb(RewardDefinition reward)
 		{
 			return reward == _bombReward;
+		}
+
+		public int GetRewardAmount(RewardDefinition reward)
+		{
+			return _rewardAmountMap.GetAmountByKind(reward, _currentZone);
 		}
 
 		public void OnBombExploded()
@@ -319,10 +327,10 @@ namespace WoF
 			if (_zoneOverrides.TryGetValue(_currentZone, out int index))
 			{
 				_rewardDefinitions = _zoneRule.ZoneOverrides[index].Rewards.ToList();
-				
+
 				for (int i = 0; i < _rewardDefinitions.Count; ++i)
 				{
-					_wheelParent.ApplyWheelSlot(i, _rewardDefinitions[i]);
+					_wheelParent.ApplyWheelSlot(i, _rewardDefinitions[i], GetRewardAmount(_rewardDefinitions[i]));
 				}
 			}
 			else
@@ -333,19 +341,19 @@ namespace WoF
 				reservedSlotIndex = hasBomb || hasSpecialItem ? Random.Range(0, _gameSettings.SlotCount) : Int32.MaxValue;
 
 				var zoneItems = GetZoneContents(currentWheelType);
-				
+
 				for (int i = 0; i < zoneItems.Count; ++i)
 				{
-					_wheelParent.ApplyWheelSlot(i, zoneItems[i]);
+					_wheelParent.ApplyWheelSlot(i, zoneItems[i], GetRewardAmount(zoneItems[i]));
 				}
 
 				if (reservedSlotIndex < zoneItems.Count)
 				{
 					RewardDefinition insertedReward = hasBomb ? _bombReward : GetSuperZoneReward(_currentZone);
-					_wheelParent.ApplyWheelSlot(reservedSlotIndex, insertedReward);
+					_wheelParent.ApplyWheelSlot(reservedSlotIndex, insertedReward, GetRewardAmount(insertedReward));
 					zoneItems[reservedSlotIndex] = insertedReward;
 				}
-				
+
 				_rewardDefinitions = zoneItems;
 			}
 		}

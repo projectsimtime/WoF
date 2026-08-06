@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b7c9d1e5a2f4c84a9d6e0b1f7c25348, type: 3}
+  m_Name: rewardAmountMap
+  m_EditorClassIdentifier: 
+  _amountByKind:
+  - _kind: 0
+    _baseAmount: 50
+    _maxAmount: 1000
+    _amountScale: 25
+  - _kind: 1
+    _baseAmount: 1
+    _maxAmount: 10
+    _amountScale: 1
+  - _kind: 2
+    _baseAmount: 1
+    _maxAmount: 1
+    _amountScale: 1
+  - _kind: 3
+    _baseAmount: 1
+    _maxAmount: 50
+    _amountScale: 3
+  - _kind: 4
+    _baseAmount: 1
+    _maxAmount: 1
+    _amountScale: 1
+  - _kind: 5
+    _baseAmount: 1
+    _maxAmount: 5
+    _amountScale: 1
+  - _kind: 6
+    _baseAmount: 0
+    _maxAmount: 0
+    _amountScale: 0

@@ -12,12 +12,13 @@ namespace WoF.Reward
 
 	public enum EItemKind
 	{
-		Cash,
+		Currency,
 		Case,
 		Weapon,
 		Points,
 		Armor,
-		Additional
+		Additional,
+		Bomb
 	}
 	
 	[CreateAssetMenu(fileName = "reward_", menuName = "WoF/Reward/New Reward")]
@@ -29,7 +30,7 @@ namespace WoF.Reward
 		private EItemRarity _rarity;
 		[SerializeField]
 		private EItemKind _kind;
-		
+
 		public Sprite Sprite => _sprite;
 		public EItemRarity Rarity => _rarity;
 		public EItemKind Kind => _kind;

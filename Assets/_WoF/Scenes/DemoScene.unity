@@ -382,6 +382,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d810e62554e9f0248b2636cdbb263654, type: 2}
   - {fileID: 11400000, guid: 10fb383e955695f4e8000b0aaf6eadc3, type: 2}
   _gameSettings: {fileID: 11400000, guid: e59ea43fdb39b3b44bf9ed11823a7b8f, type: 2}
+  _rewardAmountMap: {fileID: 11400000, guid: 7d4e1a09c3b64f5b8e2a06d9f3418c72, type: 2}
   _losePanelController: {fileID: 1956639990}
   _rewardPanelController: {fileID: 1500000144}
   _zoneIndicatorPanelController: {fileID: 2054341033}

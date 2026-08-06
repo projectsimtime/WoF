@@ -41,9 +41,10 @@ namespace WoF
             _image.sprite = style.WheelSprite;
         }
 
-        public void ApplySlotView(int index, RewardDefinition reward)
+        public void ApplySlotView(int index, RewardDefinition reward, int amount)
         {
             _wheelSlotViews[index].SetSprite(reward.Sprite);
+            _wheelSlotViews[index].SetAmount(amount);
         }
         
         public void SetActiveWheelSlot(int index, bool active)

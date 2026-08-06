@@ -25,9 +25,9 @@ namespace WoF
 			_wheelIndicator.ApplyStyle(wheelType);
 		}
 
-		public void ApplyWheelSlot(int index, RewardDefinition reward)
+		public void ApplyWheelSlot(int index, RewardDefinition reward, int amount)
 		{
-			_wheelSpin.ApplySlotView(index, reward);
+			_wheelSpin.ApplySlotView(index, reward, amount);
 		}
 
 		public void SetActiveWheelSlot(int index, bool active)

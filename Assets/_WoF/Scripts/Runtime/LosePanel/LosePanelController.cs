@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace WoF
 {
-	public class LosePanelController : MonoBehaviour
+	public class LosePanelController : PanelController
 	{
 		[SerializeField] 
 		private GiveUpButton _giveUpButton;

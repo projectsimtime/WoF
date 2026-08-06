@@ -19,16 +19,21 @@ namespace WoF
 			_gameSession = FindObjectOfType<GameSession>();
 		}
 
-		private void OnEnable()
+		protected virtual void OnEnable()
 		{
 			_button.onClick.AddListener(OnButtonClicked);
 		}
-        
-		private void OnDisable()
+
+		protected virtual void OnDisable()
 		{
 			_button.onClick.RemoveAllListeners();
 		}
 
 		protected virtual void OnButtonClicked() {}
+
+		public void SetButtonInteractable(bool interactable)
+		{
+			_button.interactable = interactable;
+		}
 	}
 }

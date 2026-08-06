@@ -11,14 +11,14 @@ namespace WoF
         protected override void OnButtonClicked()
         {
             var tween = _gameSession.OnSpinClicked();
-            Button.interactable = false;
+            SetButtonInteractable(false);
             
             tween.onComplete += OnSpinCompleted;
         }
 
         private void OnSpinCompleted()
         {
-            Button.interactable = true;
+            SetButtonInteractable(true);
         }
     }
 }

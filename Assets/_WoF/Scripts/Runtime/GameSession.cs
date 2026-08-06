@@ -47,8 +47,11 @@ namespace WoF
 
 		private bool isContinueAfterBomb;
 
-		[SerializeField] 
+		[SerializeField]
 		private LosePanelController _losePanelController;
+
+		[SerializeField]
+		private ExitPanelController _exitPanelController;
 
 		private EarnedRewardContainer _rewardContainer;
 
@@ -61,6 +64,10 @@ namespace WoF
 		private ZoneCalculator _zoneCalculator;
 
 		private RewardDefinition[] _superZoneRewards;
+
+
+		[SerializeField] 
+		private ExitButton _exitButton;
 
 		private void Awake()
 		{
@@ -101,8 +108,10 @@ namespace WoF
 				_zoneOverrides.Add(_zoneRule.ZoneOverrides[i].ZoneNumber, i);
 			}
 
-			_rewardPanelController = FindObjectOfType<RewardPanelController>();
-			_zoneIndicatorPanelController = FindObjectOfType<ZoneIndicatorPanelController>();
+			_rewardPanelController = FindObjectOfType<RewardPanelController>(true);
+			_zoneIndicatorPanelController = FindObjectOfType<ZoneIndicatorPanelController>(true);
+			_exitPanelController = FindObjectOfType<ExitPanelController>(true);
+			_losePanelController = FindObjectOfType<LosePanelController>(true);
 		}
 
 		public void OnLevelStart()
@@ -172,6 +181,8 @@ namespace WoF
 		
 		public TweenerCore<Quaternion, Vector3, QuaternionOptions> OnSpinClicked()
 		{
+			_exitButton.SetButtonInteractable(false);
+
 			float angle = CalculateTargetAngle(reservedSlotIndex, isContinueAfterBomb, out var earnedRewardIndex);
 			
 			var tween = _wheelParent.PlaySpin(angle, 3.0f);
@@ -185,6 +196,8 @@ namespace WoF
 
 		private void OnSpinComplete()
 		{
+			_exitButton.SetButtonInteractable(true);
+
 			if (IsBomb(_earnedReward))
 			{
 				OnBombExploded();
@@ -212,26 +225,41 @@ namespace WoF
 
 		public void OnBombExploded()
 		{
-			//Show bomb menu
-			_losePanelController.gameObject.SetActive(true);
-		}
-		
-		public void HideBombMenu()
-		{
-			_losePanelController.gameObject.SetActive(false);
+			_losePanelController.Show();
 		}
 
 		public void OnContinueClicked()
 		{
-			HideBombMenu();
+			_losePanelController.Hide();
 			isContinueAfterBomb = true;
 
 			_wheelParent.SetActiveWheelSlot(reservedSlotIndex, false);
 		}
-		
+
 		public void OnGiveUpButtonClicked()
 		{
-			HideBombMenu();
+			_losePanelController.Hide();
+			RestartGame();
+		}
+
+		public void OnExitClicked()
+		{
+			_exitPanelController.Show();
+		}
+
+		public void OnGoBackClicked()
+		{
+			_exitPanelController.Hide();
+		}
+
+		public void OnCollectRewardClicked()
+		{
+			_exitPanelController.Hide();
+			RestartGame();
+		}
+
+		private void RestartGame()
+		{
 			ResetGame();
 			OnLevelStart();
 			RefreshZoneIndicators();
@@ -241,7 +269,8 @@ namespace WoF
 		{
 			_currentZone = 1;
 			_earnedReward = null;
-			
+			_exitButton.SetButtonInteractable(true);
+
 			_rewardDefinitions.Clear();
 			_rewardPanelController.Clear();
 			_rewardContainer.Clear();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 using WoF.Reward;
@@ -35,7 +36,9 @@ namespace WoF
 
 		[SerializeField] 
 		private GameSettings _gameSettings;
-		
+
+		private List<RewardDefinition> _rewardDefinitions;
+
 		private void OnValidate()
 		{
 			_zoneOverrides = new Dictionary<int, int>();
@@ -46,11 +49,19 @@ namespace WoF
 			}
 		}
 
-
 		public void OnLevelStart()
 		{
 			_wheelParent.RestoreWheelRotation();
+
 			BuildZoneContents();
+			// if (_zoneOverrides.TryGetValue(_currentZone, out int index))
+			// {
+			// 	_rewardDefinitions = _zoneRule.ZoneOverrides[index].Rewards.ToList();
+			// }
+			// else
+			// {
+			// 	_rewardDefinitions = BuildZoneContents();
+			// }
 		}
 
 		public void OnSpinClicked()
@@ -133,7 +144,7 @@ namespace WoF
 			       (index - 1 + _gameSettings.SlotCount) % _gameSettings.SlotCount == reservedSlotIndex;
 		}
 
-		private List<RewardDefinition> BuildZoneContents()
+		private void BuildZoneContents()
 		{
 			WheelType currentWheelType;
 			EWheelType wheelType;
@@ -156,38 +167,45 @@ namespace WoF
 
 			_wheelParent.ApplyWheelType(currentWheelType);
 
-			bool hasBomb = wheelType == EWheelType.Bronze;
-			bool hasSpecialItem = wheelType == EWheelType.Gold;
-
-			reservedSlotIndex = hasBomb || hasSpecialItem ? Random.Range(0, _gameSettings.SlotCount) : Int32.MaxValue;
-
-			var zoneItems = GetZoneContents(currentWheelType);
-
-			for (int i = 0; i < zoneItems.Count; ++i)
+			if (_zoneOverrides.TryGetValue(_currentZone, out int index))
 			{
-				if (i == reservedSlotIndex)
+				_rewardDefinitions = _zoneRule.ZoneOverrides[index].Rewards.ToList();
+				
+				for (int i = 0; i < _rewardDefinitions.Count; ++i)
 				{
-					continue;
+					_wheelParent.ApplyWheelSlot(i, _rewardDefinitions[i]);
+				}
+			}
+			else
+			{
+				bool hasBomb = wheelType == EWheelType.Bronze;
+				bool hasSpecialItem = wheelType == EWheelType.Gold;
+
+				reservedSlotIndex = hasBomb || hasSpecialItem ? Random.Range(0, _gameSettings.SlotCount) : Int32.MaxValue;
+
+				var zoneItems = GetZoneContents(currentWheelType);
+
+				for (int i = 0; i < zoneItems.Count; ++i)
+				{
+					_wheelParent.ApplyWheelSlot(i, zoneItems[i]);
+				}
+
+				if (reservedSlotIndex < zoneItems.Count)
+				{
+					RewardDefinition insertedReward = hasBomb ? _bombReward : _specialItems[0];
+					_wheelParent.ApplyWheelSlot(reservedSlotIndex, insertedReward);
+					zoneItems[reservedSlotIndex] = insertedReward;
 				}
 				
-				_wheelParent.ApplyWheelSlot(i, zoneItems[i]);
+				_rewardDefinitions = zoneItems;
 			}
-
-			if (reservedSlotIndex != Int32.MaxValue)
-			{
-				RewardDefinition insertedReward = hasBomb ? _bombReward : _specialItems[0];
-				_wheelParent.ApplyWheelSlot(reservedSlotIndex, insertedReward);
-				zoneItems.Insert(reservedSlotIndex, insertedReward);
-			}
-
-			return zoneItems;
 		}
 
 		private List<RewardDefinition> GetZoneContents(WheelType wheelType)
 		{
 			var rewardsByRarity = wheelType.WheelTypeContent.RewardByRarity;
 
-			var itemRarities = GetItemRarityCount();
+			var itemRarities = GetItemRarityCount(wheelType);
 
 			List<RewardDefinition> rewards = new List<RewardDefinition>(_gameSettings.SlotCount);
 
@@ -210,14 +228,14 @@ namespace WoF
 			return rewards;
 		}
 
-		public Dictionary<EItemRarity, int> GetItemRarityCount()
+		public Dictionary<EItemRarity, int> GetItemRarityCount(WheelType wheelType)
 		{
 			Dictionary<EItemRarity, int> rewardCountByRarity = new Dictionary<EItemRarity, int>();
 
 			// -1 because we fill the remaining slot with bomb or special item.
-			for (int i = 0; i < _gameSettings.SlotCount - 1; ++i)
+			for (int i = 0; i < _gameSettings.SlotCount; ++i)
 			{
-				EItemRarity currentRarity = GetRandomRarity();
+				EItemRarity currentRarity = GetRandomRarity(wheelType);
 				
 				if (!rewardCountByRarity.TryAdd(currentRarity, 1))
 				{
@@ -230,20 +248,20 @@ namespace WoF
 			return rewardCountByRarity;
 		}
 
-		public EItemRarity GetRandomRarity()
+		public EItemRarity GetRandomRarity(WheelType wheelType)
 		{
 			int randomNumber = Random.Range(1, 101);
 
-			// Note: i know "else" keyword is redundant. However, I believe this version is more readable.
-			if (randomNumber > 99)
+			// Note: I know "else" keyword is redundant. However, I believe this version is more readable.
+			if (randomNumber > 99 && IsRarityExistOnWheelType(wheelType, EItemRarity.Legendary))
 			{
 				return EItemRarity.Legendary;
 			}
-			else if (randomNumber > 90)
+			else if (randomNumber > 90 && IsRarityExistOnWheelType(wheelType, EItemRarity.Epic))
 			{
 				return EItemRarity.Epic;
 			}
-			else if(randomNumber > 70)
+			else if(randomNumber > 70 && IsRarityExistOnWheelType(wheelType, EItemRarity.Rare))
 			{
 				return EItemRarity.Rare;
 			}
@@ -251,6 +269,43 @@ namespace WoF
 			{
 				return EItemRarity.Casual;
 			}
+		}
+
+		public bool IsRarityExistOnWheelType(WheelType wheelType, EItemRarity itemRarity)
+		{
+			bool isRarityExists = wheelType.WheelTypeContent.RewardByRarity.TryGetValue(itemRarity, out var rewards);
+
+			return (isRarityExists && rewards.Count > 0);
+		}
+
+		public int GetNextSafeZone(int currentZoneIndex, int safeZoneFrequency = 5)
+		{
+			if (currentZoneIndex == 1)
+			{
+				return 1;
+			}
+			
+			int possibleNextSafeZoneIndex = GetNextSpecialZoneIndex(currentZoneIndex, safeZoneFrequency);
+
+			if (possibleNextSafeZoneIndex % 30 == 0)
+			{
+				return GetNextSpecialZoneIndex(possibleNextSafeZoneIndex + 1, safeZoneFrequency);
+			}
+
+			return possibleNextSafeZoneIndex;
+		}
+
+		public int GetNextSuperZone(int currentZoneIndex, int superZoneFrequency = 30)
+		{
+			return GetNextSpecialZoneIndex(currentZoneIndex, superZoneFrequency);
+		}
+		
+		public int GetNextSpecialZoneIndex(int currentZoneIndex, int zoneFrequency)
+		{
+			int possibleScaler = (currentZoneIndex / zoneFrequency) + 1;
+			int possibleNextSafeZoneIndex = possibleScaler * zoneFrequency;
+
+			return possibleNextSafeZoneIndex;
 		}
 	}
 }

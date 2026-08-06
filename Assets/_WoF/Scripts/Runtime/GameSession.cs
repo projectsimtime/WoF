@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 using UnityEngine;
 using WoF.Reward;
 using WoF.Zone;
@@ -37,7 +39,11 @@ namespace WoF
 		[SerializeField] 
 		private GameSettings _gameSettings;
 
+		private RewardDefinition _earnedReward;
+
 		private List<RewardDefinition> _rewardDefinitions;
+
+		private bool isContinueAfterBomb;
 
 		private void OnValidate()
 		{
@@ -64,50 +70,69 @@ namespace WoF
 			// }
 		}
 
-		public void OnSpinClicked()
+		public void GetRandomIndexTurnCount(int reservedIndex, bool shouldSkipReservedIndex, out int slotIndex, out int turnCount)
 		{
-			int randomIndex = Random.Range(0, _gameSettings.SlotCount);
+			int randomSlotIndex = Random.Range(0, _gameSettings.SlotCount);
 
-			int turnCount = Random.Range(2, 4);
+			if (shouldSkipReservedIndex && randomSlotIndex == reservedIndex)
+			{
+				randomSlotIndex = (randomSlotIndex + 1) % 8;
+			}
+
+			slotIndex = randomSlotIndex;
+			turnCount = Random.Range(2, 4);
+		}
+
+		public float CalculateTargetAngle(int slotIndex, bool shouldSkipReservedIndex, out int randomSlotIndex)
+		{
+			GetRandomIndexTurnCount(slotIndex, shouldSkipReservedIndex, out randomSlotIndex, out int turnCount);
 			float angle;
 
-			if (IsRandomIndexCloseToReservedSlot(randomIndex))
+			if (!shouldSkipReservedIndex && IsRandomIndexCloseToReservedSlot(randomSlotIndex))
 			{
-				bool shouldLookLikeShowNearHit = (randomIndex + 1) % _gameSettings.SlotCount == reservedSlotIndex;
+				bool shouldLookLikeShowNearHit = (randomSlotIndex + 1) % _gameSettings.SlotCount == slotIndex;
 
 				if (shouldLookLikeShowNearHit)
 				{
 					Debug.Log("100");
-					angle = GetAngleFromIndex(randomIndex, turnCount,0.80f);
+					angle = GetAngleFromIndex(randomSlotIndex, turnCount,0.80f);
 				}
 				else
 				{
 					Debug.Log("200");
-					angle = GetAngleFromIndex(randomIndex, turnCount,0.20f);
+					angle = GetAngleFromIndex(randomSlotIndex, turnCount,0.20f);
 				}
 
 			}
-			else if(reservedSlotIndex == randomIndex)
+			else if(slotIndex == randomSlotIndex)
 			{
-				bool shouldLookLikeShowNearMiss = GetProbability(50.0f);
+				bool shouldLookLikeShowNearMiss = GetProbability(0.5f);
 
 				Debug.Log($"300 shouldLookLikeShowNearMiss({shouldLookLikeShowNearMiss})");
-				angle = GetAngleFromIndex(randomIndex, turnCount, shouldLookLikeShowNearMiss ? 0.80f : 0.20f);
+				angle = GetAngleFromIndex(randomSlotIndex, turnCount, shouldLookLikeShowNearMiss ? 0.80f : 0.20f);
 			}
 			else
 			{
 				Debug.Log("400");
 				float alpha = Random.Range(0.2f, 0.8f);
 
-				angle = GetAngleFromIndex(randomIndex, turnCount, alpha);
+				angle = GetAngleFromIndex(randomSlotIndex, turnCount, alpha);
 			}
 			
-			var tween = _wheelParent.PlaySpin(angle, turnCount * 0.66f);
+			return angle;
+		}
+		
+		public TweenerCore<Quaternion, Vector3, QuaternionOptions> OnSpinClicked()
+		{
+			float angle = CalculateTargetAngle(reservedSlotIndex, isContinueAfterBomb, out var earnedRewardIndex);
+			
+			var tween = _wheelParent.PlaySpin(angle, 3.0f);
 			
 			tween.onComplete += OnSpinComplete;
-			
-			Debug.Log(
-				$"RandomIndex({randomIndex}), ReservedIndex({reservedSlotIndex}), Angle({angle}), TurnCount({turnCount}))");
+
+			_earnedReward = _rewardDefinitions[earnedRewardIndex];
+
+			return tween;
 		}
 
 		private void OnSpinComplete()
@@ -129,9 +154,9 @@ namespace WoF
 			OnLevelStart();
 		}
 
-		private bool GetProbability(float percentage)
+		private bool GetProbability(float alpha)
 		{
-			return Random.value < percentage / 100.0f;
+			return Random.value < alpha;
 		}
 		private float GetAngleFromIndex(int index, int turnCount, float alpha = 0.5f)
 		{

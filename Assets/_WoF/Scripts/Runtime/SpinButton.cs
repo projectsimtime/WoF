@@ -6,34 +6,19 @@ using UnityEngine.UI;
 
 namespace WoF
 {
-    public class SpinButton : MonoBehaviour
+    public class SpinButton : ButtonController
     {
-        [SerializeField]
-        private GameSession _gameSession;
-
-        [SerializeField]
-        private Button _button;
-        
-        // Start is called before the first frame update
-
-        private void OnValidate()
+        protected override void OnButtonClicked()
         {
-            _button = GetComponent<Button>();
+            var tween = _gameSession.OnSpinClicked();
+            Button.interactable = false;
+            
+            tween.onComplete += OnSpinCompleted;
         }
 
-        private void OnEnable()
+        private void OnSpinCompleted()
         {
-            _button.onClick.AddListener(OnButtonClicked);
-        }
-        
-        private void OnDisable()
-        {
-            _button.onClick.RemoveAllListeners();
-        }
-
-        private void OnButtonClicked()
-        {
-            _gameSession.OnSpinClicked();
+            Button.interactable = true;
         }
     }
 }

@@ -15,9 +15,9 @@ namespace WoF
 		private ZoneRules _zoneRule;
 
 		[SerializeField]
-		private Dictionary<uint, int> _zoneOverrides;
+		private Dictionary<int, int> _zoneOverrides;
 
-		private uint _currentZone = 1;
+		private int _currentZone = 1;
 
 		private int reservedSlotIndex;
 		
@@ -27,17 +27,18 @@ namespace WoF
 		[SerializeField] 
 		private WheelParent _wheelParent;
 
-		public int SlotCount = 8;
-
 		[SerializeField]
 		private RewardDefinition _bombReward;
 
 		[SerializeField]
 		private RewardDefinition[] _specialItems;
+
+		[SerializeField] 
+		private GameSettings _gameSettings;
 		
 		private void OnValidate()
 		{
-			_zoneOverrides = new Dictionary<uint, int>();
+			_zoneOverrides = new Dictionary<int, int>();
 
 			for (int i = 0; i < _zoneRule.ZoneOverrides.Length; ++i)
 			{
@@ -54,14 +55,14 @@ namespace WoF
 
 		public void OnSpinClicked()
 		{
-			int randomIndex = Random.Range(0, 8);
+			int randomIndex = Random.Range(0, _gameSettings.SlotCount);
 
 			int turnCount = Random.Range(2, 4);
 			float angle;
 
 			if (IsRandomIndexCloseToReservedSlot(randomIndex))
 			{
-				bool shouldLookLikeShowNearHit = (randomIndex + 1) % SlotCount == reservedSlotIndex;
+				bool shouldLookLikeShowNearHit = (randomIndex + 1) % _gameSettings.SlotCount == reservedSlotIndex;
 
 				if (shouldLookLikeShowNearHit)
 				{
@@ -128,8 +129,8 @@ namespace WoF
 
 		private bool IsRandomIndexCloseToReservedSlot(int index)
 		{
-			return (index + 1 + SlotCount) % SlotCount == reservedSlotIndex || 
-			       (index - 1 + SlotCount) % SlotCount == reservedSlotIndex;
+			return (index + 1 + _gameSettings.SlotCount) % _gameSettings.SlotCount == reservedSlotIndex || 
+			       (index - 1 + _gameSettings.SlotCount) % _gameSettings.SlotCount == reservedSlotIndex;
 		}
 
 		private List<RewardDefinition> BuildZoneContents()
@@ -137,12 +138,12 @@ namespace WoF
 			WheelType currentWheelType;
 			EWheelType wheelType;
 
-			if (_currentZone % 30 == 0)
+			if (_currentZone % _gameSettings.SuperZoneFrequency == 0)
 			{
 				currentWheelType = _wheelTypes[(int)EWheelType.Gold];
 				wheelType = EWheelType.Gold;
 			}
-			else if (_currentZone % 5 == 0)
+			else if (_currentZone % _gameSettings.SafeZoneFrequency == 0)
 			{
 				currentWheelType = _wheelTypes[(int)EWheelType.Silver];
 				wheelType = EWheelType.Silver;
@@ -158,7 +159,7 @@ namespace WoF
 			bool hasBomb = wheelType == EWheelType.Bronze;
 			bool hasSpecialItem = wheelType == EWheelType.Gold;
 
-			reservedSlotIndex = hasBomb || hasSpecialItem ? Random.Range(0, 8) : Int32.MaxValue;
+			reservedSlotIndex = hasBomb || hasSpecialItem ? Random.Range(0, _gameSettings.SlotCount) : Int32.MaxValue;
 
 			var zoneItems = GetZoneContents(currentWheelType);
 
@@ -188,7 +189,7 @@ namespace WoF
 
 			var itemRarities = GetItemRarityCount();
 
-			List<RewardDefinition> rewards = new List<RewardDefinition>(SlotCount);
+			List<RewardDefinition> rewards = new List<RewardDefinition>(_gameSettings.SlotCount);
 
 			foreach (var item in itemRarities)
 			{
@@ -214,7 +215,7 @@ namespace WoF
 			Dictionary<EItemRarity, int> rewardCountByRarity = new Dictionary<EItemRarity, int>();
 
 			// -1 because we fill the remaining slot with bomb or special item.
-			for (int i = 0; i < SlotCount - 1; ++i)
+			for (int i = 0; i < _gameSettings.SlotCount - 1; ++i)
 			{
 				EItemRarity currentRarity = GetRandomRarity();
 				

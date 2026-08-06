@@ -12,11 +12,11 @@ namespace WoF.Zone
 		public struct ZoneOverride
 		{
 			[SerializeField] 
-			private uint _zoneNumber;
+			private int _zoneNumber;
 			[SerializeField]
 			private RewardDefinition[] _rewards;
 
-			public uint ZoneNumber => _zoneNumber;
+			public int ZoneNumber => _zoneNumber;
 			public RewardDefinition[] Rewards => _rewards;
 		}
 		

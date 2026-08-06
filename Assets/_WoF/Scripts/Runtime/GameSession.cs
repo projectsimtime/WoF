@@ -324,12 +324,12 @@ namespace WoF
 			WheelType currentWheelType;
 			EWheelType wheelType;
 
-			if (_currentZone % _gameSettings.SuperZoneFrequency == 0)
+			if (_zoneCalculator.IsSuperZone(_currentZone))
 			{
 				currentWheelType = _wheelTypes[(int)EWheelType.Gold];
 				wheelType = EWheelType.Gold;
 			}
-			else if (_currentZone % _gameSettings.SafeZoneFrequency == 0)
+			else if (_zoneCalculator.IsSafeZone(_currentZone))
 			{
 				currentWheelType = _wheelTypes[(int)EWheelType.Silver];
 				wheelType = EWheelType.Silver;

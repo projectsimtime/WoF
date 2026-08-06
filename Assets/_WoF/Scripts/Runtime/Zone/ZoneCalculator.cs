@@ -11,6 +11,16 @@ namespace WoF.Zone
 			_superZoneFrequency = superZoneFrequency;
 		}
 
+		public bool IsSuperZone(int zoneIndex)
+		{
+			return zoneIndex % _superZoneFrequency == 0;
+		}
+
+		public bool IsSafeZone(int zoneIndex)
+		{
+			return zoneIndex % _safeZoneFrequency == 0 && !IsSuperZone(zoneIndex);
+		}
+
 		public int GetNextSafeZoneIndex(int currentZoneIndex)
 		{
 			if (currentZoneIndex == 1)

@@ -67,8 +67,6 @@ namespace WoF
 			// TODO : is this okay ?
 			_rewardContainer = new EarnedRewardContainer();
 			_zoneCalculator = new ZoneCalculator(_gameSettings.SafeZoneFrequency, _gameSettings.SuperZoneFrequency);
-
-			
 		}
 
 		private void CalculateSuperZoneRewards()
@@ -110,21 +108,12 @@ namespace WoF
 		public void OnLevelStart()
 		{
 			_wheelParent.RestoreWheelRotation();
-
-			BuildZoneContents();
-			// if (_zoneOverrides.TryGetValue(_currentZone, out int index))
-			// {
-			// 	_rewardDefinitions = _zoneRule.ZoneOverrides[index].Rewards.ToList();
-			// }
-			// else
-			// {
-			// 	_rewardDefinitions = BuildZoneContents();
-			// }
-
 			if (isContinueAfterBomb)
 			{
 				_wheelParent.SetActiveWheelSlot(reservedSlotIndex, true);
 			}
+			
+			BuildZoneContents();
 
 			isContinueAfterBomb = false;
 		}
@@ -388,8 +377,7 @@ namespace WoF
 		public Dictionary<EItemRarity, int> GetItemRarityCount(WheelType wheelType)
 		{
 			Dictionary<EItemRarity, int> rewardCountByRarity = new Dictionary<EItemRarity, int>();
-
-			// -1 because we fill the remaining slot with bomb or special item.
+			
 			for (int i = 0; i < _gameSettings.SlotCount; ++i)
 			{
 				EItemRarity currentRarity = GetRandomRarity(wheelType);

@@ -30,6 +30,11 @@ namespace WoF
 			_wheelSpin.ApplySlotView(index, reward);
 		}
 
+		public void SetActiveWheelSlot(int index, bool active)
+		{
+			_wheelSpin.SetActiveWheelSlot(index, active);
+		}
+
 		public void RestoreWheelRotation()
 		{
 			_wheelSpin.SetRotation(Vector3.zero);

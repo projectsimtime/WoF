@@ -45,5 +45,10 @@ namespace WoF
         {
             _wheelSlotViews[index].SetSprite(reward.Sprite);
         }
+        
+        public void SetActiveWheelSlot(int index, bool active)
+        {
+            _wheelSlotViews[index].gameObject.SetActive(active);
+        }
     }
 }

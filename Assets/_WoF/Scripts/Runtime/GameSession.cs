@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Codice.Client.BaseCommands;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
@@ -45,6 +46,20 @@ namespace WoF
 
 		private bool isContinueAfterBomb;
 
+		[SerializeField] 
+		private LosePanelController _losePanelController;
+
+		private EarnedRewardContainer _rewardContainer;
+
+		[SerializeField] 
+		private RewardPanelController _rewardPanelController;
+
+		private void Awake()
+		{
+			// TODO : is this okay ?
+			_rewardContainer = new EarnedRewardContainer();
+		}
+
 		private void OnValidate()
 		{
 			_zoneOverrides = new Dictionary<int, int>();
@@ -53,6 +68,8 @@ namespace WoF
 			{
 				_zoneOverrides.Add(_zoneRule.ZoneOverrides[i].ZoneNumber, i);
 			}
+
+			_rewardPanelController = FindObjectOfType<RewardPanelController>();
 		}
 
 		public void OnLevelStart()
@@ -68,6 +85,13 @@ namespace WoF
 			// {
 			// 	_rewardDefinitions = BuildZoneContents();
 			// }
+
+			if (isContinueAfterBomb)
+			{
+				_wheelParent.SetActiveWheelSlot(reservedSlotIndex, true);
+			}
+
+			isContinueAfterBomb = false;
 		}
 
 		public void GetRandomIndexTurnCount(int reservedIndex, bool shouldSkipReservedIndex, out int slotIndex, out int turnCount)
@@ -137,14 +161,64 @@ namespace WoF
 
 		private void OnSpinComplete()
 		{
-			StartCoroutine(NextLevel());
+			if (IsBomb(_earnedReward))
+			{
+				OnBombExploded();
+			}
+			else
+			{
+				_rewardContainer.AddItem(_earnedReward, 1);
+				_rewardPanelController.AddItem(_earnedReward, 1);
+				
+				NextLevel();
+			}
 		}
 
-		IEnumerator NextLevel()
+		public bool IsBomb(RewardDefinition reward)
 		{
-			yield return new WaitForSeconds(2);
+			return reward == _bombReward;
+		}
+
+		public void OnBombExploded()
+		{
+			//Show bomb menu
+			_losePanelController.gameObject.SetActive(true);
+		}
+		
+		public void HideBombMenu()
+		{
+			_losePanelController.gameObject.SetActive(false);
+		}
+
+		public void OnContinueClicked()
+		{
+			HideBombMenu();
+			isContinueAfterBomb = true;
+
+			_wheelParent.SetActiveWheelSlot(reservedSlotIndex, false);
+		}
+		
+		public void OnGiveUpButtonClicked()
+		{
+			HideBombMenu();
+			ResetGame();
 			OnLevelStart();
+		}
+
+		public void ResetGame()
+		{
+			_currentZone = 1;
+			_earnedReward = null;
+			
+			_rewardDefinitions.Clear();
+			_rewardPanelController.Clear();
+			_rewardContainer.Clear();
+		}
+
+		void NextLevel()
+		{
 			++_currentZone;
+			OnLevelStart();
 		}
 
 		private void Start()

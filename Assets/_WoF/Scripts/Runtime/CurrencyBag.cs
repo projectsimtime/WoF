@@ -4,8 +4,6 @@
 	{
 		private int _remainingCurrencyAmount;
 
-		public int RemainingCurrencyAmount => _remainingCurrencyAmount;
-
 		public CurrencyBag(int initialCurrencyAmount)
 		{
 			_remainingCurrencyAmount = initialCurrencyAmount;
@@ -24,6 +22,11 @@
 		public int GetRemainingCurrencyAmount()
 		{
 			return _remainingCurrencyAmount;
+		}
+
+		public void Reset(int initialCurrencyAmount)
+		{
+			_remainingCurrencyAmount = initialCurrencyAmount;
 		}
 	}
 }

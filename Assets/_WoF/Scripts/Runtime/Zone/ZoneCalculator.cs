@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace WoF.Zone
 {
 	public class ZoneCalculator
@@ -5,10 +7,13 @@ namespace WoF.Zone
 		private readonly int _safeZoneFrequency;
 		private readonly int _superZoneFrequency;
 
-		public ZoneCalculator(int safeZoneFrequency, int superZoneFrequency)
+		private readonly int _endGameIndex;
+		
+		public ZoneCalculator(int safeZoneFrequency, int superZoneFrequency, int endGameIndex)
 		{
 			_safeZoneFrequency = safeZoneFrequency;
 			_superZoneFrequency = superZoneFrequency;
+			_endGameIndex = endGameIndex;
 		}
 
 		public bool IsSuperZone(int zoneIndex)
@@ -40,7 +45,7 @@ namespace WoF.Zone
 				return GetNextSpecialZoneIndex(possibleNextSafeZoneIndex + 1, _safeZoneFrequency);
 			}
 
-			return possibleNextSafeZoneIndex;
+			return Mathf.Min(possibleNextSafeZoneIndex, _endGameIndex);
 		}
 
 		public int GetNextSuperZoneIndex(int currentZoneIndex)
@@ -53,7 +58,7 @@ namespace WoF.Zone
 			int possibleScaler = (currentZoneIndex / zoneFrequency) + 1;
 			int possibleNextSafeZoneIndex = possibleScaler * zoneFrequency;
 
-			return possibleNextSafeZoneIndex;
+			return Mathf.Min(possibleNextSafeZoneIndex, _endGameIndex);
 		}
 	}
 }

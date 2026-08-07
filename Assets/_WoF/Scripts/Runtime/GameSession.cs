@@ -42,7 +42,7 @@ namespace WoF
 
 		private RewardDefinition _earnedReward;
 
-		private List<RewardDefinition> _rewardDefinitions;
+		private List<RewardDefinition> _rewardDefinitions = new();
 
 		private bool isContinueAfterBomb;
 
@@ -62,6 +62,10 @@ namespace WoF
 		
 		[SerializeField]
 		private CurrencyPanelController _currencyPanelController;
+		[SerializeField]
+		private EndGamePanelController _endGamePanelController;
+		[SerializeField]
+		private RewardSummaryPanelController _rewardSummaryPanelController;
 
 		private ZoneCalculator _zoneCalculator;
 		private ReviveCostCalculator _reviveCostCalculator;
@@ -71,6 +75,8 @@ namespace WoF
 		private bool _isWheelSpinning;
 
 		private CurrencyBag _currencyBag;
+		
+		
 
 		bool CanExitNow()
 		{
@@ -86,7 +92,7 @@ namespace WoF
 		{
 			// TODO : is this okay ?
 			_rewardContainer = new EarnedRewardContainer();
-			_zoneCalculator = new ZoneCalculator(_gameSettings.SafeZoneFrequency, _gameSettings.SuperZoneFrequency);
+			_zoneCalculator = new ZoneCalculator(_gameSettings.SafeZoneFrequency, _gameSettings.SuperZoneFrequency, _gameSettings.EndGameZoneIndex);
 			_reviveCostCalculator = new ReviveCostCalculator(_gameSettings.InitReviveCost, _gameSettings.ReviveCostScale);
 
 			_currencyBag = new CurrencyBag(_gameSettings.StartCurrencyAmount);
@@ -129,9 +135,11 @@ namespace WoF
 			_exitPanelController = FindObjectOfType<ExitPanelController>(true);
 			_losePanelController = FindObjectOfType<LosePanelController>(true);
 			_currencyPanelController = FindObjectOfType<CurrencyPanelController>(true);
+			_endGamePanelController = FindObjectOfType<EndGamePanelController>(true);
+			_rewardSummaryPanelController = FindObjectOfType<RewardSummaryPanelController>(true);
 		}
 
-		public void OnLevelStart()
+		private void BuildCurrentZone()
 		{
 			_exitButton.SetButtonInteractable(CanExitNow());
 			_wheelParent.RestoreWheelRotation();
@@ -213,6 +221,22 @@ namespace WoF
 			return tween;
 		}
 
+		public bool IsGameFinished()
+		{
+			return _currentZone > _gameSettings.EndGameZoneIndex;
+		}
+
+		public void DisplayEarnedRewards()
+		{
+			_rewardSummaryPanelController.Show();
+			_rewardSummaryPanelController.DisplayEarnedRewards(_rewardContainer);
+		}
+
+		private void OnGameFinished()
+		{
+			_endGamePanelController.Show();
+		}
+		
 		private void OnSpinComplete()
 		{
 			_isWheelSpinning = false;
@@ -229,7 +253,7 @@ namespace WoF
 				_rewardContainer.AddItem(_earnedReward, earnedAmount);
 				_rewardPanelController.AddItem(_earnedReward, earnedAmount);
 
-				NextLevel();
+				GoToNextZone();
 			}
 		}
 
@@ -289,7 +313,7 @@ namespace WoF
 		public void OnGiveUpButtonClicked()
 		{
 			_losePanelController.Hide();
-			RestartGame();
+			StartNewRun();
 		}
 
 		public void OnExitClicked()
@@ -305,22 +329,22 @@ namespace WoF
 		public void OnCollectRewardClicked()
 		{
 			_exitPanelController.Hide();
-			RestartGame();
+			DisplayEarnedRewards();
 		}
 
 		private void EnterZone()
 		{
-			OnLevelStart();
+			BuildCurrentZone();
 			RefreshZoneIndicators();
 		}
 
-		private void RestartGame()
+		public void StartNewRun()
 		{
-			ResetGame();
+			ClearRunState();
 			EnterZone();
 		}
 
-		public void ResetGame()
+		private void ClearRunState()
 		{
 			_currentZone = 1;
 			_earnedReward = null;
@@ -329,16 +353,27 @@ namespace WoF
 			_rewardDefinitions.Clear();
 			_rewardPanelController.Clear();
 			_rewardContainer.Clear();
+			_currencyBag.Reset(_gameSettings.StartCurrencyAmount);
 
 			_reviveCostCalculator.Reset();
 			_losePanelController.UpdateReviveCost(_reviveCostCalculator.GetReviveCost());
 			_currencyPanelController.SetCurrencyAmount(_currencyBag.GetRemainingCurrencyAmount());
 			CalculateSuperZoneRewards();
+
+			_rewardSummaryPanelController.Hide();
+			_endGamePanelController.Hide();
 		}
 
-		void NextLevel()
+		private void GoToNextZone()
 		{
 			++_currentZone;
+
+			if (IsGameFinished())
+			{
+				OnGameFinished();
+				return;
+			}
+
 			EnterZone();
 		}
 
@@ -346,17 +381,14 @@ namespace WoF
 		{
 			DOTween.Init();
 
-			CalculateSuperZoneRewards();
-			EnterZone();
-
-			RestartGame();
+			StartNewRun();
 		}
 
 		private void RefreshZoneIndicators()
 		{
 			int nextSuperZoneIndex = _zoneCalculator.GetNextSuperZoneIndex(_currentZone);
 
-			_zoneIndicatorPanelController.OnNewLevel(
+			_zoneIndicatorPanelController.OnNewZone(
 				_zoneCalculator.GetNextSafeZoneIndex(_currentZone),
 				nextSuperZoneIndex,
 				GetSuperZoneReward(nextSuperZoneIndex).Sprite);

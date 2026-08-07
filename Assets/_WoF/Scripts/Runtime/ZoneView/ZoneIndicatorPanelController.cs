@@ -24,7 +24,7 @@ namespace WoF
 			_safeZoneView.Init(_safeZoneStaticData);
 		}
 
-		public void OnNewLevel(int nextSafeZoneIndex, int nextSuperZoneIndex, Sprite superZoneIcon)
+		public void OnNewZone(int nextSafeZoneIndex, int nextSuperZoneIndex, Sprite superZoneIcon)
 		{
 			_superZoneView.ApplyStyle(new ZoneViewDynamicData
 			{

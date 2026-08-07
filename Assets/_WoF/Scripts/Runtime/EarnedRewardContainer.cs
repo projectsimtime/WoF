@@ -18,6 +18,11 @@ namespace WoF
 			}
 		}
 
+		public Dictionary<RewardDefinition, int> GetEarnedRewards()
+		{
+			return _inventory;
+		}
+
 		public void Clear()
 		{
 			_inventory.Clear();

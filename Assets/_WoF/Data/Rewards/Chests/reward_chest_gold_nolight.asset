@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ec1ea528f2247449cdc862438092e11, type: 3}
   m_Name: reward_chest_gold_nolight
   m_EditorClassIdentifier: 
+  _label: GOLD CHEST
   _sprite: {fileID: 21300000, guid: a2f47de83f49bde4aafb7afe68234490, type: 3}
   _rarity: 0
   _kind: 1

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ec1ea528f2247449cdc862438092e11, type: 3}
   m_Name: reward_mle_bayonet_summer_vice
   m_EditorClassIdentifier: 
+  _label: SUMMER BAYONET
   _sprite: {fileID: 21300000, guid: fd6c1ca0ff1673046ae42b54f3798776, type: 3}
   _rarity: 3
   _kind: 2

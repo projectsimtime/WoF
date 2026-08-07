@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ec1ea528f2247449cdc862438092e11, type: 3}
   m_Name: reward_healthshot_2_neurostim
   m_EditorClassIdentifier: 
+  _label: NEUROSTIM
   _sprite: {fileID: 21300000, guid: 4e783dc7fd3931644b07341196e3f727, type: 3}
   _rarity: 1
   _kind: 5

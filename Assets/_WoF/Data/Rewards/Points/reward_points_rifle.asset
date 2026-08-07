@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ec1ea528f2247449cdc862438092e11, type: 3}
   m_Name: reward_points_rifle
   m_EditorClassIdentifier: 
+  _label: RIFLE POINTS
   _sprite: {fileID: 21300000, guid: 0a200110a62925a40bb79e4189aef4b2, type: 3}
   _rarity: 0
   _kind: 3

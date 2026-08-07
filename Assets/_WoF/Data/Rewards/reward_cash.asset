@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ec1ea528f2247449cdc862438092e11, type: 3}
   m_Name: reward_cash
   m_EditorClassIdentifier: 
+  _label: CASH
   _sprite: {fileID: 21300000, guid: 8e0cdc6bbba293443a8643cdaae43ec7, type: 3}
   _rarity: 0
   _kind: 0

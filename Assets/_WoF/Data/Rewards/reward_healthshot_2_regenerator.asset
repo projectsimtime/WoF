@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ec1ea528f2247449cdc862438092e11, type: 3}
   m_Name: reward_healthshot_2_regenerator
   m_EditorClassIdentifier: 
+  _label: REGENERATOR
   _sprite: {fileID: 21300000, guid: 57394fbe8bf36e1459c4532539e9d924, type: 3}
   _rarity: 1
   _kind: 5

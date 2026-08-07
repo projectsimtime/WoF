@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ec1ea528f2247449cdc862438092e11, type: 3}
   m_Name: reward_grenade_m67
   m_EditorClassIdentifier: 
+  _label: M67 GRENADE
   _sprite: {fileID: 21300000, guid: 7743af1783fef134899811150eb1b015, type: 3}
   _rarity: 2
   _kind: 5

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ec1ea528f2247449cdc862438092e11, type: 3}
   m_Name: reward_tier3_smg
   m_EditorClassIdentifier: 
+  _label: ELITE SMG
   _sprite: {fileID: 21300000, guid: 283991677b64aa242af59a2eea8a2ea3, type: 3}
   _rarity: 2
   _kind: 2

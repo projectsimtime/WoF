@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ec1ea528f2247449cdc862438092e11, type: 3}
   m_Name: reward_cap
   m_EditorClassIdentifier: 
+  _label: CAP
   _sprite: {fileID: 21300000, guid: 32e35a246f96ed8429efd29ed42f6c62, type: 3}
   _rarity: 3
   _kind: 4

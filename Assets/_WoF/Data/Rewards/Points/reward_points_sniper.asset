@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ec1ea528f2247449cdc862438092e11, type: 3}
   m_Name: reward_points_sniper
   m_EditorClassIdentifier: 
+  _label: SNIPER POINTS
   _sprite: {fileID: 21300000, guid: 21ba6a53b55bf914cb5b0aeae350f9dc, type: 3}
   _rarity: 0
   _kind: 3

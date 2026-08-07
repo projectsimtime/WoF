@@ -24,5 +24,12 @@ namespace WoF.Zone
 		private ZoneOverride[] _zoneOverrides;
 
 		public ZoneOverride[] ZoneOverrides => _zoneOverrides;
+		
+#if UNITY_EDITOR
+		[SerializeField]
+		private GameSettings _gameSettings;
+
+		public GameSettings GameSettings => _gameSettings;
+#endif
 	}
 }

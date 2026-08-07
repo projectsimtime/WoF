@@ -12,4 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4446607ba0054ebabfd52d562be3469d, type: 3}
   m_Name: zoneRule
   m_EditorClassIdentifier: 
-  _zoneOverrides: []
+  _zoneOverrides:
+  - _zoneNumber: 3
+    _rewards:
+    - {fileID: 11400000, guid: 89e951e390791114daa5dd99de79e3a7, type: 2}
+    - {fileID: 11400000, guid: 89e951e390791114daa5dd99de79e3a7, type: 2}
+    - {fileID: 11400000, guid: 89e951e390791114daa5dd99de79e3a7, type: 2}
+    - {fileID: 11400000, guid: 89e951e390791114daa5dd99de79e3a7, type: 2}
+    - {fileID: 11400000, guid: 89e951e390791114daa5dd99de79e3a7, type: 2}
+    - {fileID: 11400000, guid: 89e951e390791114daa5dd99de79e3a7, type: 2}
+    - {fileID: 11400000, guid: 89e951e390791114daa5dd99de79e3a7, type: 2}
+    - {fileID: 11400000, guid: 1269a7a91fca47c41bda480ae98d8396, type: 2}
+  _gameSettings: {fileID: 11400000, guid: e59ea43fdb39b3b44bf9ed11823a7b8f, type: 2}

@@ -26,7 +26,15 @@ namespace WoF
 
 		public void SetAmount(int amount)
 		{
-			_amountText.text = $"x{amount}";
+			if (amount == 0)
+			{
+				_amountText.gameObject.SetActive(false);
+			}
+			else
+			{
+				_amountText.text = $"x{amount}";
+				_amountText.gameObject.SetActive(true);
+			}
 		}
 	}
 }

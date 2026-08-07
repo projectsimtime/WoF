@@ -1,21 +1,28 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace WoF
 {
 	public class LosePanelController : PanelController
 	{
 		[SerializeField] 
-		private GiveUpButton _giveUpButton;
-		[SerializeField] 
-		private ReviveButton _reviveButton;
+		private LosePanelGiveUpButton _losePanelGiveUpButton;
+		[SerializeField]
+		private LosePanelReviveButton _losePanelReviveButton;
+		[SerializeField]
+		private LosePanelSeeAdButton _losePanelSeeAdButton;
 
 		private void OnValidate()
 		{
-			_giveUpButton = GetComponentInChildren<GiveUpButton>();
-			_reviveButton = GetComponentInChildren<ReviveButton>();
+			_losePanelGiveUpButton = GetComponentInChildren<LosePanelGiveUpButton>();
+			_losePanelReviveButton = GetComponentInChildren<LosePanelReviveButton>();
+			_losePanelSeeAdButton = GetComponentInChildren<LosePanelSeeAdButton>();
 		}
-		
-		
+
+		public void HideAdButton()
+		{
+			_losePanelSeeAdButton.gameObject.SetActive(false);
+		}
 	}
 }

@@ -1,6 +1,6 @@
 namespace WoF
 {
-	public class GoBackButton : ButtonController
+	public class ExitPanelGoBackButton : ButtonController
 	{
 		protected override void OnButtonClicked()
 		{

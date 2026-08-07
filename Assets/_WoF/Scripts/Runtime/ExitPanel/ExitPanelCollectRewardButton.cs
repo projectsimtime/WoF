@@ -1,6 +1,6 @@
 namespace WoF
 {
-	public class CollectRewardButton : ButtonController
+	public class ExitPanelCollectRewardButton : ButtonController
 	{
 		protected override void OnButtonClicked()
 		{

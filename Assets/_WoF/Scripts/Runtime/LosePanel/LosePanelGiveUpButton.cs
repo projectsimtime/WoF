@@ -2,7 +2,7 @@
 
 namespace WoF
 {
-	public class GiveUpButton : ButtonController
+	public class LosePanelGiveUpButton : ButtonController
 	{
 		protected override void OnButtonClicked()
 		{

@@ -187,7 +187,7 @@ namespace WoF
 			
 			return angle;
 		}
-		
+
 		public TweenerCore<Quaternion, Vector3, QuaternionOptions> OnSpinClicked()
 		{
 			_isWheelSpinning = true;
@@ -247,6 +247,17 @@ namespace WoF
 			_wheelParent.SetActiveWheelSlot(reservedSlotIndex, false);
 		}
 
+		public void OnContinueFromAd()
+		{
+			_losePanelController.HideAdButton();
+			OnContinueClicked();
+		}
+
+		public void OnHintClicked()
+		{
+			Debug.Log("OnHintClicked");
+		}
+		
 		public void OnGiveUpButtonClicked()
 		{
 			_losePanelController.Hide();

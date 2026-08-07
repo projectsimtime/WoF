@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace WoF
 {
-	public class ReviveButton : ButtonController
+	public class LosePanelReviveButton : ButtonController
 	{
 		protected override void OnButtonClicked()
 		{

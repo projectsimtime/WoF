@@ -23,7 +23,7 @@ namespace WoF.Zone
 
 		public bool IsSafeZone(int zoneIndex)
 		{
-			return zoneIndex % _safeZoneFrequency == 0 && !IsSuperZone(zoneIndex);
+			return zoneIndex == 1 || (zoneIndex % _safeZoneFrequency == 0 && !IsSuperZone(zoneIndex));
 		}
 
 		public bool IsSpecialZone(int zoneIndex)

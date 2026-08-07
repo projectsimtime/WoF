@@ -15,8 +15,7 @@ namespace WoF
 	{
 		[SerializeField]
 		private ZoneRules _zoneRule;
-
-		[SerializeField]
+		
 		private Dictionary<int, int> _zoneOverrides;
 
 		private int _currentZone = 1;
@@ -91,6 +90,13 @@ namespace WoF
 			_reviveCostCalculator = new ReviveCostCalculator(_gameSettings.InitReviveCost, _gameSettings.ReviveCostScale);
 
 			_currencyBag = new CurrencyBag(_gameSettings.StartCurrencyAmount);
+			
+			_zoneOverrides = new Dictionary<int, int>();
+
+			for (int i = 0; i < _zoneRule.ZoneOverrides.Length; ++i)
+			{
+				_zoneOverrides.Add(_zoneRule.ZoneOverrides[i].ZoneNumber, i);
+			}
 		}
 
 		private void CalculateSuperZoneRewards()
@@ -118,13 +124,6 @@ namespace WoF
 
 		private void OnValidate()
 		{
-			_zoneOverrides = new Dictionary<int, int>();
-
-			for (int i = 0; i < _zoneRule.ZoneOverrides.Length; ++i)
-			{
-				_zoneOverrides.Add(_zoneRule.ZoneOverrides[i].ZoneNumber, i);
-			}
-
 			_rewardPanelController = FindObjectOfType<RewardPanelController>(true);
 			_zoneIndicatorPanelController = FindObjectOfType<ZoneIndicatorPanelController>(true);
 			_exitPanelController = FindObjectOfType<ExitPanelController>(true);

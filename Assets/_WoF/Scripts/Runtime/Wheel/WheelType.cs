@@ -40,7 +40,7 @@ namespace WoF
 		
 		public WheelTypeContent WheelTypeContent => _wheelTypeContent;
 
-		private void OnValidate()
+		private void OnEnable()
 		{
 			_wheelTypeContent.RewardByRarity = new Dictionary<EItemRarity, List<RewardDefinition>>();
 			

@@ -24,5 +24,14 @@ namespace WoF
 		{
 			_losePanelSeeAdButton.gameObject.SetActive(false);
 		}
+
+		public void UpdateReviveCost(int amount)
+		{
+			_losePanelReviveButton.SetReviveCost(amount);
+		}
+		public void OnNotEnoughCurrencyToRevive()
+		{
+			_losePanelReviveButton.SetButtonInteractable(false);
+		}
 	}
 }

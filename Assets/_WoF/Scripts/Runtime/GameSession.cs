@@ -60,12 +60,18 @@ namespace WoF
 
 		[SerializeField]
 		private ZoneIndicatorPanelController _zoneIndicatorPanelController;
+		
+		[SerializeField]
+		private CurrencyPanelController _currencyPanelController;
 
 		private ZoneCalculator _zoneCalculator;
+		private ReviveCostCalculator _reviveCostCalculator;
 
 		private RewardDefinition[] _superZoneRewards;
 
 		private bool _isWheelSpinning;
+
+		private CurrencyBag _currencyBag;
 
 		bool CanExitNow()
 		{
@@ -82,6 +88,9 @@ namespace WoF
 			// TODO : is this okay ?
 			_rewardContainer = new EarnedRewardContainer();
 			_zoneCalculator = new ZoneCalculator(_gameSettings.SafeZoneFrequency, _gameSettings.SuperZoneFrequency);
+			_reviveCostCalculator = new ReviveCostCalculator(_gameSettings.InitReviveCost, _gameSettings.ReviveCostScale);
+
+			_currencyBag = new CurrencyBag(_gameSettings.StartCurrencyAmount);
 		}
 
 		private void CalculateSuperZoneRewards()
@@ -120,6 +129,7 @@ namespace WoF
 			_zoneIndicatorPanelController = FindObjectOfType<ZoneIndicatorPanelController>(true);
 			_exitPanelController = FindObjectOfType<ExitPanelController>(true);
 			_losePanelController = FindObjectOfType<LosePanelController>(true);
+			_currencyPanelController = FindObjectOfType<CurrencyPanelController>(true);
 		}
 
 		public void OnLevelStart()
@@ -239,18 +249,31 @@ namespace WoF
 			_losePanelController.Show();
 		}
 
-		public void OnContinueClicked()
+		public void OnReviveButtonClicked()
 		{
 			_losePanelController.Hide();
 			isContinueAfterBomb = true;
 
 			_wheelParent.SetActiveWheelSlot(reservedSlotIndex, false);
+
+			_currencyBag.AddCurrency(-_reviveCostCalculator.GetReviveCost());
+			_reviveCostCalculator.OnRevived();
+
+			int nextReviveCost = _reviveCostCalculator.GetReviveCost();
+			_losePanelController.UpdateReviveCost(nextReviveCost);
+
+			if (!_currencyBag.HasEnoughCurrency(nextReviveCost))
+			{
+				_losePanelController.OnNotEnoughCurrencyToRevive();
+			}
+
+			_currencyPanelController.SetCurrencyAmount(_currencyBag.GetRemainingCurrencyAmount());
 		}
 
 		public void OnContinueFromAd()
 		{
 			_losePanelController.HideAdButton();
-			OnContinueClicked();
+			OnReviveButtonClicked();
 		}
 
 		public void OnHintClicked()
@@ -280,11 +303,16 @@ namespace WoF
 			RestartGame();
 		}
 
+		private void EnterZone()
+		{
+			OnLevelStart();
+			RefreshZoneIndicators();
+		}
+
 		private void RestartGame()
 		{
 			ResetGame();
-			OnLevelStart();
-			RefreshZoneIndicators();
+			EnterZone();
 		}
 
 		public void ResetGame()
@@ -297,23 +325,25 @@ namespace WoF
 			_rewardPanelController.Clear();
 			_rewardContainer.Clear();
 
+			_losePanelController.UpdateReviveCost(_reviveCostCalculator.GetReviveCost());
+			_currencyPanelController.SetCurrencyAmount(_currencyBag.GetRemainingCurrencyAmount());
 			CalculateSuperZoneRewards();
 		}
 
 		void NextLevel()
 		{
 			++_currentZone;
-			OnLevelStart();
-			RefreshZoneIndicators();
+			EnterZone();
 		}
 
 		private void Start()
 		{
 			DOTween.Init();
 
-			OnLevelStart();
 			CalculateSuperZoneRewards();
-			RefreshZoneIndicators();
+			EnterZone();
+
+			RestartGame();
 		}
 
 		private void RefreshZoneIndicators()

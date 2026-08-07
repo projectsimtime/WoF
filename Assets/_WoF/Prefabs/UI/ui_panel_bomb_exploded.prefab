@@ -64,9 +64,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a40b2b25bc49229beb9ac413b8c3e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _giveUpButton: {fileID: 8245751729205259729}
-  losePanelReviveButton: {fileID: 2497105263565686065}
-  losePanelSeeAdButton: {fileID: 7861159897865536569}
+  _losePanelGiveUpButton: {fileID: 8245751729205259729}
+  _losePanelReviveButton: {fileID: 2497105263565686065}
+  _losePanelSeeAdButton: {fileID: 7861159897865536569}
 --- !u!1 &4550000000000000200
 GameObject:
   m_ObjectHideFlags: 0
@@ -1203,6 +1203,7 @@ MonoBehaviour:
   _button: {fileID: 4550000000000000804}
   _buttonText: {fileID: 4550000000000000833}
   _gameSession: {fileID: 0}
+  _reviveCostText: {fileID: 2380274866012317099}
 --- !u!1 &4550000000000000810
 GameObject:
   m_ObjectHideFlags: 0
@@ -1328,6 +1329,7 @@ GameObject:
   - component: {fileID: 4550000000000000831}
   - component: {fileID: 4550000000000000832}
   - component: {fileID: 4550000000000000833}
+  - component: {fileID: 2380274866012317099}
   m_Layer: 0
   m_Name: ui_text_bomb_revive_cost_value
   m_TagString: Untagged
@@ -1452,6 +1454,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &2380274866012317099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4550000000000000830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0923772890c444ada08e1c9bc4c3acef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _text: {fileID: 0}
 --- !u!1 &4550000000000000840
 GameObject:
   m_ObjectHideFlags: 0

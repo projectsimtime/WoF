@@ -16,3 +16,6 @@ MonoBehaviour:
   _safeZoneFrequency: 5
   _superZoneFrequency: 30
   _endGameZoneIndex: 60
+  _startCurrencyAmount: 500
+  _reviveCostScale: 50
+  _initReviveCost: 50

@@ -1,5 +1,4 @@
-﻿using DG.Tweening.Core;
-using DG.Tweening.Plugins.Options;
+﻿using DG.Tweening;
 using UnityEngine;
 using WoF.Reward;
 
@@ -40,7 +39,7 @@ namespace WoF
 			_wheelSpin.SetRotation(Vector3.zero);
 		}
 
-		public TweenerCore<Quaternion, Vector3, QuaternionOptions> PlaySpin(float targetAngle, float duration)
+		public Tween PlaySpin(float targetAngle, float duration)
 		{
 			return _wheelSpin.PlaySpin(targetAngle, duration);
 		}

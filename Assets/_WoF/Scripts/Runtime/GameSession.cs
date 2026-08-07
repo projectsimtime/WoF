@@ -153,23 +153,25 @@ namespace WoF
 			isContinueAfterBomb = false;
 		}
 
-		public void GetRandomIndexTurnCount(int reservedIndex, bool shouldSkipReservedIndex, out int slotIndex, out int turnCount)
+		private int GetRandomSlotIndex(int reservedIndex, bool shouldSkipReservedIndex)
 		{
 			int randomSlotIndex = Random.Range(0, _gameSettings.SlotCount);
 
 			if (shouldSkipReservedIndex && randomSlotIndex == reservedIndex)
 			{
-				randomSlotIndex = (randomSlotIndex + 1) % 8;
+				randomSlotIndex = (randomSlotIndex + 1) % _gameSettings.SlotCount;
 			}
 
-			slotIndex = randomSlotIndex;
-			turnCount = Random.Range(2, 4);
+			return randomSlotIndex;
 		}
 
 		public float CalculateTargetAngle(int slotIndex, bool shouldSkipReservedIndex, out int randomSlotIndex)
 		{
-			GetRandomIndexTurnCount(slotIndex, shouldSkipReservedIndex, out randomSlotIndex, out int turnCount);
+			randomSlotIndex = GetRandomSlotIndex(slotIndex, shouldSkipReservedIndex);
 			float angle;
+
+			float edgeBias = _gameSettings.SpinEdgeBias;
+			float innerBias = 1.0f - edgeBias;
 
 			if (!shouldSkipReservedIndex && IsRandomIndexCloseToReservedSlot(randomSlotIndex))
 			{
@@ -177,42 +179,40 @@ namespace WoF
 
 				if (shouldLookLikeShowNearHit)
 				{
-					Debug.Log("100");
-					angle = GetAngleFromIndex(randomSlotIndex, turnCount,0.80f);
+					angle = GetAngleFromIndex(randomSlotIndex, edgeBias);
 				}
 				else
 				{
-					Debug.Log("200");
-					angle = GetAngleFromIndex(randomSlotIndex, turnCount,0.20f);
+					angle = GetAngleFromIndex(randomSlotIndex, innerBias);
 				}
 
 			}
 			else if(slotIndex == randomSlotIndex)
 			{
-				bool shouldLookLikeShowNearMiss = GetProbability(0.5f);
-
-				Debug.Log($"300 shouldLookLikeShowNearMiss({shouldLookLikeShowNearMiss})");
-				angle = GetAngleFromIndex(randomSlotIndex, turnCount, shouldLookLikeShowNearMiss ? 0.80f : 0.20f);
+				bool shouldLookLikeShowNearMiss = GetProbability(_gameSettings.SpinNearMissChance);
+				
+				angle = GetAngleFromIndex(randomSlotIndex, shouldLookLikeShowNearMiss ? edgeBias : innerBias);
 			}
 			else
 			{
-				Debug.Log("400");
-				float alpha = Random.Range(0.2f, 0.8f);
+				float alpha = Random.Range(innerBias, edgeBias);
 
-				angle = GetAngleFromIndex(randomSlotIndex, turnCount, alpha);
+				angle = GetAngleFromIndex(randomSlotIndex, alpha);
 			}
 			
 			return angle;
 		}
 
-		public TweenerCore<Quaternion, Vector3, QuaternionOptions> OnSpinClicked()
+		public Tween OnSpinClicked()
 		{
 			_isWheelSpinning = true;
 			_exitButton.SetButtonInteractable(CanExitNow());
 
 			float angle = CalculateTargetAngle(reservedSlotIndex, isContinueAfterBomb, out var earnedRewardIndex);
-			
-			var tween = _wheelParent.PlaySpin(angle, 3.0f);
+
+			float duration = Random.Range(_gameSettings.SpinMinDuration, _gameSettings.SpinMaxDuration);
+
+			var tween = _wheelParent.PlaySpin(angle, duration);
 			
 			tween.onComplete += OnSpinComplete;
 
@@ -398,9 +398,15 @@ namespace WoF
 		{
 			return Random.value < alpha;
 		}
-		private float GetAngleFromIndex(int index, int turnCount, float alpha = 0.5f)
+		private float GetAngleFromIndex(int index, float alpha = 0.5f)
 		{
-			return (index * -45.0f) + (turnCount * 360.0f) + Mathf.Lerp(-20.0f, 20.0f, alpha);
+			float slotPosition = index * _gameSettings.SlotAngle;
+			float slotOffset = _gameSettings.SpinSlotOffsetAngle;
+
+			int turnCount = Mathf.RoundToInt((_gameSettings.SpinTargetAngle + slotPosition) / 360.0f);
+
+			// Its -slotPosition because slots are positioned CCW.
+			return (turnCount * 360.0f) - slotPosition + Mathf.Lerp(-slotOffset, slotOffset, alpha);
 		}
 
 		private bool IsRandomIndexCloseToReservedSlot(int index)

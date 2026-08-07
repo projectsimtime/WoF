@@ -16,6 +16,12 @@ MonoBehaviour:
   _safeZoneFrequency: 5
   _superZoneFrequency: 30
   _endGameZoneIndex: 60
+  _spinTargetAngle: 1980
+  _spinMinDuration: 3.1
+  _spinMaxDuration: 3.5
+  _spinSlotOffsetAngle: 20
+  _spinEdgeBias: 0.8
+  _spinNearMissChance: 0.5
   _startCurrencyAmount: 500
   _reviveCostScale: 50
   _initReviveCost: 50

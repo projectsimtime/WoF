@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,7 +11,7 @@ namespace WoF
     {
         protected override void OnButtonClicked()
         {
-            var tween = _gameSession.OnSpinClicked();
+            Tween tween = _gameSession.OnSpinClicked();
             SetButtonInteractable(false);
             
             tween.onComplete += OnSpinCompleted;

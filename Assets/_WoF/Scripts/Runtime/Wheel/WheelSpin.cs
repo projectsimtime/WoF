@@ -19,14 +19,17 @@ namespace WoF
         [SerializeField]
         private Image _image;
 
-        public TweenerCore<Quaternion, Vector3, QuaternionOptions> PlaySpin(float targetAngle, float duration)
+        public Tween PlaySpin(float targetAngle, float duration)
         {
-            return transform.DOLocalRotate(new Vector3(0.0f, 0.0f, targetAngle), duration, RotateMode.FastBeyond360);
+            transform.DOKill();
+
+            return transform.DOLocalRotate(new Vector3(0.0f, 0.0f, targetAngle), duration, RotateMode.FastBeyond360)
+                .SetEase(Ease.OutCubic);
         }
 
         public void SetRotation(Vector3 rotation)
         {
-            transform.eulerAngles = rotation;
+            transform.localEulerAngles = rotation;
         }
 
         private void OnValidate()

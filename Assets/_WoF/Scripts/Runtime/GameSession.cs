@@ -65,6 +65,14 @@ namespace WoF
 
 		private RewardDefinition[] _superZoneRewards;
 
+		private bool _isWheelSpinning;
+
+		bool CanExitNow()
+		{
+			return _zoneCalculator.IsSpecialZone(_currentZone) && 
+			       !_isWheelSpinning;
+		}
+
 
 		[SerializeField] 
 		private ExitButton _exitButton;
@@ -116,6 +124,7 @@ namespace WoF
 
 		public void OnLevelStart()
 		{
+			_exitButton.SetButtonInteractable(CanExitNow());
 			_wheelParent.RestoreWheelRotation();
 			if (isContinueAfterBomb)
 			{
@@ -181,7 +190,8 @@ namespace WoF
 		
 		public TweenerCore<Quaternion, Vector3, QuaternionOptions> OnSpinClicked()
 		{
-			_exitButton.SetButtonInteractable(false);
+			_isWheelSpinning = true;
+			_exitButton.SetButtonInteractable(CanExitNow());
 
 			float angle = CalculateTargetAngle(reservedSlotIndex, isContinueAfterBomb, out var earnedRewardIndex);
 			
@@ -196,7 +206,8 @@ namespace WoF
 
 		private void OnSpinComplete()
 		{
-			_exitButton.SetButtonInteractable(true);
+			_isWheelSpinning = false;
+			_exitButton.SetButtonInteractable(CanExitNow());
 
 			if (IsBomb(_earnedReward))
 			{
@@ -269,7 +280,7 @@ namespace WoF
 		{
 			_currentZone = 1;
 			_earnedReward = null;
-			_exitButton.SetButtonInteractable(true);
+			_exitButton.SetButtonInteractable(CanExitNow());
 
 			_rewardDefinitions.Clear();
 			_rewardPanelController.Clear();

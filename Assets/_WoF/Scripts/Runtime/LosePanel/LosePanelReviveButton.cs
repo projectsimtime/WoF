@@ -17,7 +17,7 @@ namespace WoF
 
 		protected override void OnButtonClicked()
 		{
-			_gameSession.OnReviveButtonClicked();
+			_gameSession.OnReviveWithCurrency();
 		}
 
 		public void SetReviveCost(int amount)

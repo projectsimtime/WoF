@@ -9,7 +9,7 @@ namespace WoF.Advertisement
 
 		public override void GiveAdReward()
 		{
-			_gameSession.OnCollectRewardClicked();
+			_gameSession.OnReviveWithAd();
 		}
 	}
 }

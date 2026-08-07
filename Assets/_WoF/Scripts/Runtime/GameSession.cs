@@ -248,12 +248,17 @@ namespace WoF
 			_losePanelController.Show();
 		}
 
-		public void OnReviveButtonClicked()
+		private void Revive()
 		{
 			_losePanelController.Hide();
 			isContinueAfterBomb = true;
 
 			_wheelParent.SetActiveWheelSlot(reservedSlotIndex, false);
+		}
+
+		public void OnReviveWithCurrency()
+		{
+			Revive();
 
 			_currencyBag.AddCurrency(-_reviveCostCalculator.GetReviveCost());
 			_reviveCostCalculator.OnRevived();
@@ -269,10 +274,11 @@ namespace WoF
 			_currencyPanelController.SetCurrencyAmount(_currencyBag.GetRemainingCurrencyAmount());
 		}
 
-		public void OnContinueFromAd()
+		public void OnReviveWithAd()
 		{
 			_losePanelController.HideAdButton();
-			OnReviveButtonClicked();
+
+			Revive();
 		}
 
 		public void OnHintClicked()
@@ -324,6 +330,7 @@ namespace WoF
 			_rewardPanelController.Clear();
 			_rewardContainer.Clear();
 
+			_reviveCostCalculator.Reset();
 			_losePanelController.UpdateReviveCost(_reviveCostCalculator.GetReviveCost());
 			_currencyPanelController.SetCurrencyAmount(_currencyBag.GetRemainingCurrencyAmount());
 			CalculateSuperZoneRewards();

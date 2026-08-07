@@ -24,5 +24,10 @@ namespace WoF
 		{
 			++_revivedTime;
 		}
+
+		public void Reset()
+		{
+			_revivedTime = 0;
+		}
 	}
 }

@@ -1,7 +1,8 @@
 using UnityEngine;
 using WoF.Reward;
+using WoF.UI;
 
-namespace WoF
+namespace WoF.HintPanel
 {
 	public class HintPanelController : PanelController
 	{

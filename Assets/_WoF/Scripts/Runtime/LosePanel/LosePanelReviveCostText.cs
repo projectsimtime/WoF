@@ -2,7 +2,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace WoF
+namespace WoF.LosePanel
 {
 	public class LosePanelReviveCostText : MonoBehaviour
 	{

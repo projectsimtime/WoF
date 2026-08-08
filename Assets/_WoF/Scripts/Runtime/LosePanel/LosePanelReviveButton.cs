@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using WoF.UI;
 
-namespace WoF
+namespace WoF.LosePanel
 {
 	public class LosePanelReviveButton : ButtonController
 	{

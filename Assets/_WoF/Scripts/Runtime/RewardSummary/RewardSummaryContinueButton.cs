@@ -1,4 +1,6 @@
-namespace WoF
+using WoF.UI;
+
+namespace WoF.RewardSummary
 {
 	public class RewardSummaryContinueButton : ButtonController
 	{

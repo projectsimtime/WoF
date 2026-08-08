@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using WoF.Interface;
 
-namespace WoF
+namespace WoF.Wheel
 {
 	public class WheelIndicator : MonoBehaviour, IStyle<WheelType>
 	{

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using WoF.Reward;
 
-namespace WoF
+namespace WoF.Wheel
 {
 	public class RarityCalculator
 	{

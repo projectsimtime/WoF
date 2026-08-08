@@ -9,7 +9,7 @@ using UnityEngine.UI;
 using WoF.Interface;
 using WoF.Reward;
 
-namespace WoF
+namespace WoF.Wheel
 {
     public class WheelSpin : MonoBehaviour, IStyle<WheelType>
     {

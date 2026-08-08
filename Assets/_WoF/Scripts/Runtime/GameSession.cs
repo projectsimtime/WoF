@@ -3,8 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
+using WoF.Currency;
+using WoF.EndGame;
+using WoF.ExitPanel;
+using WoF.HintPanel;
+using WoF.LosePanel;
 using WoF.Reward;
+using WoF.RewardSummary;
+using WoF.Wheel;
 using WoF.Zone;
+using WoF.ZoneView;
 using Random = UnityEngine.Random;
 
 namespace WoF

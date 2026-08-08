@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.Serialization;
+using WoF.UI;
 
-namespace WoF
+namespace WoF.ExitPanel
 {
 	public class ExitPanelController : PanelController
 	{

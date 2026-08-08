@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace WoF
+namespace WoF.Currency
 {
 	public class CurrencyPanelController : MonoBehaviour
 	{

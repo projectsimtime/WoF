@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 using WoF.Interface;
 using Image = UnityEngine.UI.Image;
 
-namespace WoF
+namespace WoF.ZoneView
 {
 	public class ZoneViewBase : MonoBehaviour, IStyle<ZoneViewDynamicData>
 	{

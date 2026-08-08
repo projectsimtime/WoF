@@ -1,4 +1,5 @@
 using UnityEngine;
+using WoF.UI;
 
 namespace WoF.Advertisement
 {

@@ -1,4 +1,4 @@
-﻿namespace WoF
+﻿namespace WoF.Currency
 {
 	public class CurrencyContainer
 	{

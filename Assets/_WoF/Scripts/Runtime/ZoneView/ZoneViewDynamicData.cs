@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace WoF
+namespace WoF.ZoneView
 {
 	public struct ZoneViewDynamicData
 	{

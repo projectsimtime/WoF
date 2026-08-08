@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace WoF
+namespace WoF.ZoneView
 {
 	public class ZoneIndicatorPanelController : MonoBehaviour
 	{

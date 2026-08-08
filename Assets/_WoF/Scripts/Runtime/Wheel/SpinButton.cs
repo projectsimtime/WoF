@@ -1,4 +1,6 @@
-namespace WoF
+using WoF.UI;
+
+namespace WoF.Wheel
 {
     public class SpinButton : ButtonController
     {

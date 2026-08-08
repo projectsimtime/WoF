@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using WoF.Reward;
+using WoF.UI;
 
-namespace WoF
+namespace WoF.RewardSummary
 {
 	public class RewardSummaryPanelController : PanelController
 	{

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using WoF.Reward;
 
-namespace WoF
+namespace WoF.Reward
 {
 	public class RewardPanelController : MonoBehaviour
 	{

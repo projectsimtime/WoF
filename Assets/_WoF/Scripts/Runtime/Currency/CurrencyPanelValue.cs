@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-namespace WoF
+namespace WoF.Currency
 {
 	public class CurrencyPanelValue : MonoBehaviour
 	{

@@ -2,7 +2,7 @@
 using UnityEngine;
 using WoF.Reward;
 
-namespace WoF
+namespace WoF.Reward
 {
 	public class EarnedRewardContainer
 	{

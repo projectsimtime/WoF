@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using WoF.Interface;
 using WoF.Reward;
 
-namespace WoF
+namespace WoF.Reward
 {
 	public struct EarnedRewardData
 	{

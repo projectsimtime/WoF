@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace WoF
+namespace WoF.ZoneView
 {
 	public class CurrentZonePanelController : MonoBehaviour
 	{

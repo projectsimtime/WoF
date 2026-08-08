@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace WoF
+namespace WoF.UI
 {
 	public class ButtonController : MonoBehaviour
 	{

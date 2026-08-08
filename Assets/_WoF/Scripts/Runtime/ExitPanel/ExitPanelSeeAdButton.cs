@@ -1,7 +1,8 @@
 using UnityEngine;
 using WoF.Advertisement;
+using WoF.UI;
 
-namespace WoF
+namespace WoF.ExitPanel
 {
 	public class ExitPanelSeeAdButton : ButtonController
 	{

@@ -1,8 +1,9 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using WoF.UI;
 
-namespace WoF
+namespace WoF.LosePanel
 {
 	public class LosePanelController : PanelController
 	{

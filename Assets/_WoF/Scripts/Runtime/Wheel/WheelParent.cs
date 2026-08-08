@@ -2,7 +2,7 @@
 using UnityEngine;
 using WoF.Reward;
 
-namespace WoF
+namespace WoF.Wheel
 {
 	public class WheelParent : MonoBehaviour
 	{

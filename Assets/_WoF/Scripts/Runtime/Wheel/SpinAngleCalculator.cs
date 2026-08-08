@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace WoF
+namespace WoF.Wheel
 {
 	public class SpinAngleCalculator
 	{

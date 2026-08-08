@@ -2,7 +2,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
-namespace WoF
+namespace WoF.ZoneView
 {
 	public class CurrentZonePanelValue : MonoBehaviour
 	{

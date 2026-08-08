@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace WoF
+namespace WoF.UI
 {
 	public abstract class PanelController : MonoBehaviour
 	{

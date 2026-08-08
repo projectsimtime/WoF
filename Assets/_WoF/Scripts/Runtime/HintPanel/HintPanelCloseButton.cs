@@ -1,4 +1,6 @@
-namespace WoF
+using WoF.UI;
+
+namespace WoF.HintPanel
 {
 	public class HintPanelCloseButton : ButtonController
 	{

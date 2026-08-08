@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace WoF
+namespace WoF.ZoneView
 {
 	[CreateAssetMenu(fileName = "zoneStaticView_", menuName = "WoF/Zone View/New Zone Static View", order = 0)]
 	public class ZoneViewStaticData : ScriptableObject

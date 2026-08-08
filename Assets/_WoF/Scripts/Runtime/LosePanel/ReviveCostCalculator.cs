@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace WoF
+namespace WoF.LosePanel
 {
 	public class ReviveCostCalculator
 	{

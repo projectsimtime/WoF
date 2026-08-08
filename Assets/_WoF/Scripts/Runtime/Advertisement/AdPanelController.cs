@@ -1,5 +1,6 @@
 using DG.Tweening;
 using UnityEngine;
+using WoF.UI;
 
 namespace WoF.Advertisement
 {

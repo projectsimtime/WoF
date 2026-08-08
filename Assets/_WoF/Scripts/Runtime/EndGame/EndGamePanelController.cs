@@ -1,6 +1,7 @@
 using UnityEngine;
+using WoF.UI;
 
-namespace WoF
+namespace WoF.EndGame
 {
 	public class EndGamePanelController : PanelController
 	{

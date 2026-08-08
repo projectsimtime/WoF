@@ -1,6 +1,8 @@
+using WoF.UI;
+
 ﻿using UnityEngine;
 
-namespace WoF
+namespace WoF.LosePanel
 {
 	public class LosePanelGiveUpButton : ButtonController
 	{

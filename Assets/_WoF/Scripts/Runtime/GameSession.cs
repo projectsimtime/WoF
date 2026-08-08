@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
-using DG.Tweening.Core;
-using DG.Tweening.Plugins.Options;
 using UnityEngine;
 using WoF.Reward;
 using WoF.Zone;
@@ -13,6 +11,13 @@ namespace WoF
 {
 	public class GameSession : MonoBehaviour
 	{
+		private struct ZoneWheel
+		{
+			public WheelType WheelType;
+			public List<RewardDefinition> Rewards;
+			public int ReservedSlotIndex;
+		}
+
 		[SerializeField]
 		private ZoneRules _zoneRule;
 		
@@ -20,7 +25,7 @@ namespace WoF
 
 		private int _currentZone = 1;
 
-		private int reservedSlotIndex;
+		private int _reservedSlotIndex;
 		
 		[SerializeField] 
 		private WheelType[] _wheelTypes;
@@ -44,7 +49,7 @@ namespace WoF
 
 		private List<RewardDefinition> _rewardDefinitions = new();
 
-		private bool isContinueAfterBomb;
+		private bool _isContinueAfterBomb;
 
 		[SerializeField]
 		private LosePanelController _losePanelController;
@@ -69,6 +74,8 @@ namespace WoF
 
 		private ZoneCalculator _zoneCalculator;
 		private ReviveCostCalculator _reviveCostCalculator;
+		private SpinAngleCalculator _spinAngleCalculator;
+		private RarityCalculator _rarityCalculator;
 
 		private RewardDefinition[] _superZoneRewards;
 
@@ -90,10 +97,11 @@ namespace WoF
 
 		private void Awake()
 		{
-			// TODO : is this okay ?
 			_rewardContainer = new EarnedRewardContainer();
 			_zoneCalculator = new ZoneCalculator(_gameSettings.SafeZoneFrequency, _gameSettings.SuperZoneFrequency, _gameSettings.EndGameZoneIndex);
 			_reviveCostCalculator = new ReviveCostCalculator(_gameSettings.InitReviveCost, _gameSettings.ReviveCostScale);
+			_spinAngleCalculator = new SpinAngleCalculator(_gameSettings.SlotCount, _gameSettings.SpinTargetAngle, _gameSettings.SpinSlotOffsetAngle, _gameSettings.SpinEdgeBias, _gameSettings.SpinNearMissChance);
+			_rarityCalculator = new RarityCalculator(_gameSettings.SlotCount, _gameSettings.LegendaryChance, _gameSettings.EpicChance, _gameSettings.RareChance);
 
 			_currencyBag = new CurrencyBag(_gameSettings.StartCurrencyAmount);
 			
@@ -143,64 +151,19 @@ namespace WoF
 		{
 			_exitButton.SetButtonInteractable(CanExitNow());
 			_wheelParent.RestoreWheelRotation();
-			if (isContinueAfterBomb)
+			if (_isContinueAfterBomb)
 			{
-				_wheelParent.SetActiveWheelSlot(reservedSlotIndex, true);
-			}
-			
-			BuildZoneContents();
-
-			isContinueAfterBomb = false;
-		}
-
-		private int GetRandomSlotIndex(int reservedIndex, bool shouldSkipReservedIndex)
-		{
-			int randomSlotIndex = Random.Range(0, _gameSettings.SlotCount);
-
-			if (shouldSkipReservedIndex && randomSlotIndex == reservedIndex)
-			{
-				randomSlotIndex = (randomSlotIndex + 1) % _gameSettings.SlotCount;
+				_wheelParent.SetActiveWheelSlot(_reservedSlotIndex, true);
 			}
 
-			return randomSlotIndex;
-		}
+			ZoneWheel zoneWheel = BuildZoneWheel(_currentZone);
 
-		public float CalculateTargetAngle(int slotIndex, bool shouldSkipReservedIndex, out int randomSlotIndex)
-		{
-			randomSlotIndex = GetRandomSlotIndex(slotIndex, shouldSkipReservedIndex);
-			float angle;
+			_reservedSlotIndex = zoneWheel.ReservedSlotIndex;
+			_rewardDefinitions = zoneWheel.Rewards;
 
-			float edgeBias = _gameSettings.SpinEdgeBias;
-			float innerBias = 1.0f - edgeBias;
+			ApplyZoneWheel(zoneWheel, _currentZone);
 
-			if (!shouldSkipReservedIndex && IsRandomIndexCloseToReservedSlot(randomSlotIndex))
-			{
-				bool shouldLookLikeShowNearHit = (randomSlotIndex + 1) % _gameSettings.SlotCount == slotIndex;
-
-				if (shouldLookLikeShowNearHit)
-				{
-					angle = GetAngleFromIndex(randomSlotIndex, edgeBias);
-				}
-				else
-				{
-					angle = GetAngleFromIndex(randomSlotIndex, innerBias);
-				}
-
-			}
-			else if(slotIndex == randomSlotIndex)
-			{
-				bool shouldLookLikeShowNearMiss = GetProbability(_gameSettings.SpinNearMissChance);
-				
-				angle = GetAngleFromIndex(randomSlotIndex, shouldLookLikeShowNearMiss ? edgeBias : innerBias);
-			}
-			else
-			{
-				float alpha = Random.Range(innerBias, edgeBias);
-
-				angle = GetAngleFromIndex(randomSlotIndex, alpha);
-			}
-			
-			return angle;
+			_isContinueAfterBomb = false;
 		}
 
 		public Tween OnSpinClicked()
@@ -208,7 +171,7 @@ namespace WoF
 			_isWheelSpinning = true;
 			_exitButton.SetButtonInteractable(CanExitNow());
 
-			float angle = CalculateTargetAngle(reservedSlotIndex, isContinueAfterBomb, out var earnedRewardIndex);
+			float angle = _spinAngleCalculator.CalculateTargetAngle(_reservedSlotIndex, _isContinueAfterBomb, out var earnedRewardIndex);
 
 			float duration = Random.Range(_gameSettings.SpinMinDuration, _gameSettings.SpinMaxDuration);
 
@@ -248,7 +211,7 @@ namespace WoF
 			}
 			else
 			{
-				int earnedAmount = GetRewardAmount(_earnedReward);
+				int earnedAmount = GetRewardAmount(_earnedReward, _currentZone);
 
 				_rewardContainer.AddItem(_earnedReward, earnedAmount);
 				_rewardPanelController.AddItem(_earnedReward, earnedAmount);
@@ -262,9 +225,9 @@ namespace WoF
 			return reward == _bombReward;
 		}
 
-		public int GetRewardAmount(RewardDefinition reward)
+		public int GetRewardAmount(RewardDefinition reward, int zoneIndex)
 		{
-			return _rewardAmountMap.GetAmountByKind(reward, _currentZone);
+			return _rewardAmountMap.GetAmountByKind(reward, zoneIndex);
 		}
 
 		public void OnBombExploded()
@@ -275,9 +238,9 @@ namespace WoF
 		private void Revive()
 		{
 			_losePanelController.Hide();
-			isContinueAfterBomb = true;
+			_isContinueAfterBomb = true;
 
-			_wheelParent.SetActiveWheelSlot(reservedSlotIndex, false);
+			_wheelParent.SetActiveWheelSlot(_reservedSlotIndex, false);
 		}
 
 		public void OnReviveWithCurrency()
@@ -394,57 +357,37 @@ namespace WoF
 				GetSuperZoneReward(nextSuperZoneIndex).Sprite);
 		}
 
-		private bool GetProbability(float alpha)
+		private EWheelType GetWheelType(int zoneIndex)
 		{
-			return Random.value < alpha;
-		}
-		private float GetAngleFromIndex(int index, float alpha = 0.5f)
-		{
-			float slotPosition = index * _gameSettings.SlotAngle;
-			float slotOffset = _gameSettings.SpinSlotOffsetAngle;
-
-			int turnCount = Mathf.RoundToInt((_gameSettings.SpinTargetAngle + slotPosition) / 360.0f);
-
-			// Its -slotPosition because slots are positioned CCW.
-			return (turnCount * 360.0f) - slotPosition + Mathf.Lerp(-slotOffset, slotOffset, alpha);
-		}
-
-		private bool IsRandomIndexCloseToReservedSlot(int index)
-		{
-			return (index + 1 + _gameSettings.SlotCount) % _gameSettings.SlotCount == reservedSlotIndex || 
-			       (index - 1 + _gameSettings.SlotCount) % _gameSettings.SlotCount == reservedSlotIndex;
-		}
-
-		private void BuildZoneContents()
-		{
-			WheelType currentWheelType;
-			EWheelType wheelType;
-
-			if (_zoneCalculator.IsSuperZone(_currentZone))
+			if (_zoneCalculator.IsSuperZone(zoneIndex))
 			{
-				currentWheelType = _wheelTypes[(int)EWheelType.Gold];
-				wheelType = EWheelType.Gold;
-			}
-			else if (_zoneCalculator.IsSafeZone(_currentZone))
-			{
-				currentWheelType = _wheelTypes[(int)EWheelType.Silver];
-				wheelType = EWheelType.Silver;
-			}
-			else
-			{
-				currentWheelType = _wheelTypes[(int)EWheelType.Bronze];
-				wheelType = EWheelType.Bronze;
+				return EWheelType.Gold;
 			}
 
-			_wheelParent.ApplyWheelType(currentWheelType);
-
-			if (_zoneOverrides.TryGetValue(_currentZone, out int index))
+			if (_zoneCalculator.IsSafeZone(zoneIndex))
 			{
-				_rewardDefinitions = _zoneRule.ZoneOverrides[index].Rewards.ToList();
+				return EWheelType.Silver;
+			}
 
-				for (int i = 0; i < _rewardDefinitions.Count; ++i)
+			return EWheelType.Bronze;
+		}
+
+		private ZoneWheel BuildZoneWheel(int zoneIndex)
+		{
+			ZoneWheel zoneWheel;
+
+			EWheelType wheelType = GetWheelType(zoneIndex);
+
+			zoneWheel.WheelType = _wheelTypes[(int)wheelType];
+
+			if (_zoneOverrides.TryGetValue(zoneIndex, out int index))
+			{
+				zoneWheel.Rewards = _zoneRule.ZoneOverrides[index].Rewards.ToList();
+				zoneWheel.ReservedSlotIndex = zoneWheel.Rewards.IndexOf(_bombReward);
+
+				if (zoneWheel.ReservedSlotIndex < 0)
 				{
-					_wheelParent.ApplyWheelSlot(i, _rewardDefinitions[i], GetRewardAmount(_rewardDefinitions[i]));
+					zoneWheel.ReservedSlotIndex = Int32.MaxValue;
 				}
 			}
 			else
@@ -452,23 +395,25 @@ namespace WoF
 				bool hasBomb = wheelType == EWheelType.Bronze;
 				bool hasSpecialItem = wheelType == EWheelType.Gold;
 
-				reservedSlotIndex = hasBomb || hasSpecialItem ? Random.Range(0, _gameSettings.SlotCount) : Int32.MaxValue;
+				zoneWheel.ReservedSlotIndex = hasBomb || hasSpecialItem ? Random.Range(0, _gameSettings.SlotCount) : Int32.MaxValue;
+				zoneWheel.Rewards = GetZoneContents(zoneWheel.WheelType);
 
-				var zoneItems = GetZoneContents(currentWheelType);
-
-				for (int i = 0; i < zoneItems.Count; ++i)
+				if (zoneWheel.ReservedSlotIndex < zoneWheel.Rewards.Count)
 				{
-					_wheelParent.ApplyWheelSlot(i, zoneItems[i], GetRewardAmount(zoneItems[i]));
+					zoneWheel.Rewards[zoneWheel.ReservedSlotIndex] = hasBomb ? _bombReward : GetSuperZoneReward(zoneIndex);
 				}
+			}
 
-				if (reservedSlotIndex < zoneItems.Count)
-				{
-					RewardDefinition insertedReward = hasBomb ? _bombReward : GetSuperZoneReward(_currentZone);
-					_wheelParent.ApplyWheelSlot(reservedSlotIndex, insertedReward, GetRewardAmount(insertedReward));
-					zoneItems[reservedSlotIndex] = insertedReward;
-				}
+			return zoneWheel;
+		}
 
-				_rewardDefinitions = zoneItems;
+		private void ApplyZoneWheel(ZoneWheel zoneWheel, int zoneIndex)
+		{
+			_wheelParent.ApplyWheelType(zoneWheel.WheelType);
+
+			for (int i = 0; i < zoneWheel.Rewards.Count; ++i)
+			{
+				_wheelParent.ApplyWheelSlot(i, zoneWheel.Rewards[i], GetRewardAmount(zoneWheel.Rewards[i], zoneIndex));
 			}
 		}
 
@@ -476,7 +421,7 @@ namespace WoF
 		{
 			var rewardsByRarity = wheelType.WheelTypeContent.RewardByRarity;
 
-			var itemRarities = GetItemRarityCount(wheelType);
+			var itemRarities = _rarityCalculator.GetItemRarityCount(wheelType);
 
 			List<RewardDefinition> rewards = new List<RewardDefinition>(_gameSettings.SlotCount);
 
@@ -497,55 +442,6 @@ namespace WoF
 			}
 
 			return rewards;
-		}
-
-		public Dictionary<EItemRarity, int> GetItemRarityCount(WheelType wheelType)
-		{
-			Dictionary<EItemRarity, int> rewardCountByRarity = new Dictionary<EItemRarity, int>();
-			
-			for (int i = 0; i < _gameSettings.SlotCount; ++i)
-			{
-				EItemRarity currentRarity = GetRandomRarity(wheelType);
-				
-				if (!rewardCountByRarity.TryAdd(currentRarity, 1))
-				{
-					++rewardCountByRarity[currentRarity];
-				}
-			}
-
-			Debug.Log("ilker");
-
-			return rewardCountByRarity;
-		}
-
-		public EItemRarity GetRandomRarity(WheelType wheelType)
-		{
-			int randomNumber = Random.Range(1, 101);
-
-			// Note: I know "else" keyword is redundant. However, I believe this version is more readable.
-			if (randomNumber > 99 && IsRarityExistOnWheelType(wheelType, EItemRarity.Legendary))
-			{
-				return EItemRarity.Legendary;
-			}
-			else if (randomNumber > 90 && IsRarityExistOnWheelType(wheelType, EItemRarity.Epic))
-			{
-				return EItemRarity.Epic;
-			}
-			else if(randomNumber > 70 && IsRarityExistOnWheelType(wheelType, EItemRarity.Rare))
-			{
-				return EItemRarity.Rare;
-			}
-			else
-			{
-				return EItemRarity.Casual;
-			}
-		}
-
-		public bool IsRarityExistOnWheelType(WheelType wheelType, EItemRarity itemRarity)
-		{
-			bool isRarityExists = wheelType.WheelTypeContent.RewardByRarity.TryGetValue(itemRarity, out var rewards);
-
-			return (isRarityExists && rewards.Count > 0);
 		}
 	}
 }

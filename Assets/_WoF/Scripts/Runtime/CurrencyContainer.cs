@@ -1,10 +1,10 @@
 ﻿namespace WoF
 {
-	public class CurrencyBag
+	public class CurrencyContainer
 	{
 		private int _remainingCurrencyAmount;
 
-		public CurrencyBag(int initialCurrencyAmount)
+		public CurrencyContainer(int initialCurrencyAmount)
 		{
 			_remainingCurrencyAmount = initialCurrencyAmount;
 		}

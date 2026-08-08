@@ -1,25 +1,29 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using DG.Tweening;
-using UnityEngine;
-using UnityEngine.UI;
-
 namespace WoF
 {
     public class SpinButton : ButtonController
     {
-        protected override void OnButtonClicked()
+        protected override void OnEnable()
         {
-            Tween tween = _gameSession.OnSpinClicked();
-            SetButtonInteractable(false);
-            
-            tween.onComplete += OnSpinCompleted;
+            base.OnEnable();
+
+            _gameSession.WheelSpinningChanged += OnWheelSpinningChanged;
         }
 
-        private void OnSpinCompleted()
+        protected override void OnDisable()
         {
-            SetButtonInteractable(true);
+            base.OnDisable();
+
+            _gameSession.WheelSpinningChanged -= OnWheelSpinningChanged;
+        }
+
+        protected override void OnButtonClicked()
+        {
+            _gameSession.OnSpinClicked();
+        }
+
+        private void OnWheelSpinningChanged(bool isSpinning)
+        {
+            SetButtonInteractable(!isSpinning);
         }
     }
 }

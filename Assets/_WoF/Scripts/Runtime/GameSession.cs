@@ -60,9 +60,6 @@ namespace WoF
 		[SerializeField]
 		private RewardSummaryPanelController _rewardSummaryPanelController;
 
-		[SerializeField]
-		private ExitButton _exitButton;
-
 		private Dictionary<int, int> _zoneOverrides;
 
 		private ZoneCalculator _zoneCalculator;
@@ -77,11 +74,14 @@ namespace WoF
 		private RewardDefinition[] _superZoneRewards;
 		private RewardDefinition _earnedReward;
 
-		private int _currentZone = 1;
+		private int _currentZone;
 		private int _reservedSlotIndex;
 
 		private bool _isContinueAfterBomb;
 		private bool _isWheelSpinning;
+
+		public event Action<bool> WheelSpinningChanged;
+		public event Action<bool> ExitAvailabilityChanged;
 
 		private void OnValidate()
 		{
@@ -129,7 +129,7 @@ namespace WoF
 		{
 			_currentZone = 1;
 			_earnedReward = null;
-			_exitButton.SetButtonInteractable(CanExitNow());
+			RefreshExitAvailability();
 
 			_rewardDefinitions.Clear();
 			_rewardPanelController.Clear();
@@ -153,7 +153,7 @@ namespace WoF
 
 		private void BuildCurrentZone()
 		{
-			_exitButton.SetButtonInteractable(CanExitNow());
+			RefreshExitAvailability();
 			_wheelParent.RestoreWheelRotation();
 			if (_isContinueAfterBomb)
 			{
@@ -313,10 +313,9 @@ namespace WoF
 			return _superZoneRewards[rewardIndex];
 		}
 
-		public Tween OnSpinClicked()
+		public void OnSpinClicked()
 		{
-			_isWheelSpinning = true;
-			_exitButton.SetButtonInteractable(CanExitNow());
+			SetWheelSpinning(true);
 
 			float angle = _spinAngleCalculator.CalculateTargetAngle(_reservedSlotIndex, _isContinueAfterBomb, out var earnedRewardIndex);
 
@@ -327,14 +326,19 @@ namespace WoF
 			tween.onComplete += OnSpinComplete;
 
 			_earnedReward = _rewardDefinitions[earnedRewardIndex];
+		}
 
-			return tween;
+		private void SetWheelSpinning(bool isSpinning)
+		{
+			_isWheelSpinning = isSpinning;
+
+			WheelSpinningChanged?.Invoke(isSpinning);
+			RefreshExitAvailability();
 		}
 
 		private void OnSpinComplete()
 		{
-			_isWheelSpinning = false;
-			_exitButton.SetButtonInteractable(CanExitNow());
+			SetWheelSpinning(false);
 
 			if (IsBomb(_earnedReward))
 			{
@@ -409,6 +413,11 @@ namespace WoF
 		{
 			return _zoneCalculator.IsSpecialZone(_currentZone) &&
 			       !_isWheelSpinning;
+		}
+
+		private void RefreshExitAvailability()
+		{
+			ExitAvailabilityChanged?.Invoke(CanExitNow());
 		}
 
 		public void OnExitClicked()

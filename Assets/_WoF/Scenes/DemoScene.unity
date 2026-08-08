@@ -698,7 +698,6 @@ MonoBehaviour:
   _currencyPanelController: {fileID: 554779836}
   _endGamePanelController: {fileID: 232823494}
   _rewardSummaryPanelController: {fileID: 1028498720}
-  _exitButton: {fileID: 1500000119}
 --- !u!1 &906217472
 GameObject:
   m_ObjectHideFlags: 0

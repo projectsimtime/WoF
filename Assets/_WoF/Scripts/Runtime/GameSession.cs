@@ -60,6 +60,9 @@ namespace WoF
 		[SerializeField]
 		private RewardSummaryPanelController _rewardSummaryPanelController;
 
+		[SerializeField]
+		private HintPanelController _hintPanelController;
+
 		private Dictionary<int, int> _zoneOverrides;
 
 		private ZoneCalculator _zoneCalculator;
@@ -73,6 +76,9 @@ namespace WoF
 		private List<RewardDefinition> _rewardDefinitions = new();
 		private RewardDefinition[] _superZoneRewards;
 		private RewardDefinition _earnedReward;
+
+		private ZoneWheel _nextZoneWheel;
+		private bool _hasNextZoneWheel;
 
 		private int _currentZone;
 		private int _reservedSlotIndex;
@@ -92,6 +98,7 @@ namespace WoF
 			_currencyPanelController = FindObjectOfType<CurrencyPanelController>(true);
 			_endGamePanelController = FindObjectOfType<EndGamePanelController>(true);
 			_rewardSummaryPanelController = FindObjectOfType<RewardSummaryPanelController>(true);
+			_hintPanelController = FindObjectOfType<HintPanelController>(true);
 		}
 
 		private void Awake()
@@ -143,6 +150,9 @@ namespace WoF
 
 			_rewardSummaryPanelController.Hide();
 			_endGamePanelController.Hide();
+			_hintPanelController.Hide();
+
+			_hasNextZoneWheel = false;
 		}
 
 		private void EnterZone()
@@ -160,7 +170,7 @@ namespace WoF
 				_wheelParent.SetActiveWheelSlot(_reservedSlotIndex, true);
 			}
 
-			ZoneWheel zoneWheel = BuildZoneWheel(_currentZone);
+			ZoneWheel zoneWheel = GetZoneWheel(_currentZone);
 
 			_reservedSlotIndex = zoneWheel.ReservedSlotIndex;
 			_rewardDefinitions = zoneWheel.Rewards;
@@ -216,6 +226,18 @@ namespace WoF
 			}
 
 			return EWheelType.Bronze;
+		}
+
+		private ZoneWheel GetZoneWheel(int zoneIndex)
+		{
+			if (_hasNextZoneWheel)
+			{
+				_hasNextZoneWheel = false;
+
+				return _nextZoneWheel;
+			}
+
+			return BuildZoneWheel(zoneIndex);
 		}
 
 		private ZoneWheel BuildZoneWheel(int zoneIndex)
@@ -436,9 +458,55 @@ namespace WoF
 			DisplayEarnedRewards();
 		}
 
+		// This is like a concept. I wanted to add ideas from myself for this demo.
+		// I want to encourage the user to keep going by showing what's ahead.
+		// It can be tweaked with your idea as well.
 		public void OnHintClicked()
 		{
-			Debug.Log("OnHintClicked");
+			int nextZoneIndex = _currentZone + 1;
+
+			if (nextZoneIndex > _gameSettings.EndGameZoneIndex)
+			{
+				return;
+			}
+
+			if (!_hasNextZoneWheel)
+			{
+				_nextZoneWheel = BuildZoneWheel(nextZoneIndex);
+				_hasNextZoneWheel = true;
+			}
+
+			RewardDefinition bestReward = GetBestReward(_nextZoneWheel.Rewards);
+
+			_exitPanelController.Hide();
+			_hintPanelController.Show();
+			_hintPanelController.DisplayHint(bestReward, GetRewardAmount(bestReward, nextZoneIndex));
+		}
+
+		public void OnHintClosed()
+		{
+			_hintPanelController.Hide();
+			_exitPanelController.Show();
+		}
+
+		private RewardDefinition GetBestReward(List<RewardDefinition> rewards)
+		{
+			RewardDefinition bestReward = rewards.First();
+
+			foreach (RewardDefinition reward in rewards)
+			{
+				if (IsBomb(reward))
+				{
+					continue;
+				}
+
+				if (reward.Rarity > bestReward.Rarity)
+				{
+					bestReward = reward;
+				}
+			}
+
+			return bestReward;
 		}
 
 		public void DisplayEarnedRewards()

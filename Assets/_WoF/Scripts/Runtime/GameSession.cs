@@ -22,7 +22,13 @@ namespace WoF
 		private ZoneRules _zoneRule;
 
 		[SerializeField]
-		private WheelType[] _wheelTypes;
+		private ZoneTypeData _normalZoneTypeData;
+
+		[SerializeField]
+		private ZoneTypeData _safeZoneTypeData;
+
+		[SerializeField]
+		private ZoneTypeData _superZoneTypeData;
 
 		[SerializeField]
 		private WheelParent _wheelParent;
@@ -50,6 +56,9 @@ namespace WoF
 
 		[SerializeField]
 		private ZoneIndicatorPanelController _zoneIndicatorPanelController;
+
+		[SerializeField]
+		private CurrentZonePanelController _currentZonePanelController;
 
 		[SerializeField]
 		private CurrencyPanelController _currencyPanelController;
@@ -93,6 +102,7 @@ namespace WoF
 		{
 			_rewardPanelController = FindObjectOfType<RewardPanelController>(true);
 			_zoneIndicatorPanelController = FindObjectOfType<ZoneIndicatorPanelController>(true);
+			_currentZonePanelController = FindObjectOfType<CurrentZonePanelController>(true);
 			_exitPanelController = FindObjectOfType<ExitPanelController>(true);
 			_losePanelController = FindObjectOfType<LosePanelController>(true);
 			_currencyPanelController = FindObjectOfType<CurrencyPanelController>(true);
@@ -207,25 +217,29 @@ namespace WoF
 		{
 			int nextSuperZoneIndex = _zoneCalculator.GetNextSuperZoneIndex(_currentZone);
 
+			_currentZonePanelController.SetZoneIndex(_currentZone, GetZoneTypeData(_currentZone).ViewData.ThemeColor);
+
 			_zoneIndicatorPanelController.OnNewZone(
 				_zoneCalculator.GetNextSafeZoneIndex(_currentZone),
 				nextSuperZoneIndex,
 				GetSuperZoneReward(nextSuperZoneIndex).Sprite);
 		}
 
-		private EWheelType GetWheelType(int zoneIndex)
+		private ZoneTypeData GetZoneTypeData(int zoneIndex)
 		{
-			if (_zoneCalculator.IsSuperZone(zoneIndex))
+			EZoneType zoneType = _zoneCalculator.GetZoneType(zoneIndex);
+
+			if (zoneType == EZoneType.Super)
 			{
-				return EWheelType.Gold;
+				return _superZoneTypeData;
 			}
 
-			if (_zoneCalculator.IsSafeZone(zoneIndex))
+			if (zoneType == EZoneType.Safe)
 			{
-				return EWheelType.Silver;
+				return _safeZoneTypeData;
 			}
 
-			return EWheelType.Bronze;
+			return _normalZoneTypeData;
 		}
 
 		private ZoneWheel GetZoneWheel(int zoneIndex)
@@ -244,9 +258,9 @@ namespace WoF
 		{
 			ZoneWheel zoneWheel;
 
-			EWheelType wheelType = GetWheelType(zoneIndex);
+			ZoneTypeData zoneTypeData = GetZoneTypeData(zoneIndex);
 
-			zoneWheel.WheelType = _wheelTypes[(int)wheelType];
+			zoneWheel.WheelType = zoneTypeData.WheelType;
 
 			if (_zoneOverrides.TryGetValue(zoneIndex, out int index))
 			{
@@ -260,8 +274,8 @@ namespace WoF
 			}
 			else
 			{
-				bool hasBomb = wheelType == EWheelType.Bronze;
-				bool hasSpecialItem = wheelType == EWheelType.Gold;
+				bool hasBomb = zoneTypeData.HasBomb;
+				bool hasSpecialItem = zoneTypeData.HasSpecialReward;
 
 				zoneWheel.ReservedSlotIndex = hasBomb || hasSpecialItem ? Random.Range(0, _gameSettings.SlotCount) : Int32.MaxValue;
 				zoneWheel.Rewards = GetZoneContents(zoneWheel.WheelType);

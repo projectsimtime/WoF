@@ -2,6 +2,13 @@ using UnityEngine;
 
 namespace WoF.Zone
 {
+	public enum EZoneType
+	{
+		Normal,
+		Safe,
+		Super
+	}
+
 	public class ZoneCalculator
 	{
 		private readonly int _safeZoneFrequency;
@@ -29,6 +36,21 @@ namespace WoF.Zone
 		public bool IsSpecialZone(int zoneIndex)
 		{
 			return IsSafeZone(zoneIndex) || IsSuperZone(zoneIndex);
+		}
+
+		public EZoneType GetZoneType(int zoneIndex)
+		{
+			if (IsSuperZone(zoneIndex))
+			{
+				return EZoneType.Super;
+			}
+
+			if (IsSafeZone(zoneIndex))
+			{
+				return EZoneType.Safe;
+			}
+
+			return EZoneType.Normal;
 		}
 
 		public int GetNextSafeZoneIndex(int currentZoneIndex)

@@ -26,6 +26,11 @@ namespace WoF.LosePanel
 			_losePanelSeeAdButton.gameObject.SetActive(false);
 		}
 
+		public void ShowAdButton()
+		{
+			_losePanelSeeAdButton.gameObject.SetActive(true);
+		}
+
 		public void UpdateReviveCost(int amount)
 		{
 			_losePanelReviveButton.SetReviveCost(amount);

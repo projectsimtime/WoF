@@ -162,6 +162,7 @@ namespace WoF
 			_currencyContainer.Reset(_gameSettings.StartCurrencyAmount);
 
 			_reviveCostCalculator.Reset();
+			_losePanelController.ShowAdButton();
 			_losePanelController.UpdateReviveCost(_reviveCostCalculator.GetReviveCost());
 			_currencyPanelController.SetCurrencyAmount(_currencyContainer.GetRemainingCurrencyAmount());
 			CalculateSuperZoneRewards();

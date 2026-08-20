@@ -1,13 +1,16 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine;
+using WoF.Core;
+using WoF.Session;
 using WoF.UI;
 
 namespace WoF.LosePanel
 {
 	public class LosePanelReviveButton : ButtonController
 	{
-		[SerializeField] 
+		[SerializeField]
 		private LosePanelReviveCostText _reviveCostText;
+
+		private IReviveCommands _reviveCommands;
 
 		protected override void OnValidate()
 		{
@@ -16,9 +19,14 @@ namespace WoF.LosePanel
 			_reviveCostText = GetComponentInChildren<LosePanelReviveCostText>(true);
 		}
 
+		protected override void OnInject(IServiceResolver services)
+		{
+			_reviveCommands = services.Resolve<IReviveCommands>();
+		}
+
 		protected override void OnButtonClicked()
 		{
-			_gameSession.OnReviveWithCurrency();
+			_reviveCommands?.ReviveWithCurrency();
 		}
 
 		public void SetReviveCost(int amount)

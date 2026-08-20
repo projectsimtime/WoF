@@ -4,7 +4,7 @@ using WoF.UI;
 
 namespace WoF.HintPanel
 {
-	public class HintPanelController : PanelController
+	public class HintPanelController : PanelController, IHintView
 	{
 		[SerializeField]
 		private RewardCardView _cardView;
@@ -18,7 +18,7 @@ namespace WoF.HintPanel
 			_closeButton = GetComponentInChildren<HintPanelCloseButton>(true);
 		}
 
-		public void DisplayHint(RewardDefinition reward, int amount)
+		public void ShowHint(RewardDefinition reward, int amount)
 		{
 			_cardView.ApplyStyle(new EarnedRewardData
 			{

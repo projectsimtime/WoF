@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using WoF.Reward;
@@ -15,15 +15,16 @@ namespace WoF.Editor
 
 			ZoneRules rules = (ZoneRules)target;
 			GameSettings settings = rules.GameSettings;
+			ZoneCatalog zoneCatalog = rules.ZoneCatalog;
 
-			if (settings == null)
+			if (settings == null || zoneCatalog == null)
 			{
-				EditorGUILayout.HelpBox("Assign Game Settings to validate.", MessageType.Warning);
+				EditorGUILayout.HelpBox("Assign Game Settings and Zone Catalog to validate.", MessageType.Warning);
+
 				return;
 			}
 
-			ZoneCalculator calculator = new ZoneCalculator(
-				settings.SafeZoneFrequency, settings.SuperZoneFrequency, settings.EndGameZoneIndex);
+			ZoneCalculator calculator = new ZoneCalculator(zoneCatalog, settings.EndGameZoneIndex);
 
 			HashSet<int> seenZones = new HashSet<int>();
 
@@ -66,16 +67,15 @@ namespace WoF.Editor
 						MessageType.Error);
 				}
 
-				int bombCount = rewards.Count(reward =>
-					reward != null && reward.Kind == EItemKind.Bomb);
-				bool isSpecialZone = calculator.IsSpecialZone(zone);
+				int bombCount = rewards.Count(reward => reward != null && reward.IsBomb);
+				bool isExitZone = calculator.CanExitAt(zone);
 
-				if (isSpecialZone && bombCount > 0)
+				if (isExitZone && bombCount > 0)
 				{
-					EditorGUILayout.HelpBox($"Zone {zone} is special but has a bomb.",
+					EditorGUILayout.HelpBox($"Zone {zone} lets the player exit but has a bomb.",
 						MessageType.Error);
 				}
-				else if (!isSpecialZone && bombCount != 1)
+				else if (!isExitZone && bombCount != 1)
 				{
 					EditorGUILayout.HelpBox($"Zone {zone} needs 1 bomb, has {bombCount}.",
 						MessageType.Error);

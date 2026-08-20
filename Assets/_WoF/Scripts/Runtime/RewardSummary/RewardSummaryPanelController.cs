@@ -5,7 +5,7 @@ using WoF.UI;
 
 namespace WoF.RewardSummary
 {
-	public class RewardSummaryPanelController : PanelController
+	public class RewardSummaryPanelController : PanelController, IRewardSummaryView
 	{
 		[SerializeField]
 		private RewardCardView _cardViewPrefab;
@@ -16,18 +16,24 @@ namespace WoF.RewardSummary
 		[SerializeField]
 		private RewardSummaryContinueButton _continueButton;
 
-		private readonly List<RewardCardView> _cardViews = new();
+		private readonly List<RewardCardView> _cardViews = new List<RewardCardView>();
 
 		private void OnValidate()
 		{
 			_continueButton = GetComponentInChildren<RewardSummaryContinueButton>(true);
 		}
 
-		public void DisplayEarnedRewards(EarnedRewardContainer earnedRewardContainer)
+		public void ShowSummary(IReadOnlyDictionary<RewardDefinition, int> earnedRewards)
 		{
+			Show();
 			Clear();
 
-			foreach (var earnedReward in earnedRewardContainer.GetEarnedRewards())
+			if (earnedRewards == null)
+			{
+				return;
+			}
+
+			foreach (KeyValuePair<RewardDefinition, int> earnedReward in earnedRewards)
 			{
 				RewardCardView rewardCardView = Instantiate(_cardViewPrefab, _cardContent, false);
 

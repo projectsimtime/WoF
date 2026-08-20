@@ -1,24 +1,9 @@
-using UnityEngine;
 using WoF.Advertisement;
-using WoF.UI;
 
 namespace WoF.ExitPanel
 {
-	public class ExitPanelSeeAdButton : ButtonController
+	public class ExitPanelSeeAdButton : AdOfferButton
 	{
-		[SerializeField]
-		private AdPanelController _adPanel;
-
-		protected override void OnValidate()
-		{
-			base.OnValidate();
-
-			_adPanel = FindObjectOfType<AdPanelController>(true);
-		}
-
-		protected override void OnButtonClicked()
-		{
-			_adPanel.Play(new AdRewardZoneHint(_gameSession), 4.0f);
-		}
+		protected override EAdPlacement Placement => EAdPlacement.ZoneHint;
 	}
 }

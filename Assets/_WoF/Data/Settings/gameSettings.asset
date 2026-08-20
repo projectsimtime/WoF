@@ -11,17 +11,31 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8f4ac2256cac425f99ffca1b0a30ecfe, type: 3}
   m_Name: gameSettings
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   _slotCount: 8
-  _safeZoneFrequency: 5
-  _superZoneFrequency: 30
   _endGameZoneIndex: 60
   _spinTargetAngle: 1980
   _spinMinDuration: 3.1
   _spinMaxDuration: 3.5
-  _spinSlotOffsetAngle: 20
+  _spinSettleDuration: 0.22
+  _spinSlotOffsetAngle: 14
   _spinEdgeBias: 0.8
   _spinNearMissChance: 0.5
+  _rewardRevealDelay: 0.45
+  _bombRevealDelay: 0.6
+  _rarityChances:
+  - _rarity: 3
+    _chance: 1
+  - _rarity: 2
+    _chance: 9
+  - _rarity: 1
+    _chance: 20
+  _baseRarity: 0
   _startCurrencyAmount: 500
   _reviveCostScale: 50
   _initReviveCost: 50
+  _adPlacementDurations:
+  - _placement: 0
+    _duration: 3
+  - _placement: 1
+    _duration: 4

@@ -5,8 +5,10 @@ using UnityEngine;
 namespace WoF.Reward
 {
 	[CreateAssetMenu(fileName = "rewardAmountMap_", menuName = "WoF/Reward/New Reward Amount Map")]
-	public class RewardAmountMap : ScriptableObject
+	public class RewardAmountMap : ScriptableObject, IRewardAmountProvider
 	{
+		private const int DefaultAmount = 1;
+
 		[Serializable]
 		public struct ItemAmountData
 		{
@@ -16,7 +18,7 @@ namespace WoF.Reward
 			private int _baseAmount;
 			[SerializeField]
 			private int _maxAmount;
-			[SerializeField] 
+			[SerializeField]
 			private int _amountScale;
 
 			public EItemKind Kind => _kind;
@@ -29,33 +31,47 @@ namespace WoF.Reward
 		private ItemAmountData[] _amountByKind;
 
 		private Dictionary<EItemKind, ItemAmountData> _itemAmounts;
-		
+
 		private void OnEnable()
 		{
 			BuildMap();
+		}
+
+		public int GetAmount(RewardDefinition reward, int zoneIndex)
+		{
+			if (reward == null)
+			{
+				return DefaultAmount;
+			}
+
+			if (_itemAmounts == null)
+			{
+				BuildMap();
+			}
+
+			if (!_itemAmounts.TryGetValue(reward.Kind, out ItemAmountData itemAmountData))
+			{
+				return DefaultAmount;
+			}
+
+			int scaledAmount = itemAmountData.BaseAmount + (Mathf.Max(itemAmountData.AmountScale, 1) * (zoneIndex - 1));
+
+			return Mathf.Min(scaledAmount, itemAmountData.MaxAmount);
 		}
 
 		private void BuildMap()
 		{
 			_itemAmounts = new Dictionary<EItemKind, ItemAmountData>();
 
-			foreach (ItemAmountData itemAmountData in _amountByKind)
+			if (_amountByKind == null)
 			{
-				if (!_itemAmounts.TryAdd(itemAmountData.Kind, itemAmountData))
-				{
-					_itemAmounts[itemAmountData.Kind] = itemAmountData;
-				}
-			}
-		}
-		
-		public int GetAmountByKind(RewardDefinition reward, int zone)
-		{
-			if (!_itemAmounts.TryGetValue(reward.Kind, out ItemAmountData itemAmountData))
-			{
-				return 1;
+				return;
 			}
 
-			return Mathf.Min(itemAmountData.BaseAmount + Mathf.Max(itemAmountData.AmountScale, 1) * (zone - 1), itemAmountData.MaxAmount);
+			foreach (ItemAmountData itemAmountData in _amountByKind)
+			{
+				_itemAmounts[itemAmountData.Kind] = itemAmountData;
+			}
 		}
 	}
 }

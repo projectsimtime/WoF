@@ -1,20 +1,19 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 using WoF.UI;
 
 namespace WoF.ExitPanel
 {
-	public class ExitPanelController : PanelController
+	public class ExitPanelController : PanelController, IExitView
 	{
 		[SerializeField]
-		private ExitPanelCollectRewardButton exitPanelCollectRewardButton;
+		private ExitPanelCollectRewardButton _collectRewardButton;
 		[SerializeField]
-		private ExitPanelGoBackButton exitPanelGoBackButton;
+		private ExitPanelGoBackButton _goBackButton;
 
 		private void OnValidate()
 		{
-			exitPanelCollectRewardButton = GetComponentInChildren<ExitPanelCollectRewardButton>();
-			exitPanelGoBackButton = GetComponentInChildren<ExitPanelGoBackButton>();
+			_collectRewardButton = GetComponentInChildren<ExitPanelCollectRewardButton>(true);
+			_goBackButton = GetComponentInChildren<ExitPanelGoBackButton>(true);
 		}
 	}
 }

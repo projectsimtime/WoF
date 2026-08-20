@@ -1,51 +1,45 @@
-﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using WoF.Reward;
 
 namespace WoF.Reward
 {
-	public class RewardPanelController : MonoBehaviour
+	public class RewardPanelController : MonoBehaviour, IRewardTrackView
 	{
 		[SerializeField]
 		private RewardItemView _itemViewPrefab;
 
-		private Dictionary<RewardDefinition, RewardItemView> _rewardItemViews;
+		private readonly Dictionary<RewardDefinition, RewardItemView> _rewardItemViews = new Dictionary<RewardDefinition, RewardItemView>();
 
-		private void Awake()
+		public void AddReward(RewardDefinition reward, int amount)
 		{
-			_rewardItemViews = new();
-		}
-
-		public void AddItem(RewardDefinition reward, int amount)
-		{
-			EarnedRewardData earnedRewardData = new EarnedRewardData
+			if (reward == null)
 			{
-				Reward = reward, Amount = amount
-			};
+				return;
+			}
 
-			bool rewardExists = _rewardItemViews.TryGetValue(reward, out var rewardItemView);
-			rewardItemView ??= Instantiate(_itemViewPrefab, transform, false);
-
-			if (!rewardExists)
+			if (!_rewardItemViews.TryGetValue(reward, out RewardItemView rewardItemView))
 			{
+				rewardItemView = Instantiate(_itemViewPrefab, transform, false);
+
 				_rewardItemViews.Add(reward, rewardItemView);
 			}
 
-			rewardItemView.ApplyStyle(earnedRewardData);
+			rewardItemView.ApplyStyle(new EarnedRewardData
+			{
+				Reward = reward,
+				Amount = amount
+			});
 		}
 
 		public void Clear()
 		{
 			// TODO : Add pooling.
-			foreach (var rewardView in _rewardItemViews.Values)
+			foreach (RewardItemView rewardView in _rewardItemViews.Values)
 			{
 				Destroy(rewardView.gameObject);
 			}
 
 			_rewardItemViews.Clear();
 		}
-		
-		
 	}
 }

@@ -1,9 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
-using DG.Tweening.Core;
-using DG.Tweening.Plugins.Options;
 using UnityEngine;
 using UnityEngine.UI;
 using WoF.Interface;
@@ -11,48 +6,109 @@ using WoF.Reward;
 
 namespace WoF.Wheel
 {
-    public class WheelSpin : MonoBehaviour, IStyle<WheelType>
-    {
-        [SerializeField] 
-        private WheelSlotView[] _wheelSlotViews;
-        
-        [SerializeField]
-        private Image _image;
+	public class WheelSpin : MonoBehaviour, IStyle<WheelType>
+	{
+		private const float MinimumFullTurns = 1.0f;
 
-        public Tween PlaySpin(float targetAngle, float duration)
-        {
-            transform.DOKill();
+		[SerializeField]
+		private WheelSlotView[] _wheelSlotViews;
 
-            return transform.DOLocalRotate(new Vector3(0.0f, 0.0f, targetAngle), duration, RotateMode.FastBeyond360)
-                .SetEase(Ease.OutCubic);
-        }
+		[SerializeField]
+		private Image _image;
 
-        public void SetRotation(Vector3 rotation)
-        {
-            transform.localEulerAngles = rotation;
-        }
+		private Sequence _spinSequence;
 
-        private void OnValidate()
-        {
-            _wheelSlotViews = GetComponentsInChildren<WheelSlotView>();
-            
-            _image = GetComponent<Image>();
-        }
+		private void OnValidate()
+		{
+			_wheelSlotViews = GetComponentsInChildren<WheelSlotView>();
 
-        public void ApplyStyle(WheelType style)
-        {
-            _image.sprite = style.WheelSprite;
-        }
+			_image = GetComponent<Image>();
+		}
 
-        public void ApplySlotView(int index, RewardDefinition reward, int amount)
-        {
-            _wheelSlotViews[index].SetSprite(reward.Sprite);
-            _wheelSlotViews[index].SetAmount(amount);
-        }
-        
-        public void SetActiveWheelSlot(int index, bool active)
-        {
-            _wheelSlotViews[index].gameObject.SetActive(active);
-        }
-    }
+		/// <summary>
+		/// Spins on from wherever the wheel currently sits instead of snapping back to zero
+		/// between zones, then eases the last few degrees into the centre of the winning slot.
+		/// </summary>
+		public Tween PlaySpin(SpinResult spin, float duration, float settleDuration)
+		{
+			KillSpin();
+
+			float currentAngle = transform.localEulerAngles.z;
+			float fullTurns = Mathf.Max(MinimumFullTurns, Mathf.Floor(Mathf.Abs(spin.TargetAngle) / 360.0f));
+
+			float spinRotation = Mathf.Repeat(spin.TargetAngle - currentAngle, 360.0f) + (fullTurns * 360.0f);
+			float settleRotation = Mathf.DeltaAngle(spin.TargetAngle, spin.SettleAngle);
+
+			Sequence sequence = DOTween.Sequence();
+
+			sequence.Append(transform
+				.DOLocalRotate(new Vector3(0.0f, 0.0f, spinRotation), duration, RotateMode.LocalAxisAdd)
+				.SetEase(Ease.OutCubic));
+
+			if (settleDuration > 0.0f && !Mathf.Approximately(settleRotation, 0.0f))
+			{
+				sequence.Append(transform
+					.DOLocalRotate(new Vector3(0.0f, 0.0f, settleRotation), settleDuration, RotateMode.LocalAxisAdd)
+					.SetEase(Ease.InOutSine));
+			}
+
+			sequence.OnKill(() => _spinSequence = null);
+
+			_spinSequence = sequence;
+
+			return sequence;
+		}
+
+		private void KillSpin()
+		{
+			if (_spinSequence == null)
+			{
+				return;
+			}
+
+			Sequence spinSequence = _spinSequence;
+			_spinSequence = null;
+
+			spinSequence.Kill();
+		}
+
+		public void ApplyStyle(WheelType style)
+		{
+			_image.sprite = style.WheelSprite;
+		}
+
+		public void ApplySlotView(int index, RewardDefinition reward, int amount)
+		{
+			if (!IsSlotIndexValid(index) || reward == null)
+			{
+				return;
+			}
+
+			_wheelSlotViews[index].SetSprite(reward.Sprite);
+			_wheelSlotViews[index].SetAmount(amount);
+		}
+
+		public void SetActiveWheelSlot(int index, bool active)
+		{
+			if (!IsSlotIndexValid(index))
+			{
+				return;
+			}
+
+			_wheelSlotViews[index].gameObject.SetActive(active);
+		}
+
+		public void ResetSlots()
+		{
+			for (int i = 0; i < _wheelSlotViews.Length; ++i)
+			{
+				_wheelSlotViews[i].gameObject.SetActive(true);
+			}
+		}
+
+		private bool IsSlotIndexValid(int index)
+		{
+			return index >= 0 && index < _wheelSlotViews.Length;
+		}
+	}
 }

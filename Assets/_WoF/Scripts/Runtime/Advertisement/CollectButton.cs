@@ -1,23 +1,20 @@
-using UnityEngine;
+using WoF.Core;
 using WoF.UI;
 
 namespace WoF.Advertisement
 {
-	public class CollectButton : ButtonController
+	public class CollectButton : LabeledButtonController
 	{
-		[SerializeField]
-		private AdPanelController _adPanel;
+		private IAdPlaybackControls _adPlaybackControls;
 
-		protected override void OnValidate()
+		protected override void OnInject(IServiceResolver services)
 		{
-			base.OnValidate();
-
-			_adPanel = GetComponentInParent<AdPanelController>(true);
+			_adPlaybackControls = services.Resolve<IAdPlaybackControls>();
 		}
 
 		protected override void OnButtonClicked()
 		{
-			_adPanel.Collect();
+			_adPlaybackControls?.Collect();
 		}
 	}
 }

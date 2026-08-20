@@ -1,41 +1,52 @@
-﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace WoF.ZoneView
 {
-	public class ZoneIndicatorPanelController : MonoBehaviour
+	public class ZoneIndicatorPanelController : MonoBehaviour, IZoneIndicatorView
 	{
-		[SerializeField] 
-		private ZoneViewBase _zoneViewPrefab;
+		[SerializeField]
+		private ZoneIndicatorView _zoneViewPrefab;
 
-		[SerializeField] 
-		private ZoneViewStaticData _superZoneStaticData;
-		[SerializeField] 
-		private ZoneViewStaticData _safeZoneStaticData;
+		private readonly List<ZoneIndicatorView> _milestoneViews = new List<ZoneIndicatorView>();
 
-		private ZoneViewBase _superZoneView;
-		private ZoneViewBase _safeZoneView;
-		private void Awake()
+		public void ShowMilestones(IReadOnlyList<ZoneMilestoneData> milestones)
 		{
-			_superZoneView = Instantiate(_zoneViewPrefab, transform);
-			_safeZoneView = Instantiate(_zoneViewPrefab, transform);
+			if (milestones == null)
+			{
+				return;
+			}
 
-			_superZoneView.Init(_superZoneStaticData);
-			_safeZoneView.Init(_safeZoneStaticData);
+			for (int i = 0; i < milestones.Count; ++i)
+			{
+				ZoneMilestoneData milestone = milestones[i];
+
+				GetOrCreateView(i, milestone).ApplyStyle(new ZoneViewDynamicData
+				{
+					ZoneIndex = milestone.ZoneIndex,
+					Icon = milestone.Icon
+				});
+			}
+
+			for (int i = milestones.Count; i < _milestoneViews.Count; ++i)
+			{
+				_milestoneViews[i].gameObject.SetActive(false);
+			}
 		}
 
-		public void OnNewZone(int nextSafeZoneIndex, int nextSuperZoneIndex, Sprite superZoneIcon)
+		private ZoneIndicatorView GetOrCreateView(int index, ZoneMilestoneData milestone)
 		{
-			_superZoneView.ApplyStyle(new ZoneViewDynamicData
+			while (_milestoneViews.Count <= index)
 			{
-				ZoneIndex = nextSuperZoneIndex,
-				Icon = superZoneIcon
-			});
+				_milestoneViews.Add(Instantiate(_zoneViewPrefab, transform));
+			}
 
-			_safeZoneView.ApplyStyle(new ZoneViewDynamicData
-			{
-				ZoneIndex = nextSafeZoneIndex
-			});
+			ZoneIndicatorView milestoneView = _milestoneViews[index];
+
+			milestoneView.gameObject.SetActive(true);
+			milestoneView.Init(milestone.StaticData);
+
+			return milestoneView;
 		}
 	}
 }

@@ -1,49 +1,71 @@
-﻿using System;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using WoF.Core;
 
 namespace WoF.UI
 {
-	public class ButtonController : MonoBehaviour
+	/// <summary>
+	/// Base for every clickable control. It owns the one thing all buttons genuinely share,
+	/// the <see cref="Button"/>, and nothing else: dependencies arrive through
+	/// <see cref="OnInject"/> so a button only ever knows the command interface it needs.
+	/// </summary>
+	public abstract class ButtonController : MonoBehaviour, IInjectable
 	{
-		[SerializeField] 
-		private Button _button;
-		[SerializeField] 
-		private TextMeshProUGUI _buttonText;
 		[SerializeField]
-		protected GameSession _gameSession;
-		
-		public Button Button => _button;
+		private Button _button;
+
+		protected Button Button
+		{
+			get
+			{
+				if (_button == null)
+				{
+					_button = GetComponent<Button>();
+				}
+
+				return _button;
+			}
+		}
 
 		protected virtual void OnValidate()
 		{
 			_button = GetComponent<Button>();
-			_buttonText = GetComponentInChildren<TextMeshProUGUI>(true);
-
-			_gameSession = FindObjectOfType<GameSession>();
 		}
 
 		protected virtual void OnEnable()
 		{
-			_button.onClick.AddListener(OnButtonClicked);
+			if (Button != null)
+			{
+				Button.onClick.AddListener(OnButtonClicked);
+			}
 		}
 
 		protected virtual void OnDisable()
 		{
-			_button.onClick.RemoveAllListeners();
+			if (Button != null)
+			{
+				Button.onClick.RemoveListener(OnButtonClicked);
+			}
 		}
 
-		protected virtual void OnButtonClicked() {}
-
-		public void SetButtonInteractable(bool interactable)
+		void IInjectable.Inject(IServiceResolver services)
 		{
-			_button.interactable = interactable;
+			OnInject(services);
 		}
 
-		public void SetButtonText(string text)
+		/// <summary>
+		/// Called once by the composition root, before the first frame.
+		/// </summary>
+		protected abstract void OnInject(IServiceResolver services);
+
+		protected abstract void OnButtonClicked();
+
+		public void SetInteractable(bool interactable)
 		{
-			_buttonText.text = text;
+			if (Button != null)
+			{
+				Button.interactable = interactable;
+			}
 		}
 	}
 }

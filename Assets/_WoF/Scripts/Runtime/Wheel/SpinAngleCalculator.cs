@@ -4,13 +4,15 @@ namespace WoF.Wheel
 {
 	public class SpinAngleCalculator
 	{
-		private int _slotCount;
+		private const float SlotCentreAlpha = 0.5f;
 
-		private float _spinTargetAngle;
-		private float _spinSlotOffsetAngle;
-		private float _spinEdgeBias;
-		private float _spinNearMissChance;
-		
+		private readonly int _slotCount;
+
+		private readonly float _spinTargetAngle;
+		private readonly float _spinSlotOffsetAngle;
+		private readonly float _spinEdgeBias;
+		private readonly float _spinNearMissChance;
+
 		private float SlotAngle => 360.0f / _slotCount;
 
 		public SpinAngleCalculator(int slotCount, float spinTargetAngle, float spinSlotOffsetAngle, float spinEdgeBias, float spinNearMissChance)
@@ -23,42 +25,43 @@ namespace WoF.Wheel
 			_spinNearMissChance = spinNearMissChance;
 		}
 
-		public float CalculateTargetAngle(int reservedSlotIndex, bool shouldSkipReservedIndex, out int randomSlotIndex)
+		public SpinResult CalculateSpin(int reservedSlotIndex, bool shouldSkipReservedIndex)
 		{
-			randomSlotIndex = GetRandomSlotIndex(reservedSlotIndex, shouldSkipReservedIndex);
-			float angle;
+			int slotIndex = GetRandomSlotIndex(reservedSlotIndex, shouldSkipReservedIndex);
 
+			float alpha = GetSlotAlpha(slotIndex, reservedSlotIndex, shouldSkipReservedIndex);
+
+			return new SpinResult
+			{
+				SlotIndex = slotIndex,
+				TargetAngle = GetAngleFromIndex(slotIndex, alpha),
+				SettleAngle = GetAngleFromIndex(slotIndex, SlotCentreAlpha)
+			};
+		}
+
+		/// <summary>
+		/// How far inside its slot the wheel is allowed to stop. Landing next to the bomb leans
+		/// towards the bomb, landing on the bomb sometimes leans away from it, everything else
+		/// stays comfortably inside the slot.
+		/// </summary>
+		private float GetSlotAlpha(int slotIndex, int reservedSlotIndex, bool shouldSkipReservedIndex)
+		{
 			float edgeBias = _spinEdgeBias;
 			float innerBias = 1.0f - edgeBias;
 
-			if (!shouldSkipReservedIndex && IsRandomIndexCloseToReservedSlot(randomSlotIndex, reservedSlotIndex))
+			if (!shouldSkipReservedIndex && IsNextToReservedSlot(slotIndex, reservedSlotIndex))
 			{
-				bool shouldLookLikeShowNearHit = (randomSlotIndex + 1) % _slotCount == reservedSlotIndex;
+				bool stopsJustBeforeReservedSlot = (slotIndex + 1) % _slotCount == reservedSlotIndex;
 
-				if (shouldLookLikeShowNearHit)
-				{
-					angle = GetAngleFromIndex(randomSlotIndex, edgeBias);
-				}
-				else
-				{
-					angle = GetAngleFromIndex(randomSlotIndex, innerBias);
-				}
-
-			}
-			else if(reservedSlotIndex == randomSlotIndex)
-			{
-				bool shouldLookLikeShowNearMiss = GetProbability(_spinNearMissChance);
-
-				angle = GetAngleFromIndex(randomSlotIndex, shouldLookLikeShowNearMiss ? edgeBias : innerBias);
-			}
-			else
-			{
-				float alpha = Random.Range(innerBias, edgeBias);
-
-				angle = GetAngleFromIndex(randomSlotIndex, alpha);
+				return stopsJustBeforeReservedSlot ? edgeBias : innerBias;
 			}
 
-			return angle;
+			if (slotIndex == reservedSlotIndex)
+			{
+				return GetProbability(_spinNearMissChance) ? edgeBias : innerBias;
+			}
+
+			return Random.Range(innerBias, edgeBias);
 		}
 
 		private int GetRandomSlotIndex(int reservedIndex, bool shouldSkipReservedIndex)
@@ -78,7 +81,7 @@ namespace WoF.Wheel
 			return Random.value < alpha;
 		}
 
-		private float GetAngleFromIndex(int index, float alpha = 0.5f)
+		private float GetAngleFromIndex(int index, float alpha)
 		{
 			float slotPosition = index * SlotAngle;
 			float slotOffset = _spinSlotOffsetAngle;
@@ -89,7 +92,7 @@ namespace WoF.Wheel
 			return (turnCount * 360.0f) - slotPosition + Mathf.Lerp(-slotOffset, slotOffset, alpha);
 		}
 
-		private bool IsRandomIndexCloseToReservedSlot(int index, int reservedSlotIndex)
+		private bool IsNextToReservedSlot(int index, int reservedSlotIndex)
 		{
 			return (index + 1 + _slotCount) % _slotCount == reservedSlotIndex ||
 			       (index - 1 + _slotCount) % _slotCount == reservedSlotIndex;

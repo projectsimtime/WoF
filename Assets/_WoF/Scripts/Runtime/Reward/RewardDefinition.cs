@@ -37,5 +37,7 @@ namespace WoF.Reward
 		public Sprite Sprite => _sprite;
 		public EItemRarity Rarity => _rarity;
 		public EItemKind Kind => _kind;
+
+		public bool IsBomb => _kind == EItemKind.Bomb;
 	}
 }

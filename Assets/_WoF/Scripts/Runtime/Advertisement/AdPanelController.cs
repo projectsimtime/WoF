@@ -4,27 +4,37 @@ using WoF.UI;
 
 namespace WoF.Advertisement
 {
-	public class AdPanelController : PanelController
+	public class AdPanelController : PanelController, IAdPlayer, IAdPlaybackControls
 	{
+		private const string CollectLabel = "COLLECT AD REWARDS";
+		private const string CountdownFormat = "F1";
+
 		[SerializeField]
 		private SkipButton _skipButton;
 
 		[SerializeField]
 		private CollectButton _collectButton;
-		
-		private AdRewardBase _pendingReward;
+
+		private IAdReward _pendingReward;
 
 		private float _remainingTime;
 
 		private Tween _countdownTween;
-		
-		protected void OnValidate()
+
+		private void OnValidate()
 		{
 			_skipButton = GetComponentInChildren<SkipButton>(true);
 			_collectButton = GetComponentInChildren<CollectButton>(true);
 		}
 
-		public void Play(AdRewardBase reward, float duration)
+		protected override void OnDestroy()
+		{
+			base.OnDestroy();
+
+			StopCountdown();
+		}
+
+		public void Play(IAdReward reward, float duration)
 		{
 			_pendingReward = reward;
 
@@ -34,8 +44,11 @@ namespace WoF.Advertisement
 
 		public void Collect()
 		{
-			_pendingReward?.GiveAdReward();
+			IAdReward pendingReward = _pendingReward;
+
 			Close();
+
+			pendingReward?.Grant();
 		}
 
 		public void Skip()
@@ -46,37 +59,52 @@ namespace WoF.Advertisement
 		private void Close()
 		{
 			StopCountdown();
+
 			_pendingReward = null;
-			
+
 			Hide();
 		}
 
 		private void StartCountdown(float duration)
 		{
+			StopCountdown();
+
 			_remainingTime = duration;
 
-			_collectButton.SetButtonInteractable(false);
-			
+			_collectButton.SetInteractable(false);
+			SetCountdownText();
+
 			_countdownTween = DOTween.To(() => _remainingTime, value => _remainingTime = value, 0.0f, duration)
 				.OnUpdate(SetCountdownText)
 				.SetUpdate(UpdateType.Fixed)
 				.SetEase(Ease.Linear)
 				.OnComplete(OnCountdownCompleted);
 		}
+
 		private void StopCountdown()
 		{
-			_countdownTween?.Kill();
-		}
-		
-		private void OnCountdownCompleted()
-		{
-			_collectButton.SetButtonInteractable(true);
-			_collectButton.SetButtonText("COLLECT AD REWARDS");
+			if (_countdownTween == null)
+			{
+				return;
+			}
+
+			Tween countdownTween = _countdownTween;
+			_countdownTween = null;
+
+			countdownTween.Kill();
 		}
 
-		void SetCountdownText()
+		private void OnCountdownCompleted()
 		{
-			_collectButton.SetButtonText(_remainingTime.ToString("F1"));
+			_countdownTween = null;
+
+			_collectButton.SetInteractable(true);
+			_collectButton.SetButtonText(CollectLabel);
+		}
+
+		private void SetCountdownText()
+		{
+			_collectButton.SetButtonText(_remainingTime.ToString(CountdownFormat));
 		}
 	}
 }

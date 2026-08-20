@@ -16,3 +16,9 @@ MonoBehaviour:
   _wheelType: {fileID: 11400000, guid: 5573a78120fee8c43b3c3e969f676f2a, type: 2}
   _hasBomb: 1
   _hasSpecialReward: 0
+  _specialRewardPool: []
+  _zoneFrequency: 1
+  _matchPriority: 0
+  _matchesFirstZone: 0
+  _allowsExit: 0
+  _showsAsMilestone: 0

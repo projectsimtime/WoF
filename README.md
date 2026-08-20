@@ -53,3 +53,25 @@ The brief says this one is a bonus, so I did it.
 
 When the bomb explodes the player can give up, pay currency to revive, or watch an ad to revive for free.
 Every revive costs more than the last one.
+
+---
+
+## Architecture
+
+`GameBootstrap` is the composition root and the only class that knows concrete types.
+On `Awake` it walks the scene once, registers every component that publishes an
+`ISceneService` contract, builds the services on top of those contracts, and hands each
+scene component the single interface it asked for. There is no `FindObjectOfType` in the
+game code and no button holds a reference to the session.
+
+| Layer | Classes |
+| --- | --- |
+| Composition root | `GameBootstrap`, `ServiceContainer`, `SceneComponentScanner` |
+| Flow | `GameFlow`, `ZoneRunner`, `SpinService`, `ExitService`, `HintService`, `ReviveService` |
+| State and rules | `RunState`, `ZoneCalculator`, `ZoneWheelFactory`, `MilestoneRewardPlanner`, `RarityCalculator`, `SpinAngleCalculator`, `ReviveCostCalculator`, `EconomyService`, `RewardService` |
+| Contracts | `ISpinCommands`, `IExitCommands`, `IReviveCommands`, `IHintCommands`, `IRunCommands`, `IWheelView`, `ILoseView`, `IExitView`, `IHintView`, `IEndGameView`, `ICurrencyView`, `IRewardTrackView`, `IRewardSummaryView`, `IZoneHudView`, `IZoneIndicatorView`, `IAdPlayer`, `IAdPlaybackControls` |
+| Views | The `*PanelController` and `*View` MonoBehaviours, which only implement their contract |
+
+Zone flavours, rarity odds and ad lengths are data. A new zone type is a new `ZoneTypeData`
+asset added to the `zoneCatalog`, with its own frequency, priority and wheel; a new rarity is
+a row in the rarity table on `gameSettings`. Neither requires a code change.

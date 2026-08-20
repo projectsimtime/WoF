@@ -1,13 +1,11 @@
-﻿using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 using WoF.UI;
 
 namespace WoF.LosePanel
 {
-	public class LosePanelController : PanelController
+	public class LosePanelController : PanelController, ILoseView
 	{
-		[SerializeField] 
+		[SerializeField]
 		private LosePanelGiveUpButton _losePanelGiveUpButton;
 		[SerializeField]
 		private LosePanelReviveButton _losePanelReviveButton;
@@ -16,28 +14,24 @@ namespace WoF.LosePanel
 
 		private void OnValidate()
 		{
-			_losePanelGiveUpButton = GetComponentInChildren<LosePanelGiveUpButton>();
-			_losePanelReviveButton = GetComponentInChildren<LosePanelReviveButton>();
-			_losePanelSeeAdButton = GetComponentInChildren<LosePanelSeeAdButton>();
+			_losePanelGiveUpButton = GetComponentInChildren<LosePanelGiveUpButton>(true);
+			_losePanelReviveButton = GetComponentInChildren<LosePanelReviveButton>(true);
+			_losePanelSeeAdButton = GetComponentInChildren<LosePanelSeeAdButton>(true);
 		}
 
-		public void HideAdButton()
-		{
-			_losePanelSeeAdButton.gameObject.SetActive(false);
-		}
-
-		public void ShowAdButton()
-		{
-			_losePanelSeeAdButton.gameObject.SetActive(true);
-		}
-
-		public void UpdateReviveCost(int amount)
+		public void ShowReviveCost(int amount)
 		{
 			_losePanelReviveButton.SetReviveCost(amount);
 		}
-		public void OnNotEnoughCurrencyToRevive()
+
+		public void SetReviveEnabled(bool enabled)
 		{
-			_losePanelReviveButton.SetButtonInteractable(false);
+			_losePanelReviveButton.SetInteractable(enabled);
+		}
+
+		public void SetAdOfferVisible(bool visible)
+		{
+			_losePanelSeeAdButton.gameObject.SetActive(visible);
 		}
 	}
 }

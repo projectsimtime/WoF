@@ -1,86 +1,119 @@
-using UnityEngine;
+using System.Collections.Generic;
 
 namespace WoF.Zone
 {
-	public enum EZoneType
-	{
-		Normal,
-		Safe,
-		Super
-	}
-
+	/// <summary>
+	/// Answers every "which kind of zone is this" question from the catalog.
+	/// There is no per-type branching here, so adding a zone type never touches this class.
+	/// </summary>
 	public class ZoneCalculator
 	{
-		private readonly int _safeZoneFrequency;
-		private readonly int _superZoneFrequency;
+		public const int FirstZoneIndex = 1;
 
-		private readonly int _endGameIndex;
-		
-		public ZoneCalculator(int safeZoneFrequency, int superZoneFrequency, int endGameIndex)
+		private readonly ZoneCatalog _zoneCatalog;
+		private readonly int _endGameZoneIndex;
+
+		public ZoneCalculator(ZoneCatalog zoneCatalog, int endGameZoneIndex)
 		{
-			_safeZoneFrequency = safeZoneFrequency;
-			_superZoneFrequency = superZoneFrequency;
-			_endGameIndex = endGameIndex;
+			_zoneCatalog = zoneCatalog;
+			_endGameZoneIndex = endGameZoneIndex;
 		}
 
-		public bool IsSuperZone(int zoneIndex)
-		{
-			return zoneIndex % _superZoneFrequency == 0;
-		}
+		public int EndGameZoneIndex => _endGameZoneIndex;
 
-		public bool IsSafeZone(int zoneIndex)
+		public ZoneTypeData GetZoneType(int zoneIndex)
 		{
-			return zoneIndex == 1 || (zoneIndex % _safeZoneFrequency == 0 && !IsSuperZone(zoneIndex));
-		}
+			IReadOnlyList<ZoneTypeData> zoneTypes = _zoneCatalog.ByMatchPriority;
 
-		public bool IsSpecialZone(int zoneIndex)
-		{
-			return IsSafeZone(zoneIndex) || IsSuperZone(zoneIndex);
-		}
-
-		public EZoneType GetZoneType(int zoneIndex)
-		{
-			if (IsSuperZone(zoneIndex))
+			for (int i = 0; i < zoneTypes.Count; ++i)
 			{
-				return EZoneType.Super;
+				if (zoneTypes[i].Matches(zoneIndex))
+				{
+					return zoneTypes[i];
+				}
 			}
 
-			if (IsSafeZone(zoneIndex))
-			{
-				return EZoneType.Safe;
-			}
-
-			return EZoneType.Normal;
+			return null;
 		}
 
-		public int GetNextSafeZoneIndex(int currentZoneIndex)
+		public bool CanExitAt(int zoneIndex)
 		{
-			if (currentZoneIndex == 1)
-			{
-				return 1;
-			}
+			ZoneTypeData zoneType = GetZoneType(zoneIndex);
 
-			int possibleNextSafeZoneIndex = GetNextSpecialZoneIndex(currentZoneIndex, _safeZoneFrequency);
-
-			if (possibleNextSafeZoneIndex % _superZoneFrequency == 0)
-			{
-				return GetNextSpecialZoneIndex(possibleNextSafeZoneIndex + 1, _safeZoneFrequency);
-			}
-
-			return Mathf.Min(possibleNextSafeZoneIndex, _endGameIndex);
+			return zoneType != null && zoneType.AllowsExit;
 		}
 
-		public int GetNextSuperZoneIndex(int currentZoneIndex)
+		/// <summary>
+		/// The next zone that resolves to the given type after the given zone.
+		/// Zones a higher priority type steals are skipped automatically.
+		/// </summary>
+		public int GetNextZoneIndexOf(ZoneTypeData zoneType, int fromZoneIndex)
 		{
-			return GetNextSpecialZoneIndex(currentZoneIndex, _superZoneFrequency);
+			if (zoneType == null)
+			{
+				return _endGameZoneIndex;
+			}
+
+			if (zoneType.MatchesFirstZone && fromZoneIndex <= FirstZoneIndex)
+			{
+				return FirstZoneIndex;
+			}
+
+			for (int candidate = fromZoneIndex + 1; candidate <= _endGameZoneIndex; ++candidate)
+			{
+				if (GetZoneType(candidate) == zoneType)
+				{
+					return candidate;
+				}
+			}
+
+			return _endGameZoneIndex;
 		}
 
-		public int GetNextSpecialZoneIndex(int currentZoneIndex, int zoneFrequency)
+		/// <summary>
+		/// How many zones of this type a full run contains.
+		/// </summary>
+		public int CountZonesOf(ZoneTypeData zoneType)
 		{
-			int possibleScaler = (currentZoneIndex / zoneFrequency) + 1;
-			int possibleNextSafeZoneIndex = possibleScaler * zoneFrequency;
+			if (zoneType == null)
+			{
+				return 0;
+			}
 
-			return Mathf.Min(possibleNextSafeZoneIndex, _endGameIndex);
+			int count = 0;
+
+			for (int zoneIndex = FirstZoneIndex; zoneIndex <= _endGameZoneIndex; ++zoneIndex)
+			{
+				if (GetZoneType(zoneIndex) == zoneType)
+				{
+					++count;
+				}
+			}
+
+			return count;
+		}
+
+		/// <summary>
+		/// Zero based position of the given zone among the zones sharing its type.
+		/// </summary>
+		public int GetOrdinalOf(ZoneTypeData zoneType, int zoneIndex)
+		{
+			if (zoneType == null)
+			{
+				return 0;
+			}
+
+			int ordinal = -1;
+
+			for (int candidate = FirstZoneIndex; candidate <= zoneIndex; ++candidate)
+			{
+				if (GetZoneType(candidate) == zoneType)
+				{
+					++ordinal;
+				}
+			}
+
+			return ordinal < 0 ? 0 : ordinal;
 		}
 	}
 }

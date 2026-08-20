@@ -1,24 +1,28 @@
 using System.Collections.Generic;
-using UnityEngine;
 using WoF.Reward;
+using Random = UnityEngine.Random;
 
 namespace WoF.Wheel
 {
+	/// <summary>
+	/// Rolls a rarity per slot against a table that comes from data.
+	/// Adding or reordering a rarity is a table edit, not a new branch in this class.
+	/// </summary>
 	public class RarityCalculator
 	{
-		private int _slotCount;
+		private const int MinRoll = 1;
+		private const int MaxRollExclusive = 101;
+		private const int FullChance = 100;
 
-		private int _legendaryChance;
-		private int _epicChance;
-		private int _rareChance;
+		private readonly int _slotCount;
+		private readonly IReadOnlyList<RarityChance> _rarityChances;
+		private readonly EItemRarity _baseRarity;
 
-		public RarityCalculator(int slotCount, int legendaryChance, int epicChance, int rareChance)
+		public RarityCalculator(int slotCount, IReadOnlyList<RarityChance> rarityChances, EItemRarity baseRarity)
 		{
 			_slotCount = slotCount;
-
-			_legendaryChance = legendaryChance;
-			_epicChance = epicChance;
-			_rareChance = rareChance;
+			_rarityChances = rarityChances;
+			_baseRarity = baseRarity;
 		}
 
 		public Dictionary<EItemRarity, int> GetItemRarityCount(WheelType wheelType)
@@ -40,36 +44,37 @@ namespace WoF.Wheel
 
 		public EItemRarity GetRandomRarity(WheelType wheelType)
 		{
-			int randomNumber = Random.Range(1, 101);
+			int roll = Random.Range(MinRoll, MaxRollExclusive);
+			int threshold = FullChance;
 
-			int legendaryThreshold = 100 - _legendaryChance;
-			int epicThreshold = legendaryThreshold - _epicChance;
-			int rareThreshold = epicThreshold - _rareChance;
+			if (_rarityChances != null)
+			{
+				for (int i = 0; i < _rarityChances.Count; ++i)
+				{
+					RarityChance rarityChance = _rarityChances[i];
 
-			// Note: I know "else" keyword is redundant. However, I believe this version is more readable.
-			if (randomNumber > legendaryThreshold && IsRarityExistOnWheelType(wheelType, EItemRarity.Legendary))
-			{
-				return EItemRarity.Legendary;
+					threshold -= rarityChance.Chance;
+
+					if (roll > threshold && WheelTypeHasRarity(wheelType, rarityChance.Rarity))
+					{
+						return rarityChance.Rarity;
+					}
+				}
 			}
-			else if (randomNumber > epicThreshold && IsRarityExistOnWheelType(wheelType, EItemRarity.Epic))
-			{
-				return EItemRarity.Epic;
-			}
-			else if(randomNumber > rareThreshold && IsRarityExistOnWheelType(wheelType, EItemRarity.Rare))
-			{
-				return EItemRarity.Rare;
-			}
-			else
-			{
-				return EItemRarity.Casual;
-			}
+
+			return _baseRarity;
 		}
 
-		public bool IsRarityExistOnWheelType(WheelType wheelType, EItemRarity itemRarity)
+		public bool WheelTypeHasRarity(WheelType wheelType, EItemRarity itemRarity)
 		{
-			bool isRarityExists = wheelType.WheelTypeContent.RewardByRarity.TryGetValue(itemRarity, out var rewards);
+			if (wheelType == null)
+			{
+				return false;
+			}
 
-			return (isRarityExists && rewards.Count > 0);
+			bool rarityExists = wheelType.WheelTypeContent.RewardByRarity.TryGetValue(itemRarity, out List<RewardDefinition> rewards);
+
+			return rarityExists && rewards.Count > 0;
 		}
 	}
 }

@@ -3,7 +3,7 @@ using WoF.UI;
 
 namespace WoF.EndGame
 {
-	public class EndGamePanelController : PanelController
+	public class EndGamePanelController : PanelController, IEndGameView
 	{
 		[SerializeField]
 		private EndGameCollectButton _endGameCollectButton;

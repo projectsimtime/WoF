@@ -1,31 +1,37 @@
+using WoF.Core;
+using WoF.Session;
 using WoF.UI;
 
 namespace WoF.ExitPanel
 {
 	public class ExitButton : ButtonController
 	{
-		protected override void OnEnable()
-		{
-			base.OnEnable();
+		private IExitCommands _exitCommands;
 
-			_gameSession.ExitAvailabilityChanged += OnExitAvailabilityChanged;
+		protected override void OnInject(IServiceResolver services)
+		{
+			_exitCommands = services.Resolve<IExitCommands>();
+			_exitCommands.ExitAvailabilityChanged += OnExitAvailabilityChanged;
+
+			OnExitAvailabilityChanged(_exitCommands.IsExitAvailable);
 		}
 
-		protected override void OnDisable()
+		private void OnDestroy()
 		{
-			base.OnDisable();
-
-			_gameSession.ExitAvailabilityChanged -= OnExitAvailabilityChanged;
+			if (_exitCommands != null)
+			{
+				_exitCommands.ExitAvailabilityChanged -= OnExitAvailabilityChanged;
+			}
 		}
 
 		protected override void OnButtonClicked()
 		{
-			_gameSession.OnExitClicked();
+			_exitCommands?.RequestExit();
 		}
 
 		private void OnExitAvailabilityChanged(bool available)
 		{
-			SetButtonInteractable(available);
+			SetInteractable(available);
 		}
 	}
 }

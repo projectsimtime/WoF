@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using WoF.Reward;
 
@@ -11,7 +10,7 @@ namespace WoF.Zone
 		[Serializable]
 		public struct ZoneOverride
 		{
-			[SerializeField] 
+			[SerializeField]
 			private int _zoneNumber;
 			[SerializeField]
 			private RewardDefinition[] _rewards;
@@ -19,17 +18,21 @@ namespace WoF.Zone
 			public int ZoneNumber => _zoneNumber;
 			public RewardDefinition[] Rewards => _rewards;
 		}
-		
+
 		[SerializeField]
 		private ZoneOverride[] _zoneOverrides;
 
 		public ZoneOverride[] ZoneOverrides => _zoneOverrides;
-		
+
 #if UNITY_EDITOR
+		[Header("Validation only")]
 		[SerializeField]
 		private GameSettings _gameSettings;
+		[SerializeField]
+		private ZoneCatalog _zoneCatalog;
 
 		public GameSettings GameSettings => _gameSettings;
+		public ZoneCatalog ZoneCatalog => _zoneCatalog;
 #endif
 	}
 }

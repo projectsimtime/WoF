@@ -1,31 +1,37 @@
+using WoF.Core;
+using WoF.Session;
 using WoF.UI;
 
 namespace WoF.Wheel
 {
-    public class SpinButton : ButtonController
-    {
-        protected override void OnEnable()
-        {
-            base.OnEnable();
+	public class SpinButton : ButtonController
+	{
+		private ISpinCommands _spinCommands;
 
-            _gameSession.WheelSpinningChanged += OnWheelSpinningChanged;
-        }
+		protected override void OnInject(IServiceResolver services)
+		{
+			_spinCommands = services.Resolve<ISpinCommands>();
+			_spinCommands.SpinningChanged += OnSpinningChanged;
 
-        protected override void OnDisable()
-        {
-            base.OnDisable();
+			OnSpinningChanged(_spinCommands.IsSpinning);
+		}
 
-            _gameSession.WheelSpinningChanged -= OnWheelSpinningChanged;
-        }
+		private void OnDestroy()
+		{
+			if (_spinCommands != null)
+			{
+				_spinCommands.SpinningChanged -= OnSpinningChanged;
+			}
+		}
 
-        protected override void OnButtonClicked()
-        {
-            _gameSession.OnSpinClicked();
-        }
+		protected override void OnButtonClicked()
+		{
+			_spinCommands?.RequestSpin();
+		}
 
-        private void OnWheelSpinningChanged(bool isSpinning)
-        {
-            SetButtonInteractable(!isSpinning);
-        }
-    }
+		private void OnSpinningChanged(bool isSpinning)
+		{
+			SetInteractable(!isSpinning);
+		}
+	}
 }

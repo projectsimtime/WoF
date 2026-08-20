@@ -77,5 +77,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _zoneViewPrefab: {fileID: 3641137534190944815, guid: 078a99e7138d8a54d979d19282280e62, type: 3}
-  _superZoneStaticData: {fileID: 11400000, guid: 229551ae6afe9b64cb89fa7aa738f92e, type: 2}
-  _safeZoneStaticData: {fileID: 11400000, guid: 8864702ef1ee91045b3beec40407a9c4, type: 2}

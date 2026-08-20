@@ -3,21 +3,26 @@ using UnityEngine.UI;
 
 namespace WoF.ZoneView
 {
-	public class CurrentZonePanelController : MonoBehaviour
+	public class CurrentZonePanelController : MonoBehaviour, IZoneHudView
 	{
-		[SerializeField] private CurrentZonePanelValue _currentZone;
-		[SerializeField] private Image _frame;
+		[SerializeField]
+		private CurrentZonePanelValue _currentZone;
+		[SerializeField]
+		private Image _frame;
 
 		private void OnValidate()
 		{
 			_currentZone = GetComponentInChildren<CurrentZonePanelValue>(true);
 		}
 
-		public void SetZoneIndex(int zoneIndex, Color color)
+		public void ShowZone(int zoneIndex, Color themeColor)
 		{
-			_currentZone.SetZoneIndex(zoneIndex, color);
+			_currentZone.SetZoneIndex(zoneIndex, themeColor);
 
-			_frame.color = color;
+			if (_frame != null)
+			{
+				_frame.color = themeColor;
+			}
 		}
 	}
 }

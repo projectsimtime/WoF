@@ -1,47 +1,51 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using UnityEngine;
 using WoF.Reward;
 
 namespace WoF.Wheel
 {
-	public class WheelParent : MonoBehaviour
+	public class WheelParent : MonoBehaviour, IWheelView
 	{
-		
 		[SerializeField]
 		private WheelSpin _wheelSpin;
 		[SerializeField]
 		private WheelIndicator _wheelIndicator;
-		
+
 		private void OnValidate()
 		{
 			_wheelSpin = GetComponentInChildren<WheelSpin>();
 			_wheelIndicator = GetComponentInChildren<WheelIndicator>();
 		}
-		
+
 		public void ApplyWheelType(WheelType wheelType)
 		{
+			if (wheelType == null)
+			{
+				return;
+			}
+
 			_wheelSpin.ApplyStyle(wheelType);
 			_wheelIndicator.ApplyStyle(wheelType);
 		}
 
-		public void ApplyWheelSlot(int index, RewardDefinition reward, int amount)
+		public void ApplySlot(int slotIndex, RewardDefinition reward, int amount)
 		{
-			_wheelSpin.ApplySlotView(index, reward, amount);
+			_wheelSpin.ApplySlotView(slotIndex, reward, amount);
 		}
 
-		public void SetActiveWheelSlot(int index, bool active)
+		public void SetSlotActive(int slotIndex, bool active)
 		{
-			_wheelSpin.SetActiveWheelSlot(index, active);
+			_wheelSpin.SetActiveWheelSlot(slotIndex, active);
 		}
 
-		public void RestoreWheelRotation()
+		public void ResetSlots()
 		{
-			_wheelSpin.SetRotation(Vector3.zero);
+			_wheelSpin.ResetSlots();
 		}
 
-		public Tween PlaySpin(float targetAngle, float duration)
+		public Tween PlaySpin(SpinResult spin, float duration, float settleDuration)
 		{
-			return _wheelSpin.PlaySpin(targetAngle, duration);
+			return _wheelSpin.PlaySpin(spin, duration, settleDuration);
 		}
 	}
 }

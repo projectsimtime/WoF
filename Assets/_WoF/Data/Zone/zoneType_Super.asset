@@ -16,3 +16,11 @@ MonoBehaviour:
   _wheelType: {fileID: 11400000, guid: 32fd61f297763ad44b96aa5bcc92716a, type: 2}
   _hasBomb: 0
   _hasSpecialReward: 1
+  _specialRewardPool:
+  - {fileID: 11400000, guid: d810e62554e9f0248b2636cdbb263654, type: 2}
+  - {fileID: 11400000, guid: 10fb383e955695f4e8000b0aaf6eadc3, type: 2}
+  _zoneFrequency: 30
+  _matchPriority: 2
+  _matchesFirstZone: 0
+  _allowsExit: 1
+  _showsAsMilestone: 1

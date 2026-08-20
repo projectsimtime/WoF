@@ -539,7 +539,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _button: {fileID: 4560000000000000604}
   _buttonText: {fileID: 4560000000000000613}
-  _gameSession: {fileID: 0}
 --- !u!1 &4560000000000000610
 GameObject:
   m_ObjectHideFlags: 0
@@ -833,7 +832,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _button: {fileID: 4560000000000000704}
   _buttonText: {fileID: 4560000000000000713}
-  _gameSession: {fileID: 0}
 --- !u!1 &4560000000000000710
 GameObject:
   m_ObjectHideFlags: 0

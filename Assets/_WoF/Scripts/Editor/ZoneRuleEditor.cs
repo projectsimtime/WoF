@@ -15,6 +15,7 @@ namespace WoF.Editor
 
 			ZoneRules rules = (ZoneRules)target;
 			GameSettings settings = rules.GameSettings;
+			ZoneCatalog zoneCatalog = rules.ZoneCatalog;
 
 			if (settings == null)
 			{
@@ -22,8 +23,13 @@ namespace WoF.Editor
 				return;
 			}
 
-			ZoneCalculator calculator = new ZoneCalculator(
-				settings.SafeZoneFrequency, settings.SuperZoneFrequency, settings.EndGameZoneIndex);
+			if (zoneCatalog == null)
+			{
+				EditorGUILayout.HelpBox("Assign a Zone Catalog to validate.", MessageType.Warning);
+				return;
+			}
+
+			ZoneResolver zoneResolver = new ZoneResolver(zoneCatalog.ZoneTypes);
 
 			HashSet<int> seenZones = new HashSet<int>();
 
@@ -39,6 +45,7 @@ namespace WoF.Editor
 					EditorGUILayout.HelpBox(
 						$"Element {i}: zone {zone} is outside 1-{settings.EndGameZoneIndex}.",
 						MessageType.Error);
+					continue;
 				}
 
 				if (!seenZones.Add(zone))
@@ -68,14 +75,14 @@ namespace WoF.Editor
 
 				int bombCount = rewards.Count(reward =>
 					reward != null && reward.Kind == EItemKind.Bomb);
-				bool isSpecialZone = calculator.IsSpecialZone(zone);
+				bool zoneHasBomb = zoneResolver.Resolve(zone).HasBomb;
 
-				if (isSpecialZone && bombCount > 0)
+				if (!zoneHasBomb && bombCount > 0)
 				{
-					EditorGUILayout.HelpBox($"Zone {zone} is special but has a bomb.",
+					EditorGUILayout.HelpBox($"Zone {zone} does not allow a bomb.",
 						MessageType.Error);
 				}
-				else if (!isSpecialZone && bombCount != 1)
+				else if (zoneHasBomb && bombCount != 1)
 				{
 					EditorGUILayout.HelpBox($"Zone {zone} needs 1 bomb, has {bombCount}.",
 						MessageType.Error);

@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a7c4e0b9f61d842ab3057e6c19f84d2, type: 3}
   m_Name: zoneType_Super
   m_EditorClassIdentifier:
+  _placementRule: {fileID: 11400000, guid: fda920a09570476dbbcdfe955b6752ae, type: 2}
+  _priority: 20
   _viewData: {fileID: 11400000, guid: 229551ae6afe9b64cb89fa7aa738f92e, type: 2}
   _wheelType: {fileID: 11400000, guid: 32fd61f297763ad44b96aa5bcc92716a, type: 2}
   _hasBomb: 0
   _hasSpecialReward: 1
+  _canExit: 1
+  _showInUpcomingZoneIndicator: 1
+  _upcomingIndicatorOrder: 0
+  _showCurrentZoneIndicesInIndicator: []

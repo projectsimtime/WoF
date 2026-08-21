@@ -1,41 +1,35 @@
-﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace WoF.ZoneView
 {
 	public class ZoneIndicatorPanelController : MonoBehaviour
 	{
-		[SerializeField] 
+		[SerializeField]
 		private ZoneViewBase _zoneViewPrefab;
 
-		[SerializeField] 
-		private ZoneViewStaticData _superZoneStaticData;
-		[SerializeField] 
-		private ZoneViewStaticData _safeZoneStaticData;
+		private readonly List<ZoneViewBase> _zoneViews = new List<ZoneViewBase>();
 
-		private ZoneViewBase _superZoneView;
-		private ZoneViewBase _safeZoneView;
-		private void Awake()
+		public void OnNewZone(IReadOnlyList<ZoneIndicatorData> indicators)
 		{
-			_superZoneView = Instantiate(_zoneViewPrefab, transform);
-			_safeZoneView = Instantiate(_zoneViewPrefab, transform);
-
-			_superZoneView.Init(_superZoneStaticData);
-			_safeZoneView.Init(_safeZoneStaticData);
-		}
-
-		public void OnNewZone(int nextSafeZoneIndex, int nextSuperZoneIndex, Sprite superZoneIcon)
-		{
-			_superZoneView.ApplyStyle(new ZoneViewDynamicData
+			while (_zoneViews.Count < indicators.Count)
 			{
-				ZoneIndex = nextSuperZoneIndex,
-				Icon = superZoneIcon
-			});
+				_zoneViews.Add(Instantiate(_zoneViewPrefab, transform));
+			}
 
-			_safeZoneView.ApplyStyle(new ZoneViewDynamicData
+			for (int i = 0; i < _zoneViews.Count; ++i)
 			{
-				ZoneIndex = nextSafeZoneIndex
-			});
+				bool isActive = i < indicators.Count;
+				_zoneViews[i].gameObject.SetActive(isActive);
+
+				if (!isActive)
+				{
+					continue;
+				}
+
+				_zoneViews[i].Init(indicators[i].StaticData);
+				_zoneViews[i].ApplyStyle(indicators[i].DynamicData);
+			}
 		}
 	}
 }

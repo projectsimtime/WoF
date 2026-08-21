@@ -30,13 +30,7 @@ namespace WoF
 		private ZoneRules _zoneRule;
 
 		[SerializeField]
-		private ZoneTypeData _normalZoneTypeData;
-
-		[SerializeField]
-		private ZoneTypeData _safeZoneTypeData;
-
-		[SerializeField]
-		private ZoneTypeData _superZoneTypeData;
+		private ZoneCatalog _zoneCatalog;
 
 		[SerializeField]
 		private WheelParent _wheelParent;
@@ -82,7 +76,7 @@ namespace WoF
 
 		private Dictionary<int, int> _zoneOverrides;
 
-		private ZoneCalculator _zoneCalculator;
+		private ZoneResolver _zoneResolver;
 		private ReviveCostCalculator _reviveCostCalculator;
 		private SpinAngleCalculator _spinAngleCalculator;
 		private RarityCalculator _rarityCalculator;
@@ -91,7 +85,7 @@ namespace WoF
 		private CurrencyContainer _currencyContainer;
 
 		private List<RewardDefinition> _rewardDefinitions = new();
-		private RewardDefinition[] _superZoneRewards;
+		private readonly Dictionary<int, RewardDefinition> _specialZoneRewards = new Dictionary<int, RewardDefinition>();
 		private RewardDefinition _earnedReward;
 
 		private ZoneWheel _nextZoneWheel;
@@ -122,7 +116,7 @@ namespace WoF
 		private void Awake()
 		{
 			_rewardContainer = new EarnedRewardContainer();
-			_zoneCalculator = new ZoneCalculator(_gameSettings.SafeZoneFrequency, _gameSettings.SuperZoneFrequency, _gameSettings.EndGameZoneIndex);
+			_zoneResolver = new ZoneResolver(_zoneCatalog.ZoneTypes);
 			_reviveCostCalculator = new ReviveCostCalculator(_gameSettings.InitReviveCost, _gameSettings.ReviveCostScale);
 			_spinAngleCalculator = new SpinAngleCalculator(_gameSettings.SlotCount, _gameSettings.SpinTargetAngle, _gameSettings.SpinSlotOffsetAngle, _gameSettings.SpinEdgeBias, _gameSettings.SpinNearMissChance);
 			_rarityCalculator = new RarityCalculator(_gameSettings.SlotCount, _gameSettings.LegendaryChance, _gameSettings.EpicChance, _gameSettings.RareChance);
@@ -165,7 +159,7 @@ namespace WoF
 			_losePanelController.ShowAdButton();
 			_losePanelController.UpdateReviveCost(_reviveCostCalculator.GetReviveCost());
 			_currencyPanelController.SetCurrencyAmount(_currencyContainer.GetRemainingCurrencyAmount());
-			CalculateSuperZoneRewards();
+			CalculateSpecialZoneRewards();
 
 			_rewardSummaryPanelController.Hide();
 			_endGamePanelController.Hide();
@@ -224,31 +218,37 @@ namespace WoF
 
 		private void RefreshZoneIndicators()
 		{
-			int nextSuperZoneIndex = _zoneCalculator.GetNextSuperZoneIndex(_currentZone);
+			ZoneTypeData currentZoneType = _zoneResolver.Resolve(_currentZone);
+			_currentZonePanelController.SetZoneIndex(_currentZone, currentZoneType.ViewData.ThemeColor);
 
-			_currentZonePanelController.SetZoneIndex(_currentZone, GetZoneTypeData(_currentZone).ViewData.ThemeColor);
+			IReadOnlyList<ZoneOccurrence> upcomingZones =
+				_zoneResolver.GetUpcomingOccurrences(_currentZone, _gameSettings.EndGameZoneIndex);
+			List<ZoneIndicatorData> indicators = new List<ZoneIndicatorData>(upcomingZones.Count);
 
-			_zoneIndicatorPanelController.OnNewZone(
-				_zoneCalculator.GetNextSafeZoneIndex(_currentZone),
-				nextSuperZoneIndex,
-				GetSuperZoneReward(nextSuperZoneIndex).Sprite);
+			for (int i = 0; i < upcomingZones.Count; ++i)
+			{
+				ZoneOccurrence occurrence = upcomingZones[i];
+				Sprite icon = occurrence.ZoneType.HasSpecialReward
+					? GetSpecialZoneReward(occurrence.ZoneIndex).Sprite
+					: null;
+
+				indicators.Add(new ZoneIndicatorData
+				{
+					StaticData = occurrence.ZoneType.ViewData,
+					DynamicData = new ZoneViewDynamicData
+					{
+						ZoneIndex = occurrence.ZoneIndex,
+						Icon = icon
+					}
+				});
+			}
+
+			_zoneIndicatorPanelController.OnNewZone(indicators);
 		}
 
 		private ZoneTypeData GetZoneTypeData(int zoneIndex)
 		{
-			EZoneType zoneType = _zoneCalculator.GetZoneType(zoneIndex);
-
-			if (zoneType == EZoneType.Super)
-			{
-				return _superZoneTypeData;
-			}
-
-			if (zoneType == EZoneType.Safe)
-			{
-				return _safeZoneTypeData;
-			}
-
-			return _normalZoneTypeData;
+			return _zoneResolver.Resolve(zoneIndex);
 		}
 
 		private ZoneWheel GetZoneWheel(int zoneIndex)
@@ -291,7 +291,7 @@ namespace WoF
 
 				if (zoneWheel.ReservedSlotIndex < zoneWheel.Rewards.Count)
 				{
-					zoneWheel.Rewards[zoneWheel.ReservedSlotIndex] = hasBomb ? _bombReward : GetSuperZoneReward(zoneIndex);
+					zoneWheel.Rewards[zoneWheel.ReservedSlotIndex] = hasBomb ? _bombReward : GetSpecialZoneReward(zoneIndex);
 				}
 			}
 
@@ -335,27 +335,33 @@ namespace WoF
 			return rewards;
 		}
 
-		private void CalculateSuperZoneRewards()
+		private void CalculateSpecialZoneRewards()
 		{
-			int superZoneCount = _gameSettings.SuperZoneCount;
-
-			_superZoneRewards = new RewardDefinition[superZoneCount];
+			_specialZoneRewards.Clear();
 
 			int randomIndex = Random.Range(0, _specialItems.Length);
 
-			for (int i = 0; i < superZoneCount; ++i)
+			for (int zoneIndex = 1; zoneIndex <= _gameSettings.EndGameZoneIndex; ++zoneIndex)
 			{
-				_superZoneRewards[i] = _specialItems[randomIndex];
+				if (!_zoneResolver.Resolve(zoneIndex).HasSpecialReward)
+				{
+					continue;
+				}
+
+				_specialZoneRewards.Add(zoneIndex, _specialItems[randomIndex]);
 
 				randomIndex = (randomIndex + 1) % _specialItems.Length;
 			}
 		}
 
-		private RewardDefinition GetSuperZoneReward(int superZoneIndex)
+		private RewardDefinition GetSpecialZoneReward(int zoneIndex)
 		{
-			int rewardIndex = (superZoneIndex / _gameSettings.SuperZoneFrequency) - 1;
+			if (_specialZoneRewards.TryGetValue(zoneIndex, out RewardDefinition reward))
+			{
+				return reward;
+			}
 
-			return _superZoneRewards[rewardIndex];
+			throw new InvalidOperationException($"Zone {zoneIndex} has no configured special reward.");
 		}
 
 		public void OnSpinClicked()
@@ -456,7 +462,7 @@ namespace WoF
 
 		private bool CanExitNow()
 		{
-			return _zoneCalculator.IsSpecialZone(_currentZone) &&
+			return _zoneResolver.Resolve(_currentZone).CanExit &&
 			       !_isWheelSpinning;
 		}
 

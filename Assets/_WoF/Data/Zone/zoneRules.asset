@@ -24,3 +24,4 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 89e951e390791114daa5dd99de79e3a7, type: 2}
     - {fileID: 11400000, guid: 1269a7a91fca47c41bda480ae98d8396, type: 2}
   _gameSettings: {fileID: 11400000, guid: e59ea43fdb39b3b44bf9ed11823a7b8f, type: 2}
+  _zoneCatalog: {fileID: 11400000, guid: a00f696b4e49471a95110bf53b210842, type: 2}

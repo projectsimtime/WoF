@@ -12,10 +12,6 @@ namespace WoF
 
 		[Header("Zone")]
 		[SerializeField]
-		private int _safeZoneFrequency = 5;
-		[SerializeField]
-		private int _superZoneFrequency = 30;
-		[SerializeField]
 		private int _endGameZoneIndex = 60;
 
 		[Header("Spin")]
@@ -60,10 +56,7 @@ namespace WoF
 		public int SlotCount => _slotCount;
 		public float SlotAngle => 360.0f / _slotCount;
 
-		public int SafeZoneFrequency => _safeZoneFrequency;
-		public int SuperZoneFrequency => _superZoneFrequency;
 		public int EndGameZoneIndex => _endGameZoneIndex;
-		public int SuperZoneCount => _endGameZoneIndex / _superZoneFrequency;
 
 		public float SpinTargetAngle => _spinTargetAngle;
 		public float SpinMinDuration => _spinMinDuration;

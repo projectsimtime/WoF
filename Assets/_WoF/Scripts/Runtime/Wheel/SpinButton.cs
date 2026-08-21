@@ -1,31 +1,48 @@
-using WoF.UI;
+using System;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace WoF.Wheel
 {
-    public class SpinButton : ButtonController
+    [RequireComponent(typeof(Button))]
+    public sealed class SpinButton : MonoBehaviour
     {
-        protected override void OnEnable()
-        {
-            base.OnEnable();
+        [SerializeField]
+        private Button _button;
 
-            _gameSession.WheelSpinningChanged += OnWheelSpinningChanged;
+        public event Action Clicked;
+
+        private void OnValidate()
+        {
+            _button = GetComponent<Button>();
         }
 
-        protected override void OnDisable()
+        private void Awake()
         {
-            base.OnDisable();
-
-            _gameSession.WheelSpinningChanged -= OnWheelSpinningChanged;
+            if (_button == null)
+            {
+                _button = GetComponent<Button>();
+            }
         }
 
-        protected override void OnButtonClicked()
+        private void OnEnable()
         {
-            _gameSession.OnSpinClicked();
+            _button.onClick.AddListener(OnClicked);
         }
 
-        private void OnWheelSpinningChanged(bool isSpinning)
+        private void OnDisable()
         {
-            SetButtonInteractable(!isSpinning);
+            _button.onClick.RemoveListener(OnClicked);
+        }
+
+        private void OnClicked()
+        {
+            Clicked?.Invoke();
+        }
+
+        public void SetSpinning(bool isSpinning)
+        {
+            _button.interactable = !isSpinning;
         }
     }
 }

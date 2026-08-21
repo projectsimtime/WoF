@@ -28,8 +28,11 @@ namespace WoF.Zone
 #if UNITY_EDITOR
 		[SerializeField]
 		private GameSettings _gameSettings;
+		[SerializeField]
+		private ZoneCatalog _zoneCatalog;
 
 		public GameSettings GameSettings => _gameSettings;
+		public ZoneCatalog ZoneCatalog => _zoneCatalog;
 #endif
 	}
 }

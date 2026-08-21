@@ -13,8 +13,6 @@ MonoBehaviour:
   m_Name: gameSettings
   m_EditorClassIdentifier: 
   _slotCount: 8
-  _safeZoneFrequency: 5
-  _superZoneFrequency: 30
   _endGameZoneIndex: 60
   _spinTargetAngle: 1980
   _spinMinDuration: 3.1

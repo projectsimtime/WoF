@@ -1,8 +1,6 @@
 ﻿using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UIElements;
 using WoF.Interface;
 using Image = UnityEngine.UI.Image;
 

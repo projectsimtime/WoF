@@ -15,6 +15,15 @@ MonoBehaviour:
   _wheelSprite: {fileID: 21300000, guid: aab94be0bab92964191f47ac62194901, type: 3}
   _indicatorSprite: {fileID: 21300000, guid: 27d20e9af072c4a49973e868ca6f8aff, type: 3}
   _wheelTypeContent:
+    _rarityChances:
+    - _rarity: 3
+      _chance: 1
+    - _rarity: 2
+      _chance: 9
+    - _rarity: 1
+      _chance: 20
+    - _rarity: 0
+      _chance: 70
     _rewards:
     - {fileID: 11400000, guid: 8f54251a4dae0994c84ef0f51618a841, type: 2}
     - {fileID: 11400000, guid: a58c8121f5f465c46ace35e8033d498b, type: 2}

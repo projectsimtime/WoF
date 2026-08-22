@@ -1,24 +1,23 @@
 using UnityEngine;
+using WoF.Reward;
 using WoF.Wheel;
 using WoF.ZoneView;
 
 namespace WoF.Zone
 {
-	[CreateAssetMenu(fileName = "zoneType_", menuName = "WoF/Zone/New Zone Type", order = 0)]
-	public class ZoneTypeData : ScriptableObject
+	public abstract class ZoneTypeData : ScriptableObject
 	{
 		[SerializeField]
 		private ZoneViewStaticData _viewData;
 		[SerializeField]
 		private WheelType _wheelType;
-		[SerializeField]
-		private bool _hasBomb;
-		[SerializeField]
-		private bool _hasSpecialReward;
 
 		public ZoneViewStaticData ViewData => _viewData;
 		public WheelType WheelType => _wheelType;
-		public bool HasBomb => _hasBomb;
-		public bool HasSpecialReward => _hasSpecialReward;
+
+		public abstract int Priority { get; }
+
+		public abstract bool IsValid(int zoneIndex, GameSettings gameSettings);
+		public abstract RewardDefinition GetReservedReward(int zoneIndex, GameSettings gameSettings, int runSeed);
 	}
 }

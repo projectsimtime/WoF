@@ -8,17 +8,9 @@ namespace WoF.Wheel
 	{
 		private int _slotCount;
 
-		private int _legendaryChance;
-		private int _epicChance;
-		private int _rareChance;
-
-		public RarityCalculator(int slotCount, int legendaryChance, int epicChance, int rareChance)
+		public RarityCalculator(int slotCount)
 		{
 			_slotCount = slotCount;
-
-			_legendaryChance = legendaryChance;
-			_epicChance = epicChance;
-			_rareChance = rareChance;
 		}
 
 		public Dictionary<EItemRarity, int> GetItemRarityCount(WheelType wheelType)
@@ -40,36 +32,28 @@ namespace WoF.Wheel
 
 		public EItemRarity GetRandomRarity(WheelType wheelType)
 		{
-			int randomNumber = Random.Range(1, 101);
+			RarityChance[] rarityChances = wheelType.WheelTypeContent.RarityChances;
 
-			int legendaryThreshold = 100 - _legendaryChance;
-			int epicThreshold = legendaryThreshold - _epicChance;
-			int rareThreshold = epicThreshold - _rareChance;
+			int totalChance = 0;
 
-			// Note: I know "else" keyword is redundant. However, I believe this version is more readable.
-			if (randomNumber > legendaryThreshold && IsRarityExistOnWheelType(wheelType, EItemRarity.Legendary))
+			for (int i = 0; i < rarityChances.Length; ++i)
 			{
-				return EItemRarity.Legendary;
+				totalChance += rarityChances[i].Chance;
 			}
-			else if (randomNumber > epicThreshold && IsRarityExistOnWheelType(wheelType, EItemRarity.Epic))
-			{
-				return EItemRarity.Epic;
-			}
-			else if(randomNumber > rareThreshold && IsRarityExistOnWheelType(wheelType, EItemRarity.Rare))
-			{
-				return EItemRarity.Rare;
-			}
-			else
-			{
-				return EItemRarity.Casual;
-			}
-		}
 
-		public bool IsRarityExistOnWheelType(WheelType wheelType, EItemRarity itemRarity)
-		{
-			bool isRarityExists = wheelType.WheelTypeContent.RewardByRarity.TryGetValue(itemRarity, out var rewards);
+			int randomNumber = Random.Range(0, totalChance);
 
-			return (isRarityExists && rewards.Count > 0);
+			for (int i = 0; i < rarityChances.Length; ++i)
+			{
+				randomNumber -= rarityChances[i].Chance;
+
+				if (randomNumber < 0)
+				{
+					return rarityChances[i].Rarity;
+				}
+			}
+
+			return rarityChances[rarityChances.Length - 1].Rarity;
 		}
 	}
 }

@@ -5,11 +5,17 @@ using WoF.Reward;
 
 namespace WoF.Wheel
 {
-	public enum EWheelType
+	[Serializable]
+	public struct RarityChance
 	{
-		Bronze = 0,
-		Silver,
-		Gold
+		[SerializeField]
+		private EItemRarity _rarity;
+		[Range(0, 100)]
+		[SerializeField]
+		private int _chance;
+
+		public EItemRarity Rarity => _rarity;
+		public int Chance => _chance;
 	}
 	
 	[Serializable]
@@ -17,8 +23,11 @@ namespace WoF.Wheel
 	{
 		[SerializeField] 
 		private List<RewardDefinition> _rewards;
+		[SerializeField]
+		private RarityChance[] _rarityChances;
 
 		public List<RewardDefinition> Rewards => _rewards;
+		public RarityChance[] RarityChances => _rarityChances;
 
 		[SerializeField] 
 		public Dictionary<EItemRarity, List<RewardDefinition>> RewardByRarity;

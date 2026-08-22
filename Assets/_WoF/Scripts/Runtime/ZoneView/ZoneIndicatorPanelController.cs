@@ -6,15 +6,15 @@ namespace WoF.ZoneView
 	public class ZoneIndicatorPanelController : MonoBehaviour
 	{
 		[SerializeField] 
-		private ZoneViewBase _zoneViewPrefab;
+		private ZoneView _zoneViewPrefab;
 
 		[SerializeField] 
 		private ZoneViewStaticData _superZoneStaticData;
 		[SerializeField] 
 		private ZoneViewStaticData _safeZoneStaticData;
 
-		private ZoneViewBase _superZoneView;
-		private ZoneViewBase _safeZoneView;
+		private ZoneView _superZoneView;
+		private ZoneView _safeZoneView;
 		private void Awake()
 		{
 			_superZoneView = Instantiate(_zoneViewPrefab, transform);

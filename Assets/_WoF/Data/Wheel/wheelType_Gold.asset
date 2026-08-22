@@ -51,3 +51,12 @@ MonoBehaviour:
     - {fileID: 11400000, guid: da722b832a6ebe54f9cb2fac21babdfa, type: 2}
     - {fileID: 11400000, guid: c8daf964d7a6ad744988c09ee8118d39, type: 2}
     - {fileID: 11400000, guid: d04c800edba2a4d48a5cef3359b70fab, type: 2}
+    _rarityWeights:
+    - _rarity: {fileID: 11400000, guid: fa0459e425924649bee824513edd2586, type: 2}
+      _weight: 70
+    - _rarity: {fileID: 11400000, guid: 84abf88469e34e83b53f4ae91fe4a982, type: 2}
+      _weight: 20
+    - _rarity: {fileID: 11400000, guid: bc898beee66342f08e1635c7e523ea55, type: 2}
+      _weight: 9
+    - _rarity: {fileID: 11400000, guid: 46c59ee584a04080abcb537adea1ea73, type: 2}
+      _weight: 1

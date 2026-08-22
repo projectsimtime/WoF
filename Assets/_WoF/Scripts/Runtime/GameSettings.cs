@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace WoF
 {
@@ -36,17 +35,6 @@ namespace WoF
 		[SerializeField]
 		private float _spinNearMissChance = 0.5f;
 
-		[Header("Rarity")]
-		[Range(0, 100)]
-		[SerializeField]
-		private int _legendaryChance = 1;
-		[Range(0, 100)]
-		[SerializeField]
-		private int _epicChance = 9;
-		[Range(0, 100)]
-		[SerializeField]
-		private int _rareChance = 20;
-
 		[Header("Currency")]
 		[SerializeField]
 		private int _startCurrencyAmount = 500;
@@ -72,10 +60,6 @@ namespace WoF
 		public float SpinSlotOffsetAngle => _spinSlotOffsetAngle;
 		public float SpinEdgeBias => _spinEdgeBias;
 		public float SpinNearMissChance => _spinNearMissChance;
-
-		public int LegendaryChance => _legendaryChance;
-		public int EpicChance => _epicChance;
-		public int RareChance => _rareChance;
 
 		public int StartCurrencyAmount => _startCurrencyAmount;
 

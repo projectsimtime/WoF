@@ -32,3 +32,8 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 89e951e390791114daa5dd99de79e3a7, type: 2}
     - {fileID: 11400000, guid: 51f91784a0989f0408f779ec4534fcb9, type: 2}
     - {fileID: 11400000, guid: 31ee9d1a6fa55de40bf59a6ed29d9618, type: 2}
+    _rarityWeights:
+    - _rarity: {fileID: 11400000, guid: fa0459e425924649bee824513edd2586, type: 2}
+      _weight: 70
+    - _rarity: {fileID: 11400000, guid: 84abf88469e34e83b53f4ae91fe4a982, type: 2}
+      _weight: 30

@@ -125,7 +125,7 @@ namespace WoF
 			_zoneCalculator = new ZoneCalculator(_gameSettings.SafeZoneFrequency, _gameSettings.SuperZoneFrequency, _gameSettings.EndGameZoneIndex);
 			_reviveCostCalculator = new ReviveCostCalculator(_gameSettings.InitReviveCost, _gameSettings.ReviveCostScale);
 			_spinAngleCalculator = new SpinAngleCalculator(_gameSettings.SlotCount, _gameSettings.SpinTargetAngle, _gameSettings.SpinSlotOffsetAngle, _gameSettings.SpinEdgeBias, _gameSettings.SpinNearMissChance);
-			_rarityCalculator = new RarityCalculator(_gameSettings.SlotCount, _gameSettings.LegendaryChance, _gameSettings.EpicChance, _gameSettings.RareChance);
+			_rarityCalculator = new RarityCalculator(_gameSettings.SlotCount);
 
 			_currencyContainer = new CurrencyContainer(_gameSettings.StartCurrencyAmount);
 
@@ -310,20 +310,18 @@ namespace WoF
 
 		private List<RewardDefinition> GetZoneContents(WheelType wheelType)
 		{
-			var rewardsByRarity = wheelType.WheelTypeContent.RewardByRarity;
-
 			var itemRarities = _rarityCalculator.GetItemRarityCount(wheelType);
 
 			List<RewardDefinition> rewards = new List<RewardDefinition>(_gameSettings.SlotCount);
 
 			foreach (var item in itemRarities)
 			{
-				EItemRarity rarity = item.Key;
+				RarityDefinition rarity = item.Key;
 				int count = item.Value;
 
 				for (int i = 0; i < count; ++i)
 				{
-					List<RewardDefinition> currentRarityItems = rewardsByRarity[rarity];
+					List<RewardDefinition> currentRarityItems = wheelType.GetRewardsByRarity(rarity);
 					int rarityItemCount = currentRarityItems.Count;
 
 					int randomIndex = Random.Range(0, rarityItemCount);
@@ -523,7 +521,7 @@ namespace WoF
 					continue;
 				}
 
-				if (reward.Rarity > bestReward.Rarity)
+				if (reward.Rarity.Rank > bestReward.Rarity.Rank)
 				{
 					bestReward = reward;
 				}

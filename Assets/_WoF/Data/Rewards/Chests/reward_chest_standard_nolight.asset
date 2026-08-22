@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _label: STANDARD CHEST
   _sprite: {fileID: 21300000, guid: 3fe74aebab7548b49aae9b605e0150bc, type: 3}
-  _rarity: 0
+  _rarity: {fileID: 11400000, guid: fa0459e425924649bee824513edd2586, type: 2}
   _kind: 1

@@ -33,6 +33,12 @@ namespace WoF.Wheel
 	[CreateAssetMenu(fileName = "wheel_", menuName = "WoF/Wheel/New Wheel Type")]
 	public class WheelType : ScriptableObject
 	{
+		[Header("View")]
+		[SerializeField]
+		private string _title;
+		[SerializeField]
+		private Color _titleColor;
+
 		[SerializeField] 
 		private Sprite _wheelSprite;
 		[SerializeField] 
@@ -43,6 +49,8 @@ namespace WoF.Wheel
 
 		private Dictionary<RarityDefinition, List<RewardDefinition>> _rewardByRarity;
 		
+		public string Title => _title;
+		public Color TitleColor => _titleColor;
 		public Sprite WheelSprite => _wheelSprite;
 		public Sprite IndicatorSprite => _indicatorSprite;
 		

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using WoF.Reward;
 using WoF.Zone;
@@ -15,6 +16,8 @@ namespace WoF.Wheel
 		private WheelIndicator _wheelIndicator;
 		[SerializeField]
 		private SpinButton _spinButton;
+		[SerializeField]
+		private TMP_Text _titleText;
 
 		private GameSettings _gameSettings;
 		private RewardAmountMap _rewardAmountMap;
@@ -151,6 +154,8 @@ namespace WoF.Wheel
 		{
 			_wheelSpin.ApplyStyle(zoneWheel.WheelType);
 			_wheelIndicator.ApplyStyle(zoneWheel.WheelType);
+			_titleText.text = zoneWheel.WheelType.Title;
+			_titleText.color = zoneWheel.WheelType.TitleColor;
 
 			for (int i = 0; i < zoneWheel.Rewards.Count; ++i)
 			{

@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c479db9744114056ab670b7d0cd97c51, type: 3}
   m_Name: wheelType_Gold
   m_EditorClassIdentifier: 
+  _title: GOLDEN SPIN
+  _titleColor: {r: 1, g: 0.7686275, b: 0.2, a: 1}
   _wheelSprite: {fileID: 21300000, guid: aab94be0bab92964191f47ac62194901, type: 3}
   _indicatorSprite: {fileID: 21300000, guid: 27d20e9af072c4a49973e868ca6f8aff, type: 3}
   _wheelTypeContent:

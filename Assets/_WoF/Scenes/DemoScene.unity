@@ -746,7 +746,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 134, y: 134}
+  m_SizeDelta: {x: 160, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &906217474
 MonoBehaviour:
@@ -808,13 +808,13 @@ MonoBehaviour:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
+  m_Maskable: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: aac74dffb04ccc94a953bc66e1915269, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -2918,11 +2918,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7927785592596197356, guid: 6692a3fe020a63b43b8106e99f992017, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 485
+      value: 660
       objectReference: {fileID: 0}
     - target: {fileID: 7927785592596197356, guid: 6692a3fe020a63b43b8106e99f992017, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 485
+      value: 760
       objectReference: {fileID: 0}
     - target: {fileID: 7927785592596197356, guid: 6692a3fe020a63b43b8106e99f992017, type: 3}
       propertyPath: m_LocalPosition.x

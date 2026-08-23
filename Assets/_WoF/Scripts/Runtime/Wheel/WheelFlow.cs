@@ -35,8 +35,8 @@ namespace WoF.Wheel
 
 		private void OnValidate()
 		{
-			_wheelSpin = GetComponentInChildren<WheelSpin>();
-			_wheelIndicator = GetComponentInChildren<WheelIndicator>();
+			_wheelSpin = GetComponentInChildren<WheelSpin>(true);
+			_wheelIndicator = GetComponentInChildren<WheelIndicator>(true);
 		}
 
 		private void OnDestroy()

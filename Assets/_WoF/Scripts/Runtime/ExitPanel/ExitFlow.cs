@@ -9,9 +9,9 @@ namespace WoF.ExitPanel
 	public class ExitFlow : PanelController
 	{
 		[SerializeField]
-		private ExitPanelCollectRewardButton exitPanelCollectRewardButton;
+		private ExitPanelCollectRewardButton _exitPanelCollectRewardButton;
 		[SerializeField]
-		private ExitPanelGoBackButton exitPanelGoBackButton;
+		private ExitPanelGoBackButton _exitPanelGoBackButton;
 		[SerializeField]
 		private ExitPanelSeeAdButton _exitPanelSeeAdButton;
 		[SerializeField]
@@ -24,14 +24,14 @@ namespace WoF.ExitPanel
 
 		private void OnValidate()
 		{
-			exitPanelCollectRewardButton = GetComponentInChildren<ExitPanelCollectRewardButton>();
-			exitPanelGoBackButton = GetComponentInChildren<ExitPanelGoBackButton>();
+			_exitPanelCollectRewardButton = GetComponentInChildren<ExitPanelCollectRewardButton>(true);
+			_exitPanelGoBackButton = GetComponentInChildren<ExitPanelGoBackButton>(true);
 		}
 
 		private void OnDestroy()
 		{
-			exitPanelCollectRewardButton.CollectClicked -= OnCollectRewardClicked;
-			exitPanelGoBackButton.GoBackClicked -= OnGoBackClicked;
+			_exitPanelCollectRewardButton.CollectClicked -= OnCollectRewardClicked;
+			_exitPanelGoBackButton.GoBackClicked -= OnGoBackClicked;
 			_exitPanelSeeAdButton.HintRewardGranted -= OnHintRewardGranted;
 			_exitButton.ExitClicked -= OnExitClicked;
 			_hintPanelController.Closed -= OnHintClosed;
@@ -39,8 +39,8 @@ namespace WoF.ExitPanel
 
 		public void Initialize()
 		{
-			exitPanelCollectRewardButton.CollectClicked += OnCollectRewardClicked;
-			exitPanelGoBackButton.GoBackClicked += OnGoBackClicked;
+			_exitPanelCollectRewardButton.CollectClicked += OnCollectRewardClicked;
+			_exitPanelGoBackButton.GoBackClicked += OnGoBackClicked;
 			_exitPanelSeeAdButton.HintRewardGranted += OnHintRewardGranted;
 			_exitButton.ExitClicked += OnExitClicked;
 

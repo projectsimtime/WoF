@@ -23,9 +23,9 @@ namespace WoF.LosePanel
 
 		private void OnValidate()
 		{
-			_losePanelGiveUpButton = GetComponentInChildren<LosePanelGiveUpButton>();
-			_losePanelReviveButton = GetComponentInChildren<LosePanelReviveButton>();
-			_losePanelSeeAdButton = GetComponentInChildren<LosePanelSeeAdButton>();
+			_losePanelGiveUpButton = GetComponentInChildren<LosePanelGiveUpButton>(true);
+			_losePanelReviveButton = GetComponentInChildren<LosePanelReviveButton>(true);
+			_losePanelSeeAdButton = GetComponentInChildren<LosePanelSeeAdButton>(true);
 		}
 
 		private void OnDestroy()

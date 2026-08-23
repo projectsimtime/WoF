@@ -15,8 +15,6 @@ namespace WoF.ZoneView
 
 		private Dictionary<ZoneTypeData, ZoneView> _zoneViews;
 
-		public IReadOnlyList<ZoneTypeData> DisplayedZoneTypes => _displayedZoneTypes;
-
 		public void Initialize()
 		{
 			_zoneViews = new();
@@ -32,7 +30,12 @@ namespace WoF.ZoneView
 
 		public void SetIndicator(ZoneTypeData zoneTypeData, int zoneIndex, RewardDefinition reservedReward)
 		{
-			_zoneViews[zoneTypeData].ApplyStyle(new ZoneViewDynamicData
+			if (!_zoneViews.TryGetValue(zoneTypeData, out ZoneView zoneView))
+			{
+				return;
+			}
+
+			zoneView.ApplyStyle(new ZoneViewDynamicData
 			{
 				ZoneIndex = zoneIndex,
 				Icon = reservedReward ? reservedReward.Sprite : null

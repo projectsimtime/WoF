@@ -646,8 +646,9 @@ GameObject:
   m_Component:
   - component: {fileID: 795434444}
   - component: {fileID: 795434445}
+  - component: {fileID: 795434446}
   m_Layer: 0
-  m_Name: GameSession
+  m_Name: GameController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -691,6 +692,19 @@ MonoBehaviour:
   _reviveFlow: {fileID: 1956639990}
   _exitFlow: {fileID: 1832596077}
   _runRewardFlow: {fileID: 1500000144}
+--- !u!114 &795434446
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 795434443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82b8feb2f0314ffbb9aa68b9ac900469, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _gameSession: {fileID: 795434445}
   _zoneIndicatorPanelController: {fileID: 2054341033}
   _currentZonePanelController: {fileID: 984952279}
   _currencyPanelController: {fileID: 554779836}

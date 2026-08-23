@@ -7,7 +7,6 @@ using WoF.LosePanel;
 using WoF.Reward;
 using WoF.Wheel;
 using WoF.Zone;
-using WoF.ZoneView;
 
 namespace WoF
 {
@@ -38,20 +37,15 @@ namespace WoF
 		[SerializeField]
 		private RunRewardFlow _runRewardFlow;
 
-		[SerializeField]
-		private ZoneIndicatorPanelController _zoneIndicatorPanelController;
-
-		[SerializeField]
-		private CurrentZonePanelController _currentZonePanelController;
-
-		[SerializeField]
-		private CurrencyPanelController _currencyPanelController;
-
 		private ZoneTypeCalculator _zoneTypeCalculator;
 		private CurrencyContainer _currencyContainer;
 
 		private int _currentZone;
 		private bool _isWheelSpinning;
+
+		public event Action<int, ZoneTypeData> ZoneEntered;
+		public event Action<ZoneTypeData, int, RewardDefinition> UpcomingZoneChanged;
+		public event Action<int> CurrencyChanged;
 
 		private void Awake()
 		{
@@ -59,7 +53,6 @@ namespace WoF
 			_currencyContainer = new CurrencyContainer(_gameSettings.StartCurrencyAmount);
 
 			_wheelFlow.Initialize(_zoneRule, _zoneTypeCalculator, _gameSettings, _rewardAmountMap);
-			_zoneIndicatorPanelController.Initialize();
 			_wheelFlow.SpinCompleted += OnSpinComplete;
 			_wheelFlow.SpinStateChanged += OnWheelSpinStateChanged;
 			_reviveFlow.Initialize(_currencyContainer, _gameSettings.InitReviveCost, _gameSettings.ReviveCostScale);
@@ -108,7 +101,7 @@ namespace WoF
 			_currencyContainer.Reset(_gameSettings.StartCurrencyAmount);
 			_reviveFlow.ResetRun();
 
-			_currencyPanelController.SetCurrencyAmount(_currencyContainer.GetRemainingCurrencyAmount());
+			CurrencyChanged?.Invoke(_currencyContainer.GetRemainingCurrencyAmount());
 			_exitFlow.ResetRun();
 		}
 
@@ -116,8 +109,10 @@ namespace WoF
 		{
 			RefreshExitAvailability();
 			_wheelFlow.EnterZone(_currentZone);
-			_currentZonePanelController.SetZoneIndex(_currentZone, _zoneTypeCalculator.GetZoneTypeDataFromIndex(_currentZone).ViewData.ThemeColor);
-			RefreshZoneIndicators();
+
+			ZoneTypeData zoneTypeData = _zoneTypeCalculator.GetZoneTypeDataFromIndex(_currentZone);
+			ZoneEntered?.Invoke(_currentZone, zoneTypeData);
+			NotifyUpcomingZones();
 		}
 
 		private void GoToNextZone()
@@ -143,9 +138,9 @@ namespace WoF
 			_runRewardFlow.OnGameFinished();
 		}
 
-		private void RefreshZoneIndicators()
+		private void NotifyUpcomingZones()
 		{
-			foreach (ZoneTypeData zoneTypeData in _zoneIndicatorPanelController.DisplayedZoneTypes)
+			foreach (ZoneTypeData zoneTypeData in _zoneTypes)
 			{
 				int nextZoneIndex = _zoneTypeCalculator.GetZonesNextIndex(zoneTypeData, _currentZone);
 
@@ -154,7 +149,7 @@ namespace WoF
 					nextZoneIndex = _currentZone;
 				}
 
-				_zoneIndicatorPanelController.SetIndicator(
+				UpcomingZoneChanged?.Invoke(
 					zoneTypeData,
 					nextZoneIndex,
 					_wheelFlow.GetReservedReward(nextZoneIndex));
@@ -206,7 +201,7 @@ namespace WoF
 
 		private void OnCurrencyChanged(int currencyAmount)
 		{
-			_currencyPanelController.SetCurrencyAmount(currencyAmount);
+			CurrencyChanged?.Invoke(currencyAmount);
 		}
 
 		private bool CanExitNow()

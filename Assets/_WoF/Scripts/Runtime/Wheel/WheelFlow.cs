@@ -33,6 +33,7 @@ namespace WoF.Wheel
 
 		private int _reservedSlotIndex;
 		private bool _isContinueAfterBomb;
+		private bool _forceBombOnNextSpin;
 
 		public event Action<RewardDefinition> SpinCompleted;
 		public event Action<bool> SpinStateChanged;
@@ -64,6 +65,7 @@ namespace WoF.Wheel
 			_rewardDefinitions.Clear();
 			_zoneWheelBuilder.Reset();
 			_hasNextZoneWheel = false;
+			_forceBombOnNextSpin = false;
 			_spinButton.SetButtonInteractable(true);
 		}
 
@@ -89,13 +91,47 @@ namespace WoF.Wheel
 		{
 			SetWheelSpinning(true);
 
-			float angle = _spinAngleCalculator.CalculateTargetAngle(_reservedSlotIndex, _isContinueAfterBomb, out var earnedRewardIndex);
+			int earnedRewardIndex;
+			float angle;
+
+			if (_forceBombOnNextSpin && TryGetBombRewardIndex(out earnedRewardIndex))
+			{
+				angle = _spinAngleCalculator.CalculateTargetAngleForSlot(earnedRewardIndex);
+				_forceBombOnNextSpin = false;
+			}
+			else
+			{
+				angle = _spinAngleCalculator.CalculateTargetAngle(_reservedSlotIndex, _isContinueAfterBomb, out earnedRewardIndex);
+			}
+
 			float duration = Random.Range(_gameSettings.SpinMinDuration, _gameSettings.SpinMaxDuration);
 
 			var tween = _wheelSpin.PlaySpin(angle, duration);
 			tween.onComplete += OnSpinComplete;
 
 			_earnedReward = _rewardDefinitions[earnedRewardIndex];
+		}
+
+		public void ForceBombOnNextSpin()
+		{
+			_forceBombOnNextSpin = true;
+		}
+
+		private bool TryGetBombRewardIndex(out int bombRewardIndex)
+		{
+			for (int i = 0; i < _rewardDefinitions.Count; ++i)
+			{
+				RewardDefinition reward = _rewardDefinitions[i];
+
+				if (reward && reward.Kind && reward.Kind.IsExplosive)
+				{
+					bombRewardIndex = i;
+					return true;
+				}
+			}
+
+			bombRewardIndex = -1;
+			return false;
 		}
 
 		public void OnRevived()

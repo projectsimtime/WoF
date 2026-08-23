@@ -1,4 +1,5 @@
 ﻿using System;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -35,6 +36,17 @@ namespace WoF.Wheel
 				_amountText.text = $"x{amount}";
 				_amountText.gameObject.SetActive(true);
 			}
+		}
+
+		public Tween PlayFlash(float duration)
+		{
+			_image.DOKill();
+			Color originalColor = _image.color;
+
+			return _image.DOColor(new Color(1.0f, 0.25f, 0.1f, 1.0f), duration * 0.5f)
+				.SetLoops(2, LoopType.Yoyo)
+				.SetEase(Ease.Linear)
+				.OnComplete(() => _image.color = originalColor);
 		}
 	}
 }

@@ -21,6 +21,8 @@ namespace WoF.Reward
 
 		[SerializeField] 
 		private TextMeshProUGUI _text;
+		[SerializeField]
+		private CanvasGroup _canvasGroup;
 
 		private int _amount;
 
@@ -28,10 +30,14 @@ namespace WoF.Reward
 
 		private Tween _amountIncreaseTween;
 
+		public RectTransform RectTransform => transform as RectTransform;
+		public RectTransform RevealTarget => _rewardIcon.rectTransform;
+
 		private void OnValidate()
 		{
 			_rewardIcon = GetComponentInChildren<Image>(true);
 			_text = GetComponentInChildren<TextMeshProUGUI>(true);
+			_canvasGroup = GetComponent<CanvasGroup>();
 		}
 
 		private void OnDisable()
@@ -41,15 +47,47 @@ namespace WoF.Reward
 
 		public void ApplyStyle(EarnedRewardData style)
 		{
-			_rewardIcon.sprite = style.Reward.Sprite;
-			
+			Prepare(style.Reward, true);
+			IncreaseAmount(style.Amount, 0.0f);
+		}
+
+		public void Prepare(RewardDefinition reward, bool visible)
+		{
+			_rewardIcon.sprite = reward.Sprite;
+			SetVisible(visible);
+		}
+
+		public void SetVisible(bool visible)
+		{
+			_canvasGroup.alpha = visible ? 1.0f : 0.0f;
+		}
+
+		public void IncreaseAmount(int amount, float duration)
+		{
 			_amountIncreaseTween?.Kill();
-			_amountIncreaseTween = DOTween.To(() => _amount, value => _amount = value, _amount + style.Amount, 1.0f)
+
+			_cachedAmount = _amount + amount;
+
+			if (duration <= 0.0f)
+			{
+				_amount = _cachedAmount;
+				SetAmount(_amount);
+				return;
+			}
+
+			_amountIncreaseTween = DOTween.To(() => _amount, value => _amount = value, _cachedAmount, duration)
 				.OnUpdate(() => SetAmount(_amount))
 				.SetEase(Ease.OutQuad)
 				.OnKill(OnAmountIncreaseKilled);
-			
-			_cachedAmount = _amount + style.Amount;
+		}
+
+		public Tween PlayLanding(float duration)
+		{
+			transform.DOKill();
+			transform.localScale = Vector3.one;
+
+			return transform.DOPunchScale(Vector3.one * 0.15f, duration, 8, 0.5f)
+				.SetEase(Ease.OutQuad);
 		}
 		
 		private void OnAmountIncreaseKilled()

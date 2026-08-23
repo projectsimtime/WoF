@@ -41,6 +41,29 @@ namespace WoF
 		[SerializeField]
 		private int _initReviveCost = 75;
 
+		[Header("Reveal")]
+		[SerializeField]
+		private float _revealBlockerFadeDuration = 0.2f;
+		[SerializeField]
+		private float _revealCardScaleDuration = 0.35f;
+		[SerializeField]
+		private float _revealRailFlightDuration = 0.45f;
+		[SerializeField]
+		private float _revealLandingDuration = 0.2f;
+		[SerializeField]
+		private float _revealCounterDuration = 0.6f;
+		[Range(0.1f, 1.0f)]
+		[SerializeField]
+		private float _revealHeroHeightRatio = 0.6f;
+		[SerializeField]
+		private float _explosiveSlotFlashDuration = 0.15f;
+		[SerializeField]
+		private float _explosiveWheelShakeDuration = 0.25f;
+		[SerializeField]
+		private float _explosivePanelDelay = 0.15f;
+		[SerializeField]
+		private float _losePanelFadeDuration = 0.25f;
+
 		public int SlotCount => _slotCount;
 		public float SlotAngle => 360.0f / _slotCount;
 
@@ -58,5 +81,16 @@ namespace WoF
 
 		public int ReviveCostScale => _reviveCostScale;
 		public int InitReviveCost => _initReviveCost;
+
+		public float RevealBlockerFadeDuration => _revealBlockerFadeDuration;
+		public float RevealCardScaleDuration => _revealCardScaleDuration;
+		public float RevealRailFlightDuration => _revealRailFlightDuration;
+		public float RevealLandingDuration => _revealLandingDuration;
+		public float RevealCounterDuration => _revealCounterDuration;
+		public float RevealHeroHeightRatio => _revealHeroHeightRatio;
+		public float ExplosiveSlotFlashDuration => _explosiveSlotFlashDuration;
+		public float ExplosiveWheelShakeDuration => _explosiveWheelShakeDuration;
+		public float ExplosivePanelDelay => _explosivePanelDelay;
+		public float LosePanelFadeDuration => _losePanelFadeDuration;
 	}
 }

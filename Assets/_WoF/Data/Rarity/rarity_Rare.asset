@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: rarity_Rare
   m_EditorClassIdentifier: 
   _rank: 1
+  _revealHoldDuration: 1.1

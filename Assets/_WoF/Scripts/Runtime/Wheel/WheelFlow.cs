@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using WoF.Reward;
 using WoF.Zone;
@@ -95,8 +96,26 @@ namespace WoF.Wheel
 
 		public void OnRevived()
 		{
+			int safeSlotIndex = (_reservedSlotIndex + 1) % _gameSettings.SlotCount;
+			_wheelSpin.SetRotation(new Vector3(0.0f, 0.0f, -safeSlotIndex * _gameSettings.SlotAngle));
 			_isContinueAfterBomb = true;
 			_wheelSpin.SetActiveWheelSlot(_reservedSlotIndex, false);
+		}
+
+		public void PlayExplosiveReveal(Action completed)
+		{
+			DOTween.Sequence()
+				.Append(_wheelSpin.PlayExplosiveReveal(
+					_reservedSlotIndex,
+					_gameSettings.ExplosiveSlotFlashDuration,
+					_gameSettings.ExplosiveWheelShakeDuration))
+				.AppendInterval(_gameSettings.ExplosivePanelDelay)
+				.OnComplete(() => completed?.Invoke());
+		}
+
+		public void ResetWheelRotation()
+		{
+			_wheelSpin.SetRotation(Vector3.zero);
 		}
 
 		public RewardDefinition GetBestPreviewReward(int zoneIndex)
@@ -161,8 +180,13 @@ namespace WoF.Wheel
 
 		private void SetWheelSpinning(bool isSpinning)
 		{
-			_spinButton.SetButtonInteractable(!isSpinning);
+			SetSpinAvailability(!isSpinning);
 			SpinStateChanged?.Invoke(isSpinning);
+		}
+
+		public void SetSpinAvailability(bool available)
+		{
+			_spinButton.SetButtonInteractable(available);
 		}
 
 		private void OnSpinComplete()

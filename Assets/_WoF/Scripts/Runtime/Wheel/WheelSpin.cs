@@ -54,5 +54,19 @@ namespace WoF.Wheel
         {
             _wheelSlotViews[index].gameObject.SetActive(active);
         }
+
+        public Sequence PlayExplosiveReveal(int slotIndex, float flashDuration, float shakeDuration)
+        {
+            transform.DOKill();
+
+            return DOTween.Sequence()
+                .Append(_wheelSlotViews[slotIndex].PlayFlash(flashDuration))
+                .Append(transform.DOShakeRotation(
+                    shakeDuration,
+                    new Vector3(0.0f, 0.0f, 12.0f),
+                    14,
+                    90.0f,
+                    true).SetEase(Ease.OutQuad));
+        }
     }
 }

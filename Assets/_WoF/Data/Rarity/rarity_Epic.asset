@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: rarity_Epic
   m_EditorClassIdentifier: 
   _rank: 2
+  _revealHoldDuration: 1.4

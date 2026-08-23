@@ -86,6 +86,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7518892936175658496}
   - component: {fileID: 170497710185426918}
+  - component: {fileID: 170497710185426919}
   m_Layer: 0
   m_Name: ui_colllected_reward_view
   m_TagString: Untagged
@@ -129,6 +130,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rewardIcon: {fileID: 6818899518921934102}
   _text: {fileID: 8999446164069765038}
+  _canvasGroup: {fileID: 170497710185426919}
+--- !u!225 &170497710185426919
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5389993042336533702}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &7135032390592755900
 GameObject:
   m_ObjectHideFlags: 0

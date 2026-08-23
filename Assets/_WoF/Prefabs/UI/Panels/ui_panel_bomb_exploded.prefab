@@ -67,6 +67,8 @@ MonoBehaviour:
   _losePanelGiveUpButton: {fileID: 8245751729205259729}
   _losePanelReviveButton: {fileID: 2497105263565686065}
   _losePanelSeeAdButton: {fileID: 7861159897865536569}
+  _canvasGroup: {fileID: 4550000000000000102}
+  _content: {fileID: 4550000000000000301}
 --- !u!1 &4550000000000000200
 GameObject:
   m_ObjectHideFlags: 0

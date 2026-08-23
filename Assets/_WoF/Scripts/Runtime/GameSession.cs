@@ -12,6 +12,14 @@ namespace WoF
 {
 	public class GameSession : MonoBehaviour
 	{
+		private enum EFlowState
+		{
+			AwaitingSpin,
+			Spinning,
+			RevealingResult,
+			DeathDecision
+		}
+
 		[SerializeField]
 		private ZoneRules _zoneRule;
 
@@ -41,7 +49,7 @@ namespace WoF
 		private CurrencyContainer _currencyContainer;
 
 		private int _currentZone;
-		private bool _isWheelSpinning;
+		private EFlowState _flowState;
 
 		public event Action<int, ZoneTypeData> ZoneEntered;
 		public event Action<ZoneTypeData, int, RewardDefinition> UpcomingZoneChanged;
@@ -55,12 +63,15 @@ namespace WoF
 			_wheelFlow.Initialize(_zoneRule, _zoneTypeCalculator, _gameSettings, _rewardAmountMap);
 			_wheelFlow.SpinCompleted += OnSpinComplete;
 			_wheelFlow.SpinStateChanged += OnWheelSpinStateChanged;
-			_reviveFlow.Initialize(_currencyContainer, _gameSettings.InitReviveCost, _gameSettings.ReviveCostScale);
+			_reviveFlow.Initialize(_currencyContainer, _gameSettings.InitReviveCost, _gameSettings.ReviveCostScale, _gameSettings);
 			_reviveFlow.Revived += OnRevived;
 			_reviveFlow.GaveUp += StartNewRun;
+			_reviveFlow.DeathDecisionShown += OnDeathDecisionShown;
 			_reviveFlow.CurrencyChanged += OnCurrencyChanged;
 			_exitFlow.Initialize();
-			_runRewardFlow.Initialize();
+			_runRewardFlow.Initialize(_gameSettings);
+			_runRewardFlow.RewardFlightStarted += _wheelFlow.ResetWheelRotation;
+			_runRewardFlow.RevealCompleted += OnRewardRevealCompleted;
 			_exitFlow.CollectRequested += _runRewardFlow.ShowEarnedRewards;
 			_exitFlow.HintRequested += OnHintRequested;
 			_runRewardFlow.NewRunRequested += StartNewRun;
@@ -72,7 +83,10 @@ namespace WoF
 			_wheelFlow.SpinStateChanged -= OnWheelSpinStateChanged;
 			_reviveFlow.Revived -= OnRevived;
 			_reviveFlow.GaveUp -= StartNewRun;
+			_reviveFlow.DeathDecisionShown -= OnDeathDecisionShown;
 			_reviveFlow.CurrencyChanged -= OnCurrencyChanged;
+			_runRewardFlow.RewardFlightStarted -= _wheelFlow.ResetWheelRotation;
+			_runRewardFlow.RevealCompleted -= OnRewardRevealCompleted;
 			_exitFlow.CollectRequested -= _runRewardFlow.ShowEarnedRewards;
 			_exitFlow.HintRequested -= OnHintRequested;
 			_runRewardFlow.NewRunRequested -= StartNewRun;
@@ -89,6 +103,7 @@ namespace WoF
 		{
 			ClearRunState();
 			EnterZone();
+			SetFlowState(EFlowState.AwaitingSpin);
 		}
 
 		private void ClearRunState()
@@ -115,17 +130,18 @@ namespace WoF
 			NotifyUpcomingZones();
 		}
 
-		private void GoToNextZone()
+		private bool GoToNextZone()
 		{
 			++_currentZone;
 
 			if (IsGameFinished())
 			{
 				OnGameFinished();
-				return;
+				return false;
 			}
 
 			EnterZone();
+			return true;
 		}
 
 		private bool IsGameFinished()
@@ -158,13 +174,14 @@ namespace WoF
 
 		private void OnWheelSpinStateChanged(bool isSpinning)
 		{
-			_isWheelSpinning = isSpinning;
-
-			RefreshExitAvailability();
+			if (isSpinning)
+				SetFlowState(EFlowState.Spinning);
 		}
 
 		private void OnSpinComplete(RewardDefinition earnedReward)
 		{
+			SetFlowState(EFlowState.RevealingResult);
+
 			if (IsBomb(earnedReward))
 			{
 				OnBombExploded();
@@ -173,9 +190,7 @@ namespace WoF
 			{
 				int earnedAmount = GetRewardAmount(earnedReward, _currentZone);
 
-				_runRewardFlow.AddReward(earnedReward, earnedAmount);
-
-				GoToNextZone();
+				_runRewardFlow.RevealReward(earnedReward, earnedAmount);
 			}
 		}
 
@@ -191,12 +206,24 @@ namespace WoF
 
 		private void OnBombExploded()
 		{
-			_reviveFlow.OnBombExploded();
+			_wheelFlow.PlayExplosiveReveal(_reviveFlow.OnBombExploded);
 		}
 
 		private void OnRevived()
 		{
 			_wheelFlow.OnRevived();
+			SetFlowState(EFlowState.AwaitingSpin);
+		}
+
+		private void OnDeathDecisionShown()
+		{
+			SetFlowState(EFlowState.DeathDecision);
+		}
+
+		private void OnRewardRevealCompleted()
+		{
+			if (GoToNextZone())
+				SetFlowState(EFlowState.AwaitingSpin);
 		}
 
 		private void OnCurrencyChanged(int currencyAmount)
@@ -207,7 +234,14 @@ namespace WoF
 		private bool CanExitNow()
 		{
 			return _zoneTypeCalculator.GetZoneTypeDataFromIndex(_currentZone).CanExit &&
-			       !_isWheelSpinning;
+			       _flowState == EFlowState.AwaitingSpin;
+		}
+
+		private void SetFlowState(EFlowState flowState)
+		{
+			_flowState = flowState;
+			_wheelFlow.SetSpinAvailability(flowState == EFlowState.AwaitingSpin);
+			RefreshExitAvailability();
 		}
 
 		private void RefreshExitAvailability()

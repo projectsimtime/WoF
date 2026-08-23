@@ -15,11 +15,21 @@ MonoBehaviour:
   _slotCount: 8
   _endGameZoneIndex: 60
   _spinTargetAngle: 1980
-  _spinMinDuration: 3.1
-  _spinMaxDuration: 3.5
+  _spinMinDuration: 2.6
+  _spinMaxDuration: 3
   _spinSlotOffsetAngle: 20
   _spinEdgeBias: 0.8
   _spinNearMissChance: 0.5
   _startCurrencyAmount: 500
   _reviveCostScale: 50
   _initReviveCost: 50
+  _revealBlockerFadeDuration: 0.2
+  _revealCardScaleDuration: 0.35
+  _revealRailFlightDuration: 0.45
+  _revealLandingDuration: 0.2
+  _revealCounterDuration: 0.6
+  _revealHeroHeightRatio: 0.6
+  _explosiveSlotFlashDuration: 0.15
+  _explosiveWheelShakeDuration: 0.25
+  _explosivePanelDelay: 0.15
+  _losePanelFadeDuration: 0.25

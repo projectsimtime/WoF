@@ -416,8 +416,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _button: {fileID: 290855353}
-  _buttonText: {fileID: 1113896247}
-  _gameSession: {fileID: 795434445}
   _adPanel: {fileID: 2139907260}
 --- !u!224 &539006133 stripped
 RectTransform:
@@ -687,18 +685,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1d6e83b0c749f24aae5301b8f27dc964, type: 2}
   - {fileID: 11400000, guid: 7c2a95f38e04b641bd7fe0329ac68d15, type: 2}
   - {fileID: 11400000, guid: 4b8d1e6f0a53c74d9e2b18a7f306c5d1, type: 2}
-  _wheelParent: {fileID: 1979633068}
+  _wheelFlow: {fileID: 1979633068}
   _gameSettings: {fileID: 11400000, guid: e59ea43fdb39b3b44bf9ed11823a7b8f, type: 2}
   _rewardAmountMap: {fileID: 11400000, guid: 7d4e1a09c3b64f5b8e2a06d9f3418c72, type: 2}
-  _losePanelController: {fileID: 1956639990}
-  _exitPanelController: {fileID: 1832596077}
-  _rewardPanelController: {fileID: 1500000144}
+  _reviveFlow: {fileID: 1956639990}
+  _exitFlow: {fileID: 1832596077}
+  _runRewardFlow: {fileID: 1500000144}
   _zoneIndicatorPanelController: {fileID: 2054341033}
   _currentZonePanelController: {fileID: 984952279}
   _currencyPanelController: {fileID: 554779836}
-  _endGamePanelController: {fileID: 232823494}
-  _rewardSummaryPanelController: {fileID: 1028498720}
-  _hintPanelController: {fileID: 1349086714}
 --- !u!1 &906217472
 GameObject:
   m_ObjectHideFlags: 0
@@ -834,8 +829,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _button: {fileID: 906217474}
-  _buttonText: {fileID: 0}
-  _gameSession: {fileID: 795434445}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -1913,8 +1906,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _button: {fileID: 1500000114}
-  _buttonText: {fileID: 1500000118}
-  _gameSession: {fileID: 795434445}
 --- !u!1 &1500000120
 GameObject:
   m_ObjectHideFlags: 0
@@ -2167,6 +2158,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _itemViewPrefab: {fileID: 170497710185426918, guid: 53cff088ad8e7ad458cdf5f210c03b6e, type: 3}
+  _endGamePanelController: {fileID: 232823494}
+  _rewardSummaryPanelController: {fileID: 1028498720}
 --- !u!224 &1629949633 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4640000000000000101, guid: 5d3f8a27c614e9b40a72fd1e83c095a7, type: 3}
@@ -2412,10 +2405,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -55
       objectReference: {fileID: 0}
-    - target: {fileID: 4560000000000000606, guid: 2e6b9d47a1c34f80b5e2179c3d0a86bf, type: 3}
-      propertyPath: _gameSession
-      value: 
-      objectReference: {fileID: 795434445}
     - target: {fileID: 4560000000000000701, guid: 2e6b9d47a1c34f80b5e2179c3d0a86bf, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -2440,10 +2429,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -55
       objectReference: {fileID: 0}
-    - target: {fileID: 4560000000000000706, guid: 2e6b9d47a1c34f80b5e2179c3d0a86bf, type: 3}
-      propertyPath: _gameSession
-      value: 
-      objectReference: {fileID: 795434445}
     - target: {fileID: 8207229855648960484, guid: 2e6b9d47a1c34f80b5e2179c3d0a86bf, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -2492,6 +2477,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -55
       objectReference: {fileID: 0}
+    - target: {fileID: 4560000000000000103, guid: 2e6b9d47a1c34f80b5e2179c3d0a86bf, type: 3}
+      propertyPath: _hintPanelController
+      value:
+      objectReference: {fileID: 1349086714}
+    - target: {fileID: 4560000000000000103, guid: 2e6b9d47a1c34f80b5e2179c3d0a86bf, type: 3}
+      propertyPath: _exitPanelSeeAdButton
+      value:
+      objectReference: {fileID: 290855356}
+    - target: {fileID: 4560000000000000103, guid: 2e6b9d47a1c34f80b5e2179c3d0a86bf, type: 3}
+      propertyPath: _exitButton
+      value:
+      objectReference: {fileID: 1500000119}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2e6b9d47a1c34f80b5e2179c3d0a86bf, type: 3}
 --- !u!114 &1832596077 stripped
@@ -2613,10 +2610,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 78590478}
     m_Modifications:
-    - target: {fileID: 1110842790859786885, guid: 9c3f5a0e7d1b48c2ab6e94d0f27351ea, type: 3}
-      propertyPath: _gameSession
-      value: 
-      objectReference: {fileID: 795434445}
     - target: {fileID: 4550000000000000100, guid: 9c3f5a0e7d1b48c2ab6e94d0f27351ea, type: 3}
       propertyPath: m_Name
       value: ui_panel_bomb_exploded
@@ -2813,10 +2806,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -60
       objectReference: {fileID: 0}
-    - target: {fileID: 8245751729205259729, guid: 9c3f5a0e7d1b48c2ab6e94d0f27351ea, type: 3}
-      propertyPath: _gameSession
-      value: 
-      objectReference: {fileID: 795434445}
+    - target: {fileID: 7861159897865536569, guid: 9c3f5a0e7d1b48c2ab6e94d0f27351ea, type: 3}
+      propertyPath: _adPanel
+      value:
+      objectReference: {fileID: 2139907260}
     m_RemovedComponents:
     - {fileID: 1110842790859786885, guid: 9c3f5a0e7d1b48c2ab6e94d0f27351ea, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 9c3f5a0e7d1b48c2ab6e94d0f27351ea, type: 3}
@@ -2969,5 +2962,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: ui_wheel_parent
       objectReference: {fileID: 0}
+    - target: {fileID: 7927785592596197357, guid: 6692a3fe020a63b43b8106e99f992017, type: 3}
+      propertyPath: _spinButton
+      value:
+      objectReference: {fileID: 906217477}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6692a3fe020a63b43b8106e99f992017, type: 3}

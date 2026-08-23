@@ -614,9 +614,8 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier:
   _button: {fileID: 4570000000000000604}
-  _buttonText: {fileID: 4570000000000000613}
-  _gameSession: {fileID: 0}
   _adPanel: {fileID: 4570000000000000103}
+  _buttonText: {fileID: 4570000000000000613}
 --- !u!1 &4570000000000000610
 GameObject:
   m_ObjectHideFlags: 0
@@ -909,8 +908,6 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier:
   _button: {fileID: 4570000000000000704}
-  _buttonText: {fileID: 4570000000000000713}
-  _gameSession: {fileID: 0}
   _adPanel: {fileID: 4570000000000000103}
 --- !u!1 &4570000000000000710
 GameObject:

@@ -906,8 +906,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _button: {fileID: 4550000000000000704}
-  _buttonText: {fileID: 4550000000000000713}
-  _gameSession: {fileID: 0}
 --- !u!1 &4550000000000000710
 GameObject:
   m_ObjectHideFlags: 0
@@ -1201,8 +1199,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _button: {fileID: 4550000000000000804}
-  _buttonText: {fileID: 4550000000000000833}
-  _gameSession: {fileID: 0}
   _reviveCostText: {fileID: 2380274866012317099}
 --- !u!1 &4550000000000000810
 GameObject:
@@ -1717,8 +1713,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _button: {fileID: 7164929678675916166}
-  _buttonText: {fileID: 3538848148971528849}
-  _gameSession: {fileID: 0}
   _adPanel: {fileID: 0}
 --- !u!114 &3538848148971528849 stripped
 MonoBehaviour:

@@ -1,27 +1,16 @@
-﻿using System;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace WoF.UI
 {
-	public class ButtonController : MonoBehaviour
+	public abstract class ButtonController : MonoBehaviour
 	{
-		[SerializeField] 
-		private Button _button;
-		[SerializeField] 
-		private TextMeshProUGUI _buttonText;
 		[SerializeField]
-		protected GameSession _gameSession;
-		
-		public Button Button => _button;
+		private Button _button;
 
 		protected virtual void OnValidate()
 		{
 			_button = GetComponent<Button>();
-			_buttonText = GetComponentInChildren<TextMeshProUGUI>(true);
-
-			_gameSession = FindObjectOfType<GameSession>();
 		}
 
 		protected virtual void OnEnable()
@@ -31,19 +20,14 @@ namespace WoF.UI
 
 		protected virtual void OnDisable()
 		{
-			_button.onClick.RemoveAllListeners();
+			_button.onClick.RemoveListener(OnButtonClicked);
 		}
 
-		protected virtual void OnButtonClicked() {}
+		protected abstract void OnButtonClicked();
 
 		public void SetButtonInteractable(bool interactable)
 		{
 			_button.interactable = interactable;
-		}
-
-		public void SetButtonText(string text)
-		{
-			_buttonText.text = text;
 		}
 	}
 }

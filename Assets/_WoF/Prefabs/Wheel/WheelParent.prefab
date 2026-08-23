@@ -53,6 +53,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _wheelSpin: {fileID: 7927785593050494104}
   _wheelIndicator: {fileID: 7927785592741550735}
+  _spinButton: {fileID: 0}
   WheelTypes:
   - {fileID: 11400000, guid: 5573a78120fee8c43b3c3e969f676f2a, type: 2}
   - {fileID: 11400000, guid: c09b9c9aa27efc64791d878e10dcc206, type: 2}

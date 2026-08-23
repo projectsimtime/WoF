@@ -4,7 +4,7 @@
 
 ## Video
 
-[**Watch the gameplay video**](https://drive.google.com/file/d/1F6EvGE_bxK7qtbxdDJT4ts6WxUYiWMkX/view?usp=sharing)
+[**Watch the gameplay video**](https://we.tl/t-CT59seD4TrJDOLYk)
 
 The video has text on it for the zone override and the next zone hint.
 

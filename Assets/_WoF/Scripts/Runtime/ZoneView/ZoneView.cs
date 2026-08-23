@@ -6,7 +6,7 @@ using Image = UnityEngine.UI.Image;
 
 namespace WoF.ZoneView
 {
-	public class ZoneViewBase : MonoBehaviour, IStyle<ZoneViewDynamicData>
+	public class ZoneView : MonoBehaviour, IStyle<ZoneViewDynamicData>
 	{
 		
 		[SerializeField]

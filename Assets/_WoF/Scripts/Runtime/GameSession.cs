@@ -59,6 +59,7 @@ namespace WoF
 			_currencyContainer = new CurrencyContainer(_gameSettings.StartCurrencyAmount);
 
 			_wheelFlow.Initialize(_zoneRule, _zoneTypeCalculator, _gameSettings, _rewardAmountMap);
+			_zoneIndicatorPanelController.Initialize();
 			_wheelFlow.SpinCompleted += OnSpinComplete;
 			_wheelFlow.SpinStateChanged += OnWheelSpinStateChanged;
 			_reviveFlow.Initialize(_currencyContainer, _gameSettings.InitReviveCost, _gameSettings.ReviveCostScale);
@@ -115,6 +116,7 @@ namespace WoF
 		{
 			RefreshExitAvailability();
 			_wheelFlow.EnterZone(_currentZone);
+			_currentZonePanelController.SetZoneIndex(_currentZone, _zoneTypeCalculator.GetZoneTypeDataFromIndex(_currentZone).ViewData.ThemeColor);
 			RefreshZoneIndicators();
 		}
 
@@ -143,21 +145,20 @@ namespace WoF
 
 		private void RefreshZoneIndicators()
 		{
-			ZoneTypeData safeZoneType = _zoneTypeCalculator.GetZoneTypeDataFromIndex(_gameSettings.SafeZoneFrequency);
-			ZoneTypeData superZoneType = _zoneTypeCalculator.GetZoneTypeDataFromIndex(_gameSettings.SuperZoneFrequency);
+			foreach (ZoneTypeData zoneTypeData in _zoneIndicatorPanelController.DisplayedZoneTypes)
+			{
+				int nextZoneIndex = _zoneTypeCalculator.GetZonesNextIndex(zoneTypeData, _currentZone);
 
-			int nextSafeZoneIndex = _zoneTypeCalculator.GetZonesNextIndex(safeZoneType, _currentZone);
-			int nextSuperZoneIndex = _zoneTypeCalculator.GetZonesNextIndex(superZoneType, _currentZone);
+				if (nextZoneIndex == Int32.MaxValue)
+				{
+					nextZoneIndex = _currentZone;
+				}
 
-			nextSafeZoneIndex = nextSafeZoneIndex != Int32.MaxValue ? nextSafeZoneIndex : _currentZone;
-			nextSuperZoneIndex = nextSuperZoneIndex != Int32.MaxValue ? nextSuperZoneIndex : _currentZone;
-
-			_currentZonePanelController.SetZoneIndex(_currentZone, _zoneTypeCalculator.GetZoneTypeDataFromIndex(_currentZone).ViewData.ThemeColor);
-
-			_zoneIndicatorPanelController.OnNewZone(
-				nextSafeZoneIndex,
-				nextSuperZoneIndex,
-				_wheelFlow.GetReservedReward(nextSuperZoneIndex).Sprite);
+				_zoneIndicatorPanelController.SetIndicator(
+					zoneTypeData,
+					nextZoneIndex,
+					_wheelFlow.GetReservedReward(nextZoneIndex));
+			}
 		}
 
 		private void OnWheelSpinStateChanged(bool isSpinning)

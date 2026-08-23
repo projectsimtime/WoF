@@ -1,40 +1,41 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using WoF.Reward;
+using WoF.Zone;
 
 namespace WoF.ZoneView
 {
 	public class ZoneIndicatorPanelController : MonoBehaviour
 	{
 		[SerializeField] 
-		private ZoneViewBase _zoneViewPrefab;
+		private ZoneView _zoneViewPrefab;
 
 		[SerializeField] 
-		private ZoneViewStaticData _superZoneStaticData;
-		[SerializeField] 
-		private ZoneViewStaticData _safeZoneStaticData;
+		private ZoneTypeData[] _displayedZoneTypes;
 
-		private ZoneViewBase _superZoneView;
-		private ZoneViewBase _safeZoneView;
-		private void Awake()
+		private Dictionary<ZoneTypeData, ZoneView> _zoneViews;
+
+		public IReadOnlyList<ZoneTypeData> DisplayedZoneTypes => _displayedZoneTypes;
+
+		public void Initialize()
 		{
-			_superZoneView = Instantiate(_zoneViewPrefab, transform);
-			_safeZoneView = Instantiate(_zoneViewPrefab, transform);
+			_zoneViews = new();
 
-			_superZoneView.Init(_superZoneStaticData);
-			_safeZoneView.Init(_safeZoneStaticData);
+			foreach (ZoneTypeData zoneTypeData in _displayedZoneTypes)
+			{
+				ZoneView zoneView = Instantiate(_zoneViewPrefab, transform);
+				zoneView.Init(zoneTypeData.ViewData);
+
+				_zoneViews.Add(zoneTypeData, zoneView);
+			}
 		}
 
-		public void OnNewZone(int nextSafeZoneIndex, int nextSuperZoneIndex, Sprite superZoneIcon)
+		public void SetIndicator(ZoneTypeData zoneTypeData, int zoneIndex, RewardDefinition reservedReward)
 		{
-			_superZoneView.ApplyStyle(new ZoneViewDynamicData
+			_zoneViews[zoneTypeData].ApplyStyle(new ZoneViewDynamicData
 			{
-				ZoneIndex = nextSuperZoneIndex,
-				Icon = superZoneIcon
-			});
-
-			_safeZoneView.ApplyStyle(new ZoneViewDynamicData
-			{
-				ZoneIndex = nextSafeZoneIndex
+				ZoneIndex = zoneIndex,
+				Icon = reservedReward ? reservedReward.Sprite : null
 			});
 		}
 	}

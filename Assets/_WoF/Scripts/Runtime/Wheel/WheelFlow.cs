@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using WoF.Reward;
@@ -63,6 +64,7 @@ namespace WoF.Wheel
 			_rewardDefinitions.Clear();
 			_zoneWheelBuilder.Reset();
 			_hasNextZoneWheel = false;
+			_spinButton.SetButtonInteractable(true);
 		}
 
 		public void EnterZone(int zoneIndex)
@@ -168,6 +170,16 @@ namespace WoF.Wheel
 		{
 			_spinButton.SetButtonInteractable(!isSpinning);
 			SpinStateChanged?.Invoke(isSpinning);
+		}
+
+		public void SetSpinInteractable(bool interactable)
+		{
+			_spinButton.SetButtonInteractable(interactable);
+		}
+
+		public Tween PlayBombReaction()
+		{
+			return _wheelSpin.PlayBombReaction(_gameSettings.BombReactionDuration);
 		}
 
 		private void OnSpinComplete()

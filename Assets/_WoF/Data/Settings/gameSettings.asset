@@ -23,3 +23,5 @@ MonoBehaviour:
   _startCurrencyAmount: 500
   _reviveCostScale: 50
   _initReviveCost: 50
+  _bombReactionDuration: 0.15
+  _losePanelScaleDuration: 0.2

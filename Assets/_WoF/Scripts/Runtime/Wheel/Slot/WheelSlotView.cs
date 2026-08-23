@@ -16,7 +16,7 @@ namespace WoF.Wheel
 		private void OnValidate()
 		{
 			_image = GetComponent<Image>();
-			_amountText = GetComponentInChildren<TextMeshProUGUI>();
+			_amountText = GetComponentInChildren<TextMeshProUGUI>(true);
 		}
 
 		public void SetSprite(Sprite sprite)

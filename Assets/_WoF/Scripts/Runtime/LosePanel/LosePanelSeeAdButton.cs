@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using WoF.Advertisement;
 using WoF.UI;
@@ -9,16 +10,16 @@ namespace WoF.LosePanel
 		[SerializeField]
 		private AdPanelController _adPanel;
 
-		protected override void OnValidate()
-		{
-			base.OnValidate();
-
-			_adPanel = FindObjectOfType<AdPanelController>(true);
-		}
+		public event Action ReviveRewardGranted;
 
 		protected override void OnButtonClicked()
 		{
-			_adPanel.Play(new AdRewardRevive(_gameSession), 3.0f);
+			_adPanel.Play(new AdRewardRevive(OnReviveRewardGranted), 3.0f);
+		}
+
+		private void OnReviveRewardGranted()
+		{
+			ReviveRewardGranted?.Invoke();
 		}
 	}
 }

@@ -1,40 +1,52 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using WoF.Reward;
+using WoF.Zone;
 
 namespace WoF.ZoneView
 {
 	public class ZoneIndicatorPanelController : MonoBehaviour
 	{
 		[SerializeField] 
-		private ZoneViewBase _zoneViewPrefab;
+		private ZoneView _zoneViewPrefab;
 
 		[SerializeField] 
-		private ZoneViewStaticData _superZoneStaticData;
-		[SerializeField] 
-		private ZoneViewStaticData _safeZoneStaticData;
+		private ZoneTypeData[] _displayedZoneTypes;
 
-		private ZoneViewBase _superZoneView;
-		private ZoneViewBase _safeZoneView;
-		private void Awake()
+		private Dictionary<ZoneTypeData, ZoneView> _zoneViews;
+
+		public void Initialize()
 		{
-			_superZoneView = Instantiate(_zoneViewPrefab, transform);
-			_safeZoneView = Instantiate(_zoneViewPrefab, transform);
+			_zoneViews = new();
 
-			_superZoneView.Init(_superZoneStaticData);
-			_safeZoneView.Init(_safeZoneStaticData);
+			foreach (ZoneTypeData zoneTypeData in _displayedZoneTypes)
+			{
+				ZoneView zoneView = Instantiate(_zoneViewPrefab, transform);
+				zoneView.Init(zoneTypeData.ViewData);
+
+				_zoneViews.Add(zoneTypeData, zoneView);
+			}
 		}
 
-		public void OnNewZone(int nextSafeZoneIndex, int nextSuperZoneIndex, Sprite superZoneIcon)
+		public void SetIndicator(ZoneTypeData zoneTypeData, int zoneIndex, RewardDefinition reservedReward)
 		{
-			_superZoneView.ApplyStyle(new ZoneViewDynamicData
+			if (!_zoneViews.TryGetValue(zoneTypeData, out ZoneView zoneView))
 			{
-				ZoneIndex = nextSuperZoneIndex,
-				Icon = superZoneIcon
-			});
+				return;
+			}
 
-			_safeZoneView.ApplyStyle(new ZoneViewDynamicData
+			if (zoneIndex == int.MaxValue)
 			{
-				ZoneIndex = nextSafeZoneIndex
+				zoneView.gameObject.SetActive(false);
+				return;
+			}
+
+			zoneView.gameObject.SetActive(true);
+
+			zoneView.ApplyStyle(new ZoneViewDynamicData
+			{
+				ZoneIndex = zoneIndex,
+				Icon = reservedReward ? reservedReward.Sprite : null
 			});
 		}
 	}

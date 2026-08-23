@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _label: REGENERATOR
   _sprite: {fileID: 21300000, guid: 57394fbe8bf36e1459c4532539e9d924, type: 3}
-  _rarity: 1
-  _kind: 5
+  _rarity: {fileID: 11400000, guid: 84abf88469e34e83b53f4ae91fe4a982, type: 2}
+  _kind: {fileID: 11400000, guid: 730ad6a53fc8445f891d990fdfad2642, type: 2}

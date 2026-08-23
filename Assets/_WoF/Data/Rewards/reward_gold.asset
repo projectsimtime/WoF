@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _label: GOLD
   _sprite: {fileID: 21300000, guid: 086cdd068e9534c4e9fd6f8e0ac10347, type: 3}
-  _rarity: 1
-  _kind: 0
+  _rarity: {fileID: 11400000, guid: 84abf88469e34e83b53f4ae91fe4a982, type: 2}
+  _kind: {fileID: 11400000, guid: 039f98326292492082e02bbbf4079349, type: 2}

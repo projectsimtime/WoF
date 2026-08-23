@@ -1,13 +1,15 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+using System;
+using UnityEngine;
 using WoF.UI;
 
 namespace WoF.LosePanel
 {
 	public class LosePanelReviveButton : ButtonController
 	{
-		[SerializeField] 
+		[SerializeField]
 		private LosePanelReviveCostText _reviveCostText;
+
+		public event Action ReviveClicked;
 
 		protected override void OnValidate()
 		{
@@ -18,7 +20,7 @@ namespace WoF.LosePanel
 
 		protected override void OnButtonClicked()
 		{
-			_gameSession.OnReviveWithCurrency();
+			ReviveClicked?.Invoke();
 		}
 
 		public void SetReviveCost(int amount)

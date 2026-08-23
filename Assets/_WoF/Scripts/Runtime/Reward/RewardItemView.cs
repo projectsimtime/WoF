@@ -30,8 +30,8 @@ namespace WoF.Reward
 
 		private void OnValidate()
 		{
-			_rewardIcon = GetComponentInChildren<Image>();
-			_text = GetComponentInChildren<TextMeshProUGUI>();
+			_rewardIcon = GetComponentInChildren<Image>(true);
+			_text = GetComponentInChildren<TextMeshProUGUI>(true);
 		}
 
 		private void OnDisable()

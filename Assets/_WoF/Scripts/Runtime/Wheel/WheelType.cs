@@ -5,28 +5,40 @@ using WoF.Reward;
 
 namespace WoF.Wheel
 {
-	public enum EWheelType
+	[Serializable]
+	public struct RarityWeight
 	{
-		Bronze = 0,
-		Silver,
-		Gold
+		[SerializeField]
+		private RarityDefinition _rarity;
+		[Min(1)]
+		[SerializeField]
+		private int _weight;
+
+		public RarityDefinition Rarity => _rarity;
+		public int Weight => _weight;
 	}
 	
 	[Serializable]
 	public struct WheelTypeContent
 	{
 		[SerializeField] 
-		private List<RewardDefinition> _rewards;
+		private RewardDefinition[] _rewards;
+		[SerializeField]
+		private RarityWeight[] _rarityWeights;
 
-		public List<RewardDefinition> Rewards => _rewards;
-
-		[SerializeField] 
-		public Dictionary<EItemRarity, List<RewardDefinition>> RewardByRarity;
+		public RewardDefinition[] Rewards => _rewards;
+		public RarityWeight[] RarityWeights => _rarityWeights;
 	}
 	
 	[CreateAssetMenu(fileName = "wheel_", menuName = "WoF/Wheel/New Wheel Type")]
 	public class WheelType : ScriptableObject
 	{
+		[Header("View")]
+		[SerializeField]
+		private string _title;
+		[SerializeField]
+		private Color _titleColor;
+
 		[SerializeField] 
 		private Sprite _wheelSprite;
 		[SerializeField] 
@@ -34,7 +46,11 @@ namespace WoF.Wheel
 		
 		[SerializeField] 
 		private WheelTypeContent _wheelTypeContent;
+
+		private Dictionary<RarityDefinition, List<RewardDefinition>> _rewardByRarity;
 		
+		public string Title => _title;
+		public Color TitleColor => _titleColor;
 		public Sprite WheelSprite => _wheelSprite;
 		public Sprite IndicatorSprite => _indicatorSprite;
 		
@@ -42,18 +58,23 @@ namespace WoF.Wheel
 
 		private void OnEnable()
 		{
-			_wheelTypeContent.RewardByRarity = new Dictionary<EItemRarity, List<RewardDefinition>>();
+			_rewardByRarity = new Dictionary<RarityDefinition, List<RewardDefinition>>();
 			
 			foreach (RewardDefinition reward in _wheelTypeContent.Rewards)
 			{
 				if (reward)
 				{
-					if (!_wheelTypeContent.RewardByRarity.TryAdd(reward.Rarity, new List<RewardDefinition> { reward }))
+					if (!_rewardByRarity.TryAdd(reward.Rarity, new List<RewardDefinition> { reward }))
 					{
-						_wheelTypeContent.RewardByRarity[reward.Rarity].Add(reward);
+						_rewardByRarity[reward.Rarity].Add(reward);
 					}
 				}
 			}
+		}
+
+		public List<RewardDefinition> GetRewardsByRarity(RarityDefinition rarity)
+		{
+			return _rewardByRarity[rarity];
 		}
 	}
 }

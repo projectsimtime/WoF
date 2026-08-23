@@ -13,31 +13,31 @@ MonoBehaviour:
   m_Name: rewardAmountMap
   m_EditorClassIdentifier: 
   _amountByKind:
-  - _kind: 0
+  - _kind: {fileID: 11400000, guid: 039f98326292492082e02bbbf4079349, type: 2}
     _baseAmount: 50
     _maxAmount: 1000
     _amountScale: 25
-  - _kind: 1
+  - _kind: {fileID: 11400000, guid: bd6905f6a5124434a12c31dd58121aa7, type: 2}
     _baseAmount: 1
     _maxAmount: 10
     _amountScale: 1
-  - _kind: 2
+  - _kind: {fileID: 11400000, guid: b6a2bf6583214a18a802b960cb48cb1f, type: 2}
     _baseAmount: 1
     _maxAmount: 1
     _amountScale: 1
-  - _kind: 3
+  - _kind: {fileID: 11400000, guid: de517e48c306487a86570f3c9c17c757, type: 2}
     _baseAmount: 1
     _maxAmount: 50
     _amountScale: 3
-  - _kind: 4
+  - _kind: {fileID: 11400000, guid: 0d990334ebfc44948262dcc9ebd62fbe, type: 2}
     _baseAmount: 1
     _maxAmount: 1
     _amountScale: 1
-  - _kind: 5
+  - _kind: {fileID: 11400000, guid: 730ad6a53fc8445f891d990fdfad2642, type: 2}
     _baseAmount: 1
     _maxAmount: 5
     _amountScale: 1
-  - _kind: 6
+  - _kind: {fileID: 11400000, guid: f04085dce9db4594835135bd0b5044a9, type: 2}
     _baseAmount: 0
     _maxAmount: 0
     _amountScale: 0

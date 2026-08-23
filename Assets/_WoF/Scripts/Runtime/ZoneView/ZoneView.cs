@@ -1,14 +1,12 @@
 ﻿using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UIElements;
 using WoF.Interface;
 using Image = UnityEngine.UI.Image;
 
 namespace WoF.ZoneView
 {
-	public class ZoneViewBase : MonoBehaviour, IStyle<ZoneViewDynamicData>
+	public class ZoneView : MonoBehaviour, IStyle<ZoneViewDynamicData>
 	{
 		
 		[SerializeField]

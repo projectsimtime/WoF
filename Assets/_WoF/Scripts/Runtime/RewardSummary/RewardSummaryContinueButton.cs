@@ -1,12 +1,15 @@
+using System;
 using WoF.UI;
 
 namespace WoF.RewardSummary
 {
 	public class RewardSummaryContinueButton : ButtonController
 	{
+		public event Action ContinueClicked;
+
 		protected override void OnButtonClicked()
 		{
-			_gameSession.StartNewRun();
+			ContinueClicked?.Invoke();
 		}
 	}
 }

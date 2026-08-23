@@ -14,5 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   _viewData: {fileID: 11400000, guid: 8864702ef1ee91045b3beec40407a9c4, type: 2}
   _wheelType: {fileID: 11400000, guid: c09b9c9aa27efc64791d878e10dcc206, type: 2}
-  _hasBomb: 0
-  _hasSpecialReward: 0
+  _frequency: 5
+  _overrideIndices:
+  - 1
+  _canExit: 1
+  _reservedRewards: []

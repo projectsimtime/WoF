@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4570000000000000101}
   - component: {fileID: 4570000000000000102}
+  - component: {fileID: 4570000000000000103}
   - component: {fileID: 6181402472875203614}
   m_Layer: 0
   m_Name: ui_group_zone_indicators
@@ -64,6 +65,20 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &4570000000000000103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4570000000000000100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
 --- !u!114 &6181402472875203614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,5 +92,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _zoneViewPrefab: {fileID: 3641137534190944815, guid: 078a99e7138d8a54d979d19282280e62, type: 3}
-  _superZoneStaticData: {fileID: 11400000, guid: 229551ae6afe9b64cb89fa7aa738f92e, type: 2}
-  _safeZoneStaticData: {fileID: 11400000, guid: 8864702ef1ee91045b3beec40407a9c4, type: 2}
+  _displayedZoneTypes:
+  - {fileID: 11400000, guid: 1d6e83b0c749f24aae5301b8f27dc964, type: 2}
+  - {fileID: 11400000, guid: 7c2a95f38e04b641bd7fe0329ac68d15, type: 2}

@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _label: MOLOTOV
   _sprite: {fileID: 21300000, guid: 35ae040b945b39c4482a91c6358abb34, type: 3}
-  _rarity: 1
-  _kind: 2
+  _rarity: {fileID: 11400000, guid: 84abf88469e34e83b53f4ae91fe4a982, type: 2}
+  _kind: {fileID: 11400000, guid: b6a2bf6583214a18a802b960cb48cb1f, type: 2}

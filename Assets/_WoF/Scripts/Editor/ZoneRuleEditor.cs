@@ -22,9 +22,6 @@ namespace WoF.Editor
 				return;
 			}
 
-			ZoneCalculator calculator = new ZoneCalculator(
-				settings.SafeZoneFrequency, settings.SuperZoneFrequency, settings.EndGameZoneIndex);
-
 			HashSet<int> seenZones = new HashSet<int>();
 
 			EditorGUILayout.Space();
@@ -66,20 +63,6 @@ namespace WoF.Editor
 						MessageType.Error);
 				}
 
-				int bombCount = rewards.Count(reward =>
-					reward != null && reward.Kind == EItemKind.Bomb);
-				bool isSpecialZone = calculator.IsSpecialZone(zone);
-
-				if (isSpecialZone && bombCount > 0)
-				{
-					EditorGUILayout.HelpBox($"Zone {zone} is special but has a bomb.",
-						MessageType.Error);
-				}
-				else if (!isSpecialZone && bombCount != 1)
-				{
-					EditorGUILayout.HelpBox($"Zone {zone} needs 1 bomb, has {bombCount}.",
-						MessageType.Error);
-				}
 			}
 		}
 	}

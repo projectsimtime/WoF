@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using WoF.Advertisement;
 using WoF.UI;
@@ -9,16 +10,16 @@ namespace WoF.ExitPanel
 		[SerializeField]
 		private AdPanelController _adPanel;
 
-		protected override void OnValidate()
-		{
-			base.OnValidate();
-
-			_adPanel = FindObjectOfType<AdPanelController>(true);
-		}
+		public event Action HintRewardGranted;
 
 		protected override void OnButtonClicked()
 		{
-			_adPanel.Play(new AdRewardZoneHint(_gameSession), 4.0f);
+			_adPanel.Play(new AdRewardZoneHint(OnHintRewardGranted), 4.0f);
+		}
+
+		private void OnHintRewardGranted()
+		{
+			HintRewardGranted?.Invoke();
 		}
 	}
 }

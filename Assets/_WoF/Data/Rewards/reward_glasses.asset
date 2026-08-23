@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _label: GLASSES
   _sprite: {fileID: 21300000, guid: f53aefee9bda2d04b93db95bb5d21eb3, type: 3}
-  _rarity: 2
-  _kind: 4
+  _rarity: {fileID: 11400000, guid: bc898beee66342f08e1635c7e523ea55, type: 2}
+  _kind: {fileID: 11400000, guid: 0d990334ebfc44948262dcc9ebd62fbe, type: 2}

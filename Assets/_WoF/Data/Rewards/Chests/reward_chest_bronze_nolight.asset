@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _label: BRONZE CHEST
   _sprite: {fileID: 21300000, guid: bf6514ca4367e3941914a8816dd7d84e, type: 3}
-  _rarity: 0
-  _kind: 1
+  _rarity: {fileID: 11400000, guid: fa0459e425924649bee824513edd2586, type: 2}
+  _kind: {fileID: 11400000, guid: bd6905f6a5124434a12c31dd58121aa7, type: 2}

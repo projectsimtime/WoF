@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c479db9744114056ab670b7d0cd97c51, type: 3}
   m_Name: wheelType_Silver
   m_EditorClassIdentifier: 
+  _title: SILVER SPIN
+  _titleColor: {r: 0.8431373, g: 0.8705882, b: 0.9098039, a: 1}
   _wheelSprite: {fileID: 21300000, guid: 54228dc14a866a14d9beb2661d65595c, type: 3}
   _indicatorSprite: {fileID: 21300000, guid: 23f8f1adcc6433d46be510cf37aba7dc, type: 3}
   _wheelTypeContent:
@@ -41,3 +43,10 @@ MonoBehaviour:
     - {fileID: 11400000, guid: c8daf964d7a6ad744988c09ee8118d39, type: 2}
     - {fileID: 11400000, guid: bc09471d4992ea040a60b68c1186a26a, type: 2}
     - {fileID: 11400000, guid: 4862872686a41b14c904add334e78219, type: 2}
+    _rarityWeights:
+    - _rarity: {fileID: 11400000, guid: fa0459e425924649bee824513edd2586, type: 2}
+      _weight: 70
+    - _rarity: {fileID: 11400000, guid: 84abf88469e34e83b53f4ae91fe4a982, type: 2}
+      _weight: 20
+    - _rarity: {fileID: 11400000, guid: bc898beee66342f08e1635c7e523ea55, type: 2}
+      _weight: 10

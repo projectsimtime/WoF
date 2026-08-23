@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using WoF.Reward;
@@ -18,9 +19,21 @@ namespace WoF.RewardSummary
 
 		private readonly List<RewardCardView> _cardViews = new();
 
+		public event Action ContinueRequested;
+
 		private void OnValidate()
 		{
 			_continueButton = GetComponentInChildren<RewardSummaryContinueButton>(true);
+		}
+
+		private void OnDestroy()
+		{
+			_continueButton.ContinueClicked -= OnContinueClicked;
+		}
+
+		public void Initialize()
+		{
+			_continueButton.ContinueClicked += OnContinueClicked;
 		}
 
 		public void DisplayEarnedRewards(EarnedRewardContainer earnedRewardContainer)
@@ -50,6 +63,11 @@ namespace WoF.RewardSummary
 			}
 
 			_cardViews.Clear();
+		}
+
+		private void OnContinueClicked()
+		{
+			ContinueRequested?.Invoke();
 		}
 	}
 }

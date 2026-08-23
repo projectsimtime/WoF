@@ -1,4 +1,5 @@
 using UnityEngine;
+using WoF.Reward;
 using WoF.Wheel;
 using WoF.ZoneView;
 
@@ -12,13 +13,19 @@ namespace WoF.Zone
 		[SerializeField]
 		private WheelType _wheelType;
 		[SerializeField]
-		private bool _hasBomb;
+		private int _frequency = 1;
 		[SerializeField]
-		private bool _hasSpecialReward;
+		private int[] _overrideIndices;
+		[SerializeField]
+		private bool _canExit;
+		[SerializeField]
+		private RewardDefinition[] _reservedRewards;
 
 		public ZoneViewStaticData ViewData => _viewData;
 		public WheelType WheelType => _wheelType;
-		public bool HasBomb => _hasBomb;
-		public bool HasSpecialReward => _hasSpecialReward;
+		public int Frequency => _frequency;
+		public int[] OverrideIndices => _overrideIndices;
+		public bool CanExit => _canExit;
+		public RewardDefinition[] ReservedRewards => _reservedRewards;
 	}
 }

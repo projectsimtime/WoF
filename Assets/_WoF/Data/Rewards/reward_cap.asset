@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _label: CAP
   _sprite: {fileID: 21300000, guid: 32e35a246f96ed8429efd29ed42f6c62, type: 3}
-  _rarity: 3
-  _kind: 4
+  _rarity: {fileID: 11400000, guid: 46c59ee584a04080abcb537adea1ea73, type: 2}
+  _kind: {fileID: 11400000, guid: 0d990334ebfc44948262dcc9ebd62fbe, type: 2}

@@ -691,8 +691,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _button: {fileID: 4610000000000000804}
-  _buttonText: {fileID: 4610000000000000813}
-  _gameSession: {fileID: 0}
 --- !u!1 &4610000000000000810
 GameObject:
   m_ObjectHideFlags: 0

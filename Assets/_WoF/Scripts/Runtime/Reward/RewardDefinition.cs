@@ -2,25 +2,6 @@
 
 namespace WoF.Reward
 {
-	public enum EItemRarity
-	{
-		Casual,
-		Rare,
-		Epic,
-		Legendary
-	}
-
-	public enum EItemKind
-	{
-		Currency,
-		Case,
-		Weapon,
-		Points,
-		Armor,
-		Additional,
-		Bomb
-	}
-	
 	[CreateAssetMenu(fileName = "reward_", menuName = "WoF/Reward/New Reward")]
 	public class RewardDefinition : ScriptableObject
 	{
@@ -29,13 +10,13 @@ namespace WoF.Reward
 		[SerializeField]
 		private Sprite _sprite;
 		[SerializeField]
-		private EItemRarity _rarity;
+		private RarityDefinition _rarity;
 		[SerializeField]
-		private EItemKind _kind;
+		private ItemKindDefinition _kind;
 
 		public string Label => _label;
 		public Sprite Sprite => _sprite;
-		public EItemRarity Rarity => _rarity;
-		public EItemKind Kind => _kind;
+		public RarityDefinition Rarity => _rarity;
+		public ItemKindDefinition Kind => _kind;
 	}
 }

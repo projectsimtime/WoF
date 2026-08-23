@@ -1,51 +1,28 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections;
 using DG.Tweening;
 using UnityEngine;
 using WoF.Currency;
-using WoF.EndGame;
 using WoF.ExitPanel;
-using WoF.HintPanel;
 using WoF.LosePanel;
 using WoF.Reward;
-using WoF.RewardSummary;
+using WoF.UI;
 using WoF.Wheel;
 using WoF.Zone;
-using WoF.ZoneView;
-using Random = UnityEngine.Random;
 
 namespace WoF
 {
 	public class GameSession : MonoBehaviour
 	{
-		private struct ZoneWheel
-		{
-			public WheelType WheelType;
-			public List<RewardDefinition> Rewards;
-			public int ReservedSlotIndex;
-		}
-
 		[SerializeField]
 		private ZoneRules _zoneRule;
 
 		[SerializeField]
-		private ZoneTypeData _normalZoneTypeData;
+		[Tooltip("First ones have higher priority. Super zone is before safe zone so at 30 super zone will be selected.")]
+		private ZoneTypeData[] _zoneTypes;
 
 		[SerializeField]
-		private ZoneTypeData _safeZoneTypeData;
-
-		[SerializeField]
-		private ZoneTypeData _superZoneTypeData;
-
-		[SerializeField]
-		private WheelParent _wheelParent;
-
-		[SerializeField]
-		private RewardDefinition _bombReward;
-
-		[SerializeField]
-		private RewardDefinition[] _specialItems;
+		private WheelFlow _wheelFlow;
 
 		[SerializeField]
 		private GameSettings _gameSettings;
@@ -54,149 +31,104 @@ namespace WoF
 		private RewardAmountMap _rewardAmountMap;
 
 		[SerializeField]
-		private LosePanelController _losePanelController;
+		private ReviveFlow _reviveFlow;
 
 		[SerializeField]
-		private ExitPanelController _exitPanelController;
+		private ExitFlow _exitFlow;
 
 		[SerializeField]
-		private RewardPanelController _rewardPanelController;
+		private RunRewardFlow _runRewardFlow;
 
 		[SerializeField]
-		private ZoneIndicatorPanelController _zoneIndicatorPanelController;
+		private StartScreen _startScreen;
 
-		[SerializeField]
-		private CurrentZonePanelController _currentZonePanelController;
-
-		[SerializeField]
-		private CurrencyPanelController _currencyPanelController;
-
-		[SerializeField]
-		private EndGamePanelController _endGamePanelController;
-
-		[SerializeField]
-		private RewardSummaryPanelController _rewardSummaryPanelController;
-
-		[SerializeField]
-		private HintPanelController _hintPanelController;
-
-		private Dictionary<int, int> _zoneOverrides;
-
-		private ZoneCalculator _zoneCalculator;
-		private ReviveCostCalculator _reviveCostCalculator;
-		private SpinAngleCalculator _spinAngleCalculator;
-		private RarityCalculator _rarityCalculator;
-
-		private EarnedRewardContainer _rewardContainer;
+		private ZoneTypeCalculator _zoneTypeCalculator;
 		private CurrencyContainer _currencyContainer;
 
-		private List<RewardDefinition> _rewardDefinitions = new();
-		private RewardDefinition[] _superZoneRewards;
-		private RewardDefinition _earnedReward;
-
-		private ZoneWheel _nextZoneWheel;
-		private bool _hasNextZoneWheel;
-
 		private int _currentZone;
-		private int _reservedSlotIndex;
-
-		private bool _isContinueAfterBomb;
 		private bool _isWheelSpinning;
+		private bool _isRewardRevealing;
 
-		public event Action<bool> WheelSpinningChanged;
-		public event Action<bool> ExitAvailabilityChanged;
-
-		private void OnValidate()
-		{
-			_rewardPanelController = FindObjectOfType<RewardPanelController>(true);
-			_zoneIndicatorPanelController = FindObjectOfType<ZoneIndicatorPanelController>(true);
-			_currentZonePanelController = FindObjectOfType<CurrentZonePanelController>(true);
-			_exitPanelController = FindObjectOfType<ExitPanelController>(true);
-			_losePanelController = FindObjectOfType<LosePanelController>(true);
-			_currencyPanelController = FindObjectOfType<CurrencyPanelController>(true);
-			_endGamePanelController = FindObjectOfType<EndGamePanelController>(true);
-			_rewardSummaryPanelController = FindObjectOfType<RewardSummaryPanelController>(true);
-			_hintPanelController = FindObjectOfType<HintPanelController>(true);
-		}
+		public event Action<int, ZoneTypeData> ZoneEntered;
+		public event Action<ZoneTypeData, int, RewardDefinition> UpcomingZoneChanged;
+		public event Action<int> CurrencyChanged;
 
 		private void Awake()
 		{
-			_rewardContainer = new EarnedRewardContainer();
-			_zoneCalculator = new ZoneCalculator(_gameSettings.SafeZoneFrequency, _gameSettings.SuperZoneFrequency, _gameSettings.EndGameZoneIndex);
-			_reviveCostCalculator = new ReviveCostCalculator(_gameSettings.InitReviveCost, _gameSettings.ReviveCostScale);
-			_spinAngleCalculator = new SpinAngleCalculator(_gameSettings.SlotCount, _gameSettings.SpinTargetAngle, _gameSettings.SpinSlotOffsetAngle, _gameSettings.SpinEdgeBias, _gameSettings.SpinNearMissChance);
-			_rarityCalculator = new RarityCalculator(_gameSettings.SlotCount, _gameSettings.LegendaryChance, _gameSettings.EpicChance, _gameSettings.RareChance);
-
+			_zoneTypeCalculator = new ZoneTypeCalculator(_zoneTypes, _gameSettings.EndGameZoneIndex);
 			_currencyContainer = new CurrencyContainer(_gameSettings.StartCurrencyAmount);
 
-			_zoneOverrides = new Dictionary<int, int>();
+			_wheelFlow.Initialize(_zoneRule, _zoneTypeCalculator, _gameSettings, _rewardAmountMap);
+			_wheelFlow.SpinCompleted += OnSpinComplete;
+			_wheelFlow.SpinStateChanged += OnWheelSpinStateChanged;
+			_reviveFlow.Initialize(_currencyContainer, _gameSettings.InitReviveCost, _gameSettings.ReviveCostScale, _gameSettings.LosePanelScaleDuration);
+			_reviveFlow.Revived += OnRevived;
+			_reviveFlow.GaveUp += ShowStartScreen;
+			_reviveFlow.CurrencyChanged += OnCurrencyChanged;
+			_exitFlow.Initialize();
+			_runRewardFlow.Initialize();
+			_startScreen.Initialize();
+			_exitFlow.CollectRequested += _runRewardFlow.ShowEarnedRewards;
+			_exitFlow.HintRequested += OnHintRequested;
+			_runRewardFlow.NewRunRequested += ShowStartScreen;
+			_startScreen.PlayRequested += StartNewRun;
+		}
 
-			for (int i = 0; i < _zoneRule.ZoneOverrides.Length; ++i)
-			{
-				_zoneOverrides.Add(_zoneRule.ZoneOverrides[i].ZoneNumber, i);
-			}
+		private void OnDestroy()
+		{
+			_wheelFlow.SpinCompleted -= OnSpinComplete;
+			_wheelFlow.SpinStateChanged -= OnWheelSpinStateChanged;
+			_reviveFlow.Revived -= OnRevived;
+			_reviveFlow.GaveUp -= ShowStartScreen;
+			_reviveFlow.CurrencyChanged -= OnCurrencyChanged;
+			_exitFlow.CollectRequested -= _runRewardFlow.ShowEarnedRewards;
+			_exitFlow.HintRequested -= OnHintRequested;
+			_runRewardFlow.NewRunRequested -= ShowStartScreen;
+			_startScreen.PlayRequested -= StartNewRun;
 		}
 
 		private void Start()
 		{
 			DOTween.Init();
 
-			StartNewRun();
+			ShowStartScreen();
 		}
 
-		public void StartNewRun()
+		private void StartNewRun()
 		{
+			_startScreen.Hide();
 			ClearRunState();
 			EnterZone();
+		}
+
+		private void ShowStartScreen()
+		{
+			_startScreen.Show();
 		}
 
 		private void ClearRunState()
 		{
 			_currentZone = 1;
-			_earnedReward = null;
+			_isRewardRevealing = false;
 			RefreshExitAvailability();
 
-			_rewardDefinitions.Clear();
-			_rewardPanelController.Clear();
-			_rewardContainer.Clear();
+			_wheelFlow.ResetRun();
+			_runRewardFlow.ResetRun();
 			_currencyContainer.Reset(_gameSettings.StartCurrencyAmount);
+			_reviveFlow.ResetRun();
 
-			_reviveCostCalculator.Reset();
-			_losePanelController.ShowAdButton();
-			_losePanelController.UpdateReviveCost(_reviveCostCalculator.GetReviveCost());
-			_currencyPanelController.SetCurrencyAmount(_currencyContainer.GetRemainingCurrencyAmount());
-			CalculateSuperZoneRewards();
-
-			_rewardSummaryPanelController.Hide();
-			_endGamePanelController.Hide();
-			_hintPanelController.Hide();
-
-			_hasNextZoneWheel = false;
+			CurrencyChanged?.Invoke(_currencyContainer.GetRemainingCurrencyAmount());
+			_exitFlow.ResetRun();
 		}
 
 		private void EnterZone()
 		{
-			BuildCurrentZone();
-			RefreshZoneIndicators();
-		}
-
-		private void BuildCurrentZone()
-		{
 			RefreshExitAvailability();
-			_wheelParent.RestoreWheelRotation();
-			if (_isContinueAfterBomb)
-			{
-				_wheelParent.SetActiveWheelSlot(_reservedSlotIndex, true);
-			}
+			_wheelFlow.EnterZone(_currentZone);
 
-			ZoneWheel zoneWheel = GetZoneWheel(_currentZone);
-
-			_reservedSlotIndex = zoneWheel.ReservedSlotIndex;
-			_rewardDefinitions = zoneWheel.Rewards;
-
-			ApplyZoneWheel(zoneWheel, _currentZone);
-
-			_isContinueAfterBomb = false;
+			ZoneTypeData zoneTypeData = _zoneTypeCalculator.GetZoneTypeDataFromIndex(_currentZone);
+			ZoneEntered?.Invoke(_currentZone, zoneTypeData);
+			NotifyUpcomingZones();
 		}
 
 		private void GoToNextZone()
@@ -212,279 +144,109 @@ namespace WoF
 			EnterZone();
 		}
 
-		public bool IsGameFinished()
+		private bool IsGameFinished()
 		{
 			return _currentZone > _gameSettings.EndGameZoneIndex;
 		}
 
 		private void OnGameFinished()
 		{
-			_endGamePanelController.Show();
+			_runRewardFlow.OnGameFinished();
 		}
 
-		private void RefreshZoneIndicators()
+		private void NotifyUpcomingZones()
 		{
-			int nextSuperZoneIndex = _zoneCalculator.GetNextSuperZoneIndex(_currentZone);
-
-			_currentZonePanelController.SetZoneIndex(_currentZone, GetZoneTypeData(_currentZone).ViewData.ThemeColor);
-
-			_zoneIndicatorPanelController.OnNewZone(
-				_zoneCalculator.GetNextSafeZoneIndex(_currentZone),
-				nextSuperZoneIndex,
-				GetSuperZoneReward(nextSuperZoneIndex).Sprite);
-		}
-
-		private ZoneTypeData GetZoneTypeData(int zoneIndex)
-		{
-			EZoneType zoneType = _zoneCalculator.GetZoneType(zoneIndex);
-
-			if (zoneType == EZoneType.Super)
+			foreach (ZoneTypeData zoneTypeData in _zoneTypes)
 			{
-				return _superZoneTypeData;
-			}
+				int nextZoneIndex = _zoneTypeCalculator.GetZonesNextIndex(zoneTypeData, _currentZone);
 
-			if (zoneType == EZoneType.Safe)
-			{
-				return _safeZoneTypeData;
-			}
-
-			return _normalZoneTypeData;
-		}
-
-		private ZoneWheel GetZoneWheel(int zoneIndex)
-		{
-			if (_hasNextZoneWheel)
-			{
-				_hasNextZoneWheel = false;
-
-				return _nextZoneWheel;
-			}
-
-			return BuildZoneWheel(zoneIndex);
-		}
-
-		private ZoneWheel BuildZoneWheel(int zoneIndex)
-		{
-			ZoneWheel zoneWheel;
-
-			ZoneTypeData zoneTypeData = GetZoneTypeData(zoneIndex);
-
-			zoneWheel.WheelType = zoneTypeData.WheelType;
-
-			if (_zoneOverrides.TryGetValue(zoneIndex, out int index))
-			{
-				zoneWheel.Rewards = _zoneRule.ZoneOverrides[index].Rewards.ToList();
-				zoneWheel.ReservedSlotIndex = zoneWheel.Rewards.IndexOf(_bombReward);
-
-				if (zoneWheel.ReservedSlotIndex < 0)
-				{
-					zoneWheel.ReservedSlotIndex = Int32.MaxValue;
-				}
-			}
-			else
-			{
-				bool hasBomb = zoneTypeData.HasBomb;
-				bool hasSpecialItem = zoneTypeData.HasSpecialReward;
-
-				zoneWheel.ReservedSlotIndex = hasBomb || hasSpecialItem ? Random.Range(0, _gameSettings.SlotCount) : Int32.MaxValue;
-				zoneWheel.Rewards = GetZoneContents(zoneWheel.WheelType);
-
-				if (zoneWheel.ReservedSlotIndex < zoneWheel.Rewards.Count)
-				{
-					zoneWheel.Rewards[zoneWheel.ReservedSlotIndex] = hasBomb ? _bombReward : GetSuperZoneReward(zoneIndex);
-				}
-			}
-
-			return zoneWheel;
-		}
-
-		private void ApplyZoneWheel(ZoneWheel zoneWheel, int zoneIndex)
-		{
-			_wheelParent.ApplyWheelType(zoneWheel.WheelType);
-
-			for (int i = 0; i < zoneWheel.Rewards.Count; ++i)
-			{
-				_wheelParent.ApplyWheelSlot(i, zoneWheel.Rewards[i], GetRewardAmount(zoneWheel.Rewards[i], zoneIndex));
+				UpcomingZoneChanged?.Invoke(
+					zoneTypeData,
+					nextZoneIndex,
+					nextZoneIndex == Int32.MaxValue ? null : _wheelFlow.GetReservedReward(nextZoneIndex));
 			}
 		}
 
-		private List<RewardDefinition> GetZoneContents(WheelType wheelType)
-		{
-			var rewardsByRarity = wheelType.WheelTypeContent.RewardByRarity;
-
-			var itemRarities = _rarityCalculator.GetItemRarityCount(wheelType);
-
-			List<RewardDefinition> rewards = new List<RewardDefinition>(_gameSettings.SlotCount);
-
-			foreach (var item in itemRarities)
-			{
-				EItemRarity rarity = item.Key;
-				int count = item.Value;
-
-				for (int i = 0; i < count; ++i)
-				{
-					List<RewardDefinition> currentRarityItems = rewardsByRarity[rarity];
-					int rarityItemCount = currentRarityItems.Count;
-
-					int randomIndex = Random.Range(0, rarityItemCount);
-
-					rewards.Add(currentRarityItems[randomIndex]);
-				}
-			}
-
-			return rewards;
-		}
-
-		private void CalculateSuperZoneRewards()
-		{
-			int superZoneCount = _gameSettings.SuperZoneCount;
-
-			_superZoneRewards = new RewardDefinition[superZoneCount];
-
-			int randomIndex = Random.Range(0, _specialItems.Length);
-
-			for (int i = 0; i < superZoneCount; ++i)
-			{
-				_superZoneRewards[i] = _specialItems[randomIndex];
-
-				randomIndex = (randomIndex + 1) % _specialItems.Length;
-			}
-		}
-
-		private RewardDefinition GetSuperZoneReward(int superZoneIndex)
-		{
-			int rewardIndex = (superZoneIndex / _gameSettings.SuperZoneFrequency) - 1;
-
-			return _superZoneRewards[rewardIndex];
-		}
-
-		public void OnSpinClicked()
-		{
-			SetWheelSpinning(true);
-
-			float angle = _spinAngleCalculator.CalculateTargetAngle(_reservedSlotIndex, _isContinueAfterBomb, out var earnedRewardIndex);
-
-			float duration = Random.Range(_gameSettings.SpinMinDuration, _gameSettings.SpinMaxDuration);
-
-			var tween = _wheelParent.PlaySpin(angle, duration);
-
-			tween.onComplete += OnSpinComplete;
-
-			_earnedReward = _rewardDefinitions[earnedRewardIndex];
-		}
-
-		private void SetWheelSpinning(bool isSpinning)
+		private void OnWheelSpinStateChanged(bool isSpinning)
 		{
 			_isWheelSpinning = isSpinning;
 
-			WheelSpinningChanged?.Invoke(isSpinning);
 			RefreshExitAvailability();
 		}
 
-		private void OnSpinComplete()
+		private void OnSpinComplete(RewardDefinition earnedReward)
 		{
-			SetWheelSpinning(false);
-
-			if (IsBomb(_earnedReward))
+			if (IsBomb(earnedReward))
 			{
-				OnBombExploded();
+				StartCoroutine(OnBombExploded());
 			}
 			else
 			{
-				int earnedAmount = GetRewardAmount(_earnedReward, _currentZone);
+				int earnedAmount = GetRewardAmount(earnedReward, _currentZone);
 
-				_rewardContainer.AddItem(_earnedReward, earnedAmount);
-				_rewardPanelController.AddItem(_earnedReward, earnedAmount);
-
-				GoToNextZone();
+				StartCoroutine(RevealReward(earnedReward, earnedAmount));
 			}
 		}
 
-		public bool IsBomb(RewardDefinition reward)
+		private IEnumerator RevealReward(RewardDefinition reward, int amount)
 		{
-			return reward == _bombReward;
+			_isRewardRevealing = true;
+			_wheelFlow.SetSpinInteractable(false);
+			RefreshExitAvailability();
+
+			yield return _runRewardFlow.RevealReward(reward, amount);
+
+			_isRewardRevealing = false;
+			_wheelFlow.SetSpinInteractable(true);
+			GoToNextZone();
 		}
 
-		public int GetRewardAmount(RewardDefinition reward, int zoneIndex)
+		private bool IsBomb(RewardDefinition reward)
+		{
+			return reward && reward.Kind && reward.Kind.IsExplosive;
+		}
+
+		private int GetRewardAmount(RewardDefinition reward, int zoneIndex)
 		{
 			return _rewardAmountMap.GetAmountByKind(reward, zoneIndex);
 		}
 
-		public void OnBombExploded()
+		private IEnumerator OnBombExploded()
 		{
-			_losePanelController.Show();
+			_wheelFlow.SetSpinInteractable(false);
+
+			yield return _wheelFlow.PlayBombReaction().WaitForCompletion();
+
+			_reviveFlow.OnBombExploded();
 		}
 
-		private void Revive()
+		private void OnRevived()
 		{
-			_losePanelController.Hide();
-			_isContinueAfterBomb = true;
-
-			_wheelParent.SetActiveWheelSlot(_reservedSlotIndex, false);
+			_wheelFlow.OnRevived();
+			_wheelFlow.SetSpinInteractable(true);
 		}
 
-		public void OnReviveWithCurrency()
+		private void OnCurrencyChanged(int currencyAmount)
 		{
-			Revive();
-
-			_currencyContainer.AddCurrency(-_reviveCostCalculator.GetReviveCost());
-			_reviveCostCalculator.OnRevived();
-
-			int nextReviveCost = _reviveCostCalculator.GetReviveCost();
-			_losePanelController.UpdateReviveCost(nextReviveCost);
-
-			if (!_currencyContainer.HasEnoughCurrency(nextReviveCost))
-			{
-				_losePanelController.OnNotEnoughCurrencyToRevive();
-			}
-
-			_currencyPanelController.SetCurrencyAmount(_currencyContainer.GetRemainingCurrencyAmount());
-		}
-
-		public void OnReviveWithAd()
-		{
-			_losePanelController.HideAdButton();
-
-			Revive();
-		}
-
-		public void OnGiveUpButtonClicked()
-		{
-			_losePanelController.Hide();
-			StartNewRun();
+			CurrencyChanged?.Invoke(currencyAmount);
 		}
 
 		private bool CanExitNow()
 		{
-			return _zoneCalculator.IsSpecialZone(_currentZone) &&
-			       !_isWheelSpinning;
+			return _zoneTypeCalculator.GetZoneTypeDataFromIndex(_currentZone).CanExit &&
+			       !_isWheelSpinning &&
+			       !_isRewardRevealing;
 		}
 
 		private void RefreshExitAvailability()
 		{
-			ExitAvailabilityChanged?.Invoke(CanExitNow());
-		}
-
-		public void OnExitClicked()
-		{
-			_exitPanelController.Show();
-		}
-
-		public void OnGoBackClicked()
-		{
-			_exitPanelController.Hide();
-		}
-
-		public void OnCollectRewardClicked()
-		{
-			_exitPanelController.Hide();
-			DisplayEarnedRewards();
+			_exitFlow.SetExitAvailability(CanExitNow());
 		}
 
 		// This is like a concept. I wanted to add ideas from myself for this demo.
 		// I want to encourage the user to keep going by showing what's ahead.
 		// It can be tweaked with your idea as well.
-		public void OnHintClicked()
+		private void OnHintRequested()
 		{
 			int nextZoneIndex = _currentZone + 1;
 
@@ -493,49 +255,9 @@ namespace WoF
 				return;
 			}
 
-			if (!_hasNextZoneWheel)
-			{
-				_nextZoneWheel = BuildZoneWheel(nextZoneIndex);
-				_hasNextZoneWheel = true;
-			}
+			RewardDefinition bestReward = _wheelFlow.GetBestPreviewReward(nextZoneIndex);
 
-			RewardDefinition bestReward = GetBestReward(_nextZoneWheel.Rewards);
-
-			_exitPanelController.Hide();
-			_hintPanelController.Show();
-			_hintPanelController.DisplayHint(bestReward, GetRewardAmount(bestReward, nextZoneIndex));
-		}
-
-		public void OnHintClosed()
-		{
-			_hintPanelController.Hide();
-			_exitPanelController.Show();
-		}
-
-		private RewardDefinition GetBestReward(List<RewardDefinition> rewards)
-		{
-			RewardDefinition bestReward = rewards.First();
-
-			foreach (RewardDefinition reward in rewards)
-			{
-				if (IsBomb(reward))
-				{
-					continue;
-				}
-
-				if (reward.Rarity > bestReward.Rarity)
-				{
-					bestReward = reward;
-				}
-			}
-
-			return bestReward;
-		}
-
-		public void DisplayEarnedRewards()
-		{
-			_rewardSummaryPanelController.Show();
-			_rewardSummaryPanelController.DisplayEarnedRewards(_rewardContainer);
+			_exitFlow.OnHintClicked(bestReward, GetRewardAmount(bestReward, nextZoneIndex));
 		}
 	}
 }

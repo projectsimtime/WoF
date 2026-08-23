@@ -106,7 +106,7 @@ namespace WoF.Wheel
 
 			foreach (RewardDefinition reward in previewRewards)
 			{
-				if (reward.Kind == EItemKind.Bomb)
+				if (reward.Kind && reward.Kind.IsExplosive)
 				{
 					continue;
 				}

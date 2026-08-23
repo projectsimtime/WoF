@@ -15,4 +15,4 @@ MonoBehaviour:
   _label: ELITE SHOTGUN
   _sprite: {fileID: 21300000, guid: 6dc61595c731e594db1c1f3d203af764, type: 3}
   _rarity: {fileID: 11400000, guid: bc898beee66342f08e1635c7e523ea55, type: 2}
-  _kind: 2
+  _kind: {fileID: 11400000, guid: b6a2bf6583214a18a802b960cb48cb1f, type: 2}

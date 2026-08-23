@@ -11,7 +11,7 @@ namespace WoF.Reward
 		public struct ItemAmountData
 		{
 			[SerializeField]
-			private EItemKind _kind;
+			private ItemKindDefinition _kind;
 			[SerializeField]
 			private int _baseAmount;
 			[SerializeField]
@@ -19,7 +19,7 @@ namespace WoF.Reward
 			[SerializeField] 
 			private int _amountScale;
 
-			public EItemKind Kind => _kind;
+			public ItemKindDefinition Kind => _kind;
 			public int BaseAmount => _baseAmount;
 			public int MaxAmount => _maxAmount;
 			public int AmountScale => _amountScale;
@@ -28,7 +28,7 @@ namespace WoF.Reward
 		[SerializeField]
 		private ItemAmountData[] _amountByKind;
 
-		private Dictionary<EItemKind, ItemAmountData> _itemAmounts;
+		private Dictionary<ItemKindDefinition, ItemAmountData> _itemAmounts;
 		
 		private void OnEnable()
 		{
@@ -37,7 +37,7 @@ namespace WoF.Reward
 
 		private void BuildMap()
 		{
-			_itemAmounts = new Dictionary<EItemKind, ItemAmountData>();
+			_itemAmounts = new Dictionary<ItemKindDefinition, ItemAmountData>();
 
 			foreach (ItemAmountData itemAmountData in _amountByKind)
 			{
@@ -50,7 +50,7 @@ namespace WoF.Reward
 		
 		public int GetAmountByKind(RewardDefinition reward, int zone)
 		{
-			if (!_itemAmounts.TryGetValue(reward.Kind, out ItemAmountData itemAmountData))
+			if (!reward.Kind || !_itemAmounts.TryGetValue(reward.Kind, out ItemAmountData itemAmountData))
 			{
 				return 1;
 			}

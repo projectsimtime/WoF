@@ -15,4 +15,4 @@ MonoBehaviour:
   _label: VEST POINTS
   _sprite: {fileID: 21300000, guid: ce3cb5985de189d49ad628ee1e57d5df, type: 3}
   _rarity: {fileID: 11400000, guid: fa0459e425924649bee824513edd2586, type: 2}
-  _kind: 3
+  _kind: {fileID: 11400000, guid: de517e48c306487a86570f3c9c17c757, type: 2}

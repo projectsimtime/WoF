@@ -181,7 +181,7 @@ namespace WoF
 
 		private bool IsBomb(RewardDefinition reward)
 		{
-			return reward && reward.Kind == EItemKind.Bomb;
+			return reward && reward.Kind && reward.Kind.IsExplosive;
 		}
 
 		private int GetRewardAmount(RewardDefinition reward, int zoneIndex)

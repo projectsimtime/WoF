@@ -15,4 +15,4 @@ MonoBehaviour:
   _label: M67 GRENADE
   _sprite: {fileID: 21300000, guid: 7743af1783fef134899811150eb1b015, type: 3}
   _rarity: {fileID: 11400000, guid: bc898beee66342f08e1635c7e523ea55, type: 2}
-  _kind: 5
+  _kind: {fileID: 11400000, guid: 730ad6a53fc8445f891d990fdfad2642, type: 2}

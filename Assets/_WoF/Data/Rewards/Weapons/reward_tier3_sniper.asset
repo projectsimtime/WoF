@@ -15,4 +15,4 @@ MonoBehaviour:
   _label: ELITE SNIPER
   _sprite: {fileID: 21300000, guid: 765267b2d0aad4343a3cff3b9bbcea0b, type: 3}
   _rarity: {fileID: 11400000, guid: bc898beee66342f08e1635c7e523ea55, type: 2}
-  _kind: 2
+  _kind: {fileID: 11400000, guid: b6a2bf6583214a18a802b960cb48cb1f, type: 2}

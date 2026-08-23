@@ -35,6 +35,14 @@ namespace WoF.ZoneView
 				return;
 			}
 
+			if (zoneIndex == int.MaxValue)
+			{
+				zoneView.gameObject.SetActive(false);
+				return;
+			}
+
+			zoneView.gameObject.SetActive(true);
+
 			zoneView.ApplyStyle(new ZoneViewDynamicData
 			{
 				ZoneIndex = zoneIndex,

@@ -41,6 +41,12 @@ namespace WoF
 		[SerializeField]
 		private int _initReviveCost = 75;
 
+		[Header("Flow")]
+		[SerializeField]
+		private float _bombReactionDuration;
+		[SerializeField]
+		private float _losePanelScaleDuration;
+
 		public int SlotCount => _slotCount;
 		public float SlotAngle => 360.0f / _slotCount;
 
@@ -58,5 +64,8 @@ namespace WoF
 
 		public int ReviveCostScale => _reviveCostScale;
 		public int InitReviveCost => _initReviveCost;
+
+		public float BombReactionDuration => _bombReactionDuration;
+		public float LosePanelScaleDuration => _losePanelScaleDuration;
 	}
 }

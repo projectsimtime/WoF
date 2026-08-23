@@ -32,6 +32,11 @@ namespace WoF.Wheel
             transform.localEulerAngles = rotation;
         }
 
+        public Tween PlayBombReaction(float duration)
+        {
+            return transform.DOPunchRotation(new Vector3(0.0f, 0.0f, 8.0f), duration, 8, 0.5f);
+        }
+
         private void OnValidate()
         {
             _wheelSlotViews = GetComponentsInChildren<WheelSlotView>();

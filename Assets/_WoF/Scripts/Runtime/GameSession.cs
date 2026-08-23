@@ -1,10 +1,12 @@
 using System;
+using System.Collections;
 using DG.Tweening;
 using UnityEngine;
 using WoF.Currency;
 using WoF.ExitPanel;
 using WoF.LosePanel;
 using WoF.Reward;
+using WoF.UI;
 using WoF.Wheel;
 using WoF.Zone;
 
@@ -37,11 +39,15 @@ namespace WoF
 		[SerializeField]
 		private RunRewardFlow _runRewardFlow;
 
+		[SerializeField]
+		private StartScreen _startScreen;
+
 		private ZoneTypeCalculator _zoneTypeCalculator;
 		private CurrencyContainer _currencyContainer;
 
 		private int _currentZone;
 		private bool _isWheelSpinning;
+		private bool _isRewardRevealing;
 
 		public event Action<int, ZoneTypeData> ZoneEntered;
 		public event Action<ZoneTypeData, int, RewardDefinition> UpcomingZoneChanged;
@@ -55,15 +61,17 @@ namespace WoF
 			_wheelFlow.Initialize(_zoneRule, _zoneTypeCalculator, _gameSettings, _rewardAmountMap);
 			_wheelFlow.SpinCompleted += OnSpinComplete;
 			_wheelFlow.SpinStateChanged += OnWheelSpinStateChanged;
-			_reviveFlow.Initialize(_currencyContainer, _gameSettings.InitReviveCost, _gameSettings.ReviveCostScale);
+			_reviveFlow.Initialize(_currencyContainer, _gameSettings.InitReviveCost, _gameSettings.ReviveCostScale, _gameSettings.LosePanelScaleDuration);
 			_reviveFlow.Revived += OnRevived;
-			_reviveFlow.GaveUp += StartNewRun;
+			_reviveFlow.GaveUp += ShowStartScreen;
 			_reviveFlow.CurrencyChanged += OnCurrencyChanged;
 			_exitFlow.Initialize();
 			_runRewardFlow.Initialize();
+			_startScreen.Initialize();
 			_exitFlow.CollectRequested += _runRewardFlow.ShowEarnedRewards;
 			_exitFlow.HintRequested += OnHintRequested;
-			_runRewardFlow.NewRunRequested += StartNewRun;
+			_runRewardFlow.NewRunRequested += ShowStartScreen;
+			_startScreen.PlayRequested += StartNewRun;
 		}
 
 		private void OnDestroy()
@@ -71,29 +79,37 @@ namespace WoF
 			_wheelFlow.SpinCompleted -= OnSpinComplete;
 			_wheelFlow.SpinStateChanged -= OnWheelSpinStateChanged;
 			_reviveFlow.Revived -= OnRevived;
-			_reviveFlow.GaveUp -= StartNewRun;
+			_reviveFlow.GaveUp -= ShowStartScreen;
 			_reviveFlow.CurrencyChanged -= OnCurrencyChanged;
 			_exitFlow.CollectRequested -= _runRewardFlow.ShowEarnedRewards;
 			_exitFlow.HintRequested -= OnHintRequested;
-			_runRewardFlow.NewRunRequested -= StartNewRun;
+			_runRewardFlow.NewRunRequested -= ShowStartScreen;
+			_startScreen.PlayRequested -= StartNewRun;
 		}
 
 		private void Start()
 		{
 			DOTween.Init();
 
-			StartNewRun();
+			ShowStartScreen();
 		}
 
 		private void StartNewRun()
 		{
+			_startScreen.Hide();
 			ClearRunState();
 			EnterZone();
+		}
+
+		private void ShowStartScreen()
+		{
+			_startScreen.Show();
 		}
 
 		private void ClearRunState()
 		{
 			_currentZone = 1;
+			_isRewardRevealing = false;
 			RefreshExitAvailability();
 
 			_wheelFlow.ResetRun();
@@ -144,15 +160,10 @@ namespace WoF
 			{
 				int nextZoneIndex = _zoneTypeCalculator.GetZonesNextIndex(zoneTypeData, _currentZone);
 
-				if (nextZoneIndex == Int32.MaxValue)
-				{
-					nextZoneIndex = _currentZone;
-				}
-
 				UpcomingZoneChanged?.Invoke(
 					zoneTypeData,
 					nextZoneIndex,
-					_wheelFlow.GetReservedReward(nextZoneIndex));
+					nextZoneIndex == Int32.MaxValue ? null : _wheelFlow.GetReservedReward(nextZoneIndex));
 			}
 		}
 
@@ -167,16 +178,27 @@ namespace WoF
 		{
 			if (IsBomb(earnedReward))
 			{
-				OnBombExploded();
+				StartCoroutine(OnBombExploded());
 			}
 			else
 			{
 				int earnedAmount = GetRewardAmount(earnedReward, _currentZone);
 
-				_runRewardFlow.AddReward(earnedReward, earnedAmount);
-
-				GoToNextZone();
+				StartCoroutine(RevealReward(earnedReward, earnedAmount));
 			}
+		}
+
+		private IEnumerator RevealReward(RewardDefinition reward, int amount)
+		{
+			_isRewardRevealing = true;
+			_wheelFlow.SetSpinInteractable(false);
+			RefreshExitAvailability();
+
+			yield return _runRewardFlow.RevealReward(reward, amount);
+
+			_isRewardRevealing = false;
+			_wheelFlow.SetSpinInteractable(true);
+			GoToNextZone();
 		}
 
 		private bool IsBomb(RewardDefinition reward)
@@ -189,14 +211,19 @@ namespace WoF
 			return _rewardAmountMap.GetAmountByKind(reward, zoneIndex);
 		}
 
-		private void OnBombExploded()
+		private IEnumerator OnBombExploded()
 		{
+			_wheelFlow.SetSpinInteractable(false);
+
+			yield return _wheelFlow.PlayBombReaction().WaitForCompletion();
+
 			_reviveFlow.OnBombExploded();
 		}
 
 		private void OnRevived()
 		{
 			_wheelFlow.OnRevived();
+			_wheelFlow.SetSpinInteractable(true);
 		}
 
 		private void OnCurrencyChanged(int currencyAmount)
@@ -207,7 +234,8 @@ namespace WoF
 		private bool CanExitNow()
 		{
 			return _zoneTypeCalculator.GetZoneTypeDataFromIndex(_currentZone).CanExit &&
-			       !_isWheelSpinning;
+			       !_isWheelSpinning &&
+			       !_isRewardRevealing;
 		}
 
 		private void RefreshExitAvailability()

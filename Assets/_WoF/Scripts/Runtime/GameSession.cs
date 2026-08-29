@@ -18,7 +18,6 @@ namespace WoF
 		private ZoneRules _zoneRule;
 
 		[SerializeField]
-		[Tooltip("First ones have higher priority. Super zone is before safe zone so at 30 super zone will be selected.")]
 		private ZoneTypeData[] _zoneTypes;
 
 		[SerializeField]

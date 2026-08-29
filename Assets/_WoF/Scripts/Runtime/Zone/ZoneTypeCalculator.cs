@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace WoF.Zone
@@ -14,7 +15,7 @@ namespace WoF.Zone
 
 		public ZoneTypeCalculator(ZoneTypeData[] zoneTypes, int endGameIndex)
 		{
-			_zoneTypes = zoneTypes;
+			_zoneTypes = zoneTypes.OrderByDescending(zoneType => zoneType.Priority).ToArray();
 			_endGameIndex = endGameIndex;
 
 			foreach (ZoneTypeData zoneTypeData in _zoneTypes)

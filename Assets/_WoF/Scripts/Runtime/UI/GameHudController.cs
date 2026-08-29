@@ -42,7 +42,7 @@ namespace WoF.UI
 
 		private void OnZoneEntered(int zoneIndex, ZoneTypeData zoneTypeData)
 		{
-			_currentZonePanelController.SetZoneIndex(zoneIndex, zoneTypeData.ViewData.ThemeColor);
+			_currentZonePanelController.SetZoneIndex(zoneIndex, zoneTypeData.ThemeColor);
 		}
 
 		private void OnUpcomingZoneChanged(ZoneTypeData zoneTypeData, int zoneIndex, RewardDefinition reservedReward)

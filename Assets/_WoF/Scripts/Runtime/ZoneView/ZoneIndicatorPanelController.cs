@@ -22,7 +22,7 @@ namespace WoF.ZoneView
 			foreach (ZoneTypeData zoneTypeData in _displayedZoneTypes)
 			{
 				ZoneView zoneView = Instantiate(_zoneViewPrefab, transform);
-				zoneView.Init(zoneTypeData.ViewData);
+				zoneView.Init(zoneTypeData);
 
 				_zoneViews.Add(zoneTypeData, zoneView);
 			}

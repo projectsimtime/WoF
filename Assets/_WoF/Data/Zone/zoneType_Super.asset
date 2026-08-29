@@ -11,11 +11,14 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a7c4e0b9f61d842ab3057e6c19f84d2, type: 3}
   m_Name: zoneType_Super
-  m_EditorClassIdentifier:
-  _viewData: {fileID: 11400000, guid: 229551ae6afe9b64cb89fa7aa738f92e, type: 2}
+  m_EditorClassIdentifier: 
+  _label: SUPER ZONE
+  _themeColor: {r: 1, g: 0.7490196, b: 0.2, a: 1}
+  _icon: {fileID: 0}
   _wheelType: {fileID: 11400000, guid: 32fd61f297763ad44b96aa5bcc92716a, type: 2}
   _frequency: 30
-  _overrideIndices: []
+  _priority: 20
+  _overrideIndices: 
   _canExit: 1
   _reservedRewards:
   - {fileID: 11400000, guid: d810e62554e9f0248b2636cdbb263654, type: 2}

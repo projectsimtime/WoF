@@ -55,6 +55,9 @@ namespace WoF
 
 		private void Awake()
 		{
+			QualitySettings.vSyncCount = 0;
+			Application.targetFrameRate = _gameSettings.TargetFrameRate;
+
 			_zoneTypeCalculator = new ZoneTypeCalculator(_zoneTypes, _gameSettings.EndGameZoneIndex);
 			_currencyContainer = new CurrencyContainer(_gameSettings.StartCurrencyAmount);
 

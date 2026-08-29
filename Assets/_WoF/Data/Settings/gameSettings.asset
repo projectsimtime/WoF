@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f4ac2256cac425f99ffca1b0a30ecfe, type: 3}
   m_Name: gameSettings
   m_EditorClassIdentifier: 
+  _targetFrameRate: 60
   _slotCount: 8
   _endGameZoneIndex: 60
   _spinTargetAngle: 1980

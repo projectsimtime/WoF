@@ -18,7 +18,7 @@ namespace WoF
 		private ZoneRules _zoneRule;
 
 		[SerializeField]
-		[Tooltip("First ones have higher priority. Super zone is before safe zone so at 30 super zone will be selected.")]
+		[Tooltip("Zone types are resolved by their own priority, frequency, and explicit override indices.")]
 		private ZoneTypeData[] _zoneTypes;
 
 		[SerializeField]
@@ -44,10 +44,12 @@ namespace WoF
 
 		private ZoneTypeCalculator _zoneTypeCalculator;
 		private CurrencyContainer _currencyContainer;
-
 		private int _currentZone;
 		private bool _isWheelSpinning;
 		private bool _isRewardRevealing;
+
+		public int EndGameZoneIndex => _gameSettings.EndGameZoneIndex;
+		public ZoneTypeCalculator ZoneTypeCalculator => _zoneTypeCalculator;
 
 		public event Action<int, ZoneTypeData> ZoneEntered;
 		public event Action<ZoneTypeData, int, RewardDefinition> UpcomingZoneChanged;
@@ -197,8 +199,8 @@ namespace WoF
 			yield return _runRewardFlow.RevealReward(reward, amount);
 
 			_isRewardRevealing = false;
-			_wheelFlow.SetSpinInteractable(true);
 			GoToNextZone();
+			_wheelFlow.SetSpinInteractable(!IsGameFinished());
 		}
 
 		private bool IsBomb(RewardDefinition reward)

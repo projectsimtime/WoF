@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace WoF.Zone
@@ -14,11 +15,28 @@ namespace WoF.Zone
 
 		public ZoneTypeCalculator(ZoneTypeData[] zoneTypes, int endGameIndex)
 		{
-			_zoneTypes = zoneTypes;
+			_zoneTypes = zoneTypes
+				.OrderByDescending(zoneType => zoneType.Priority)
+				.ToArray();
 			_endGameIndex = endGameIndex;
+			Dictionary<int, ZoneTypeData> zoneTypesByPriority = new();
 
 			foreach (ZoneTypeData zoneTypeData in _zoneTypes)
 			{
+				if (zoneTypesByPriority.TryGetValue(zoneTypeData.Priority, out ZoneTypeData existingZoneType))
+				{
+					if (existingZoneType != zoneTypeData)
+					{
+						Debug.LogWarning(
+							$"Zone types '{existingZoneType.name}' and '{zoneTypeData.name}' use the same priority ({zoneTypeData.Priority}). " +
+							"Their array order will decide which matching type is selected.");
+					}
+				}
+				else
+				{
+					zoneTypesByPriority.Add(zoneTypeData.Priority, zoneTypeData);
+				}
+
 				foreach (int overrideIndex in zoneTypeData.OverrideIndices)
 				{
 					if (!_overriddenIndices.TryAdd(overrideIndex, zoneTypeData))

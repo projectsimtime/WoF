@@ -2,6 +2,7 @@ using UnityEngine;
 using WoF.Currency;
 using WoF.Reward;
 using WoF.Zone;
+using WoF.ZoneProgress;
 using WoF.ZoneView;
 
 namespace WoF.UI
@@ -15,7 +16,7 @@ namespace WoF.UI
 		private ZoneIndicatorPanelController _zoneIndicatorPanelController;
 
 		[SerializeField]
-		private CurrentZonePanelController _currentZonePanelController;
+		private ZoneProgressBarView _zoneProgressBarView;
 
 		[SerializeField]
 		private CurrencyPanelController _currencyPanelController;
@@ -25,9 +26,10 @@ namespace WoF.UI
 			_gameSession = GetComponent<GameSession>();
 		}
 
-		private void Awake()
+		private void Start()
 		{
 			_zoneIndicatorPanelController.Initialize();
+			_zoneProgressBarView.Initialize(_gameSession.ZoneTypeCalculator, _gameSession.EndGameZoneIndex);
 			_gameSession.ZoneEntered += OnZoneEntered;
 			_gameSession.UpcomingZoneChanged += OnUpcomingZoneChanged;
 			_gameSession.CurrencyChanged += OnCurrencyChanged;
@@ -40,9 +42,9 @@ namespace WoF.UI
 			_gameSession.CurrencyChanged -= OnCurrencyChanged;
 		}
 
-		private void OnZoneEntered(int zoneIndex, ZoneTypeData zoneTypeData)
+		private void OnZoneEntered(int zoneIndex, ZoneTypeData _)
 		{
-			_currentZonePanelController.SetZoneIndex(zoneIndex, zoneTypeData.ViewData.ThemeColor);
+			_zoneProgressBarView.SetCurrentZone(zoneIndex);
 		}
 
 		private void OnUpcomingZoneChanged(ZoneTypeData zoneTypeData, int zoneIndex, RewardDefinition reservedReward)

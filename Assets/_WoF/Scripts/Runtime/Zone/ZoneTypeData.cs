@@ -15,6 +15,9 @@ namespace WoF.Zone
 		[SerializeField]
 		private int _frequency = 1;
 		[SerializeField]
+		[Tooltip("Higher-priority zone types win when more than one frequency matches the same zone.")]
+		private int _priority;
+		[SerializeField]
 		private int[] _overrideIndices;
 		[SerializeField]
 		private bool _canExit;
@@ -24,6 +27,7 @@ namespace WoF.Zone
 		public ZoneViewStaticData ViewData => _viewData;
 		public WheelType WheelType => _wheelType;
 		public int Frequency => _frequency;
+		public int Priority => _priority;
 		public int[] OverrideIndices => _overrideIndices;
 		public bool CanExit => _canExit;
 		public RewardDefinition[] ReservedRewards => _reservedRewards;

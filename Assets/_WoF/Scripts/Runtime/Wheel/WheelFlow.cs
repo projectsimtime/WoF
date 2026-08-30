@@ -28,7 +28,7 @@ namespace WoF.Wheel
 		private List<RewardDefinition> _rewardDefinitions = new();
 		private RewardDefinition _earnedReward;
 
-		private ZoneWheelData _nextZoneWheel;
+		private ZoneWheelData _nextZoneWheelData;
 		private bool _hasNextZoneWheel;
 
 		private int _reservedSlotIndex;
@@ -48,11 +48,11 @@ namespace WoF.Wheel
 			_spinButton.SpinClicked -= OnSpinClicked;
 		}
 
-		public void Initialize(ZoneRules zoneRules, ZoneTypeCalculator zoneTypeCalculator, GameSettings gameSettings, RewardAmountMap rewardAmountMap)
+		public void Initialize(ZoneRules zoneRules, ZoneSchedule zoneSchedule, GameSettings gameSettings, RewardAmountMap rewardAmountMap)
 		{
 			_gameSettings = gameSettings;
 			_rewardAmountMap = rewardAmountMap;
-			_zoneWheelBuilder = new ZoneWheelBuilder(zoneRules, zoneTypeCalculator, gameSettings.SlotCount);
+			_zoneWheelBuilder = new ZoneWheelBuilder(zoneRules, zoneSchedule, gameSettings.SlotCount);
 			_spinAngleCalculator = new SpinAngleCalculator(gameSettings.SlotCount, gameSettings.SpinTargetAngle, gameSettings.SpinSlotOffsetAngle, gameSettings.SpinEdgeBias, gameSettings.SpinNearMissChance);
 
 			_spinButton.SpinClicked += OnSpinClicked;
@@ -71,9 +71,9 @@ namespace WoF.Wheel
 		{
 			_wheelSpin.SetRotation(Vector3.zero);
 
-			ZoneWheelData zoneWheel = GetZoneWheel(zoneIndex);
+			ZoneWheelData zoneWheelData = GetZoneWheel(zoneIndex);
 			
-			ApplyZoneWheel(zoneWheel, zoneIndex);
+			ApplyZoneWheel(zoneWheelData, zoneIndex);
 
 			if (_isContinueAfterBomb)
 			{
@@ -81,8 +81,8 @@ namespace WoF.Wheel
 				_isContinueAfterBomb = false;
 			}
 			
-			_reservedSlotIndex = zoneWheel.ReservedSlotIndex;
-			_rewardDefinitions = zoneWheel.Rewards;
+			_reservedSlotIndex = zoneWheelData.ReservedSlotIndex;
+			_rewardDefinitions = zoneWheelData.Rewards;
 		}
 
 		private void OnSpinClicked()
@@ -129,11 +129,11 @@ namespace WoF.Wheel
 		{
 			if (!_hasNextZoneWheel)
 			{
-				_nextZoneWheel = _zoneWheelBuilder.Build(zoneIndex);
+				_nextZoneWheelData = _zoneWheelBuilder.Build(zoneIndex);
 				_hasNextZoneWheel = true;
 			}
 
-			return _nextZoneWheel.Rewards;
+			return _nextZoneWheelData.Rewards;
 		}
 
 		public RewardDefinition GetReservedReward(int zoneIndex)
@@ -146,22 +146,22 @@ namespace WoF.Wheel
 			if (_hasNextZoneWheel)
 			{
 				_hasNextZoneWheel = false;
-				return _nextZoneWheel;
+				return _nextZoneWheelData;
 			}
 
 			return _zoneWheelBuilder.Build(zoneIndex);
 		}
 
-		private void ApplyZoneWheel(ZoneWheelData zoneWheel, int zoneIndex)
+		private void ApplyZoneWheel(ZoneWheelData zoneWheelData, int zoneIndex)
 		{
-			_wheelSpin.ApplyStyle(zoneWheel.WheelType);
-			_wheelIndicator.ApplyStyle(zoneWheel.WheelType);
-			_titleText.text = zoneWheel.WheelType.Title;
-			_titleText.color = zoneWheel.WheelType.TitleColor;
+			_wheelSpin.ApplyStyle(zoneWheelData.WheelType);
+			_wheelIndicator.ApplyStyle(zoneWheelData.WheelType);
+			_titleText.text = zoneWheelData.WheelType.Title;
+			_titleText.color = zoneWheelData.WheelType.TitleColor;
 
-			for (int i = 0; i < zoneWheel.Rewards.Count; ++i)
+			for (int i = 0; i < zoneWheelData.Rewards.Count; ++i)
 			{
-				RewardDefinition reward = zoneWheel.Rewards[i];
+				RewardDefinition reward = zoneWheelData.Rewards[i];
 				_wheelSpin.ApplySlotView(i, reward, _rewardAmountMap.GetAmountByKind(reward, zoneIndex));
 			}
 		}

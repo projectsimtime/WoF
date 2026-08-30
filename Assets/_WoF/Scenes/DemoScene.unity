@@ -683,11 +683,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af3929ad6fde49e8b58c33aa3023df49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _zoneRule: {fileID: 11400000, guid: e9b0ad3ca2bb7024cbb74e6bb05e21c1, type: 2}
-  _zoneTypes:
-  - {fileID: 11400000, guid: 4b8d1e6f0a53c74d9e2b18a7f306c5d1, type: 2}
-  - {fileID: 11400000, guid: 7c2a95f38e04b641bd7fe0329ac68d15, type: 2}
-  - {fileID: 11400000, guid: 1d6e83b0c749f24aae5301b8f27dc964, type: 2}
+  _zoneRules: {fileID: 11400000, guid: e9b0ad3ca2bb7024cbb74e6bb05e21c1, type: 2}
+  _zonePattern: {fileID: 11400000, guid: a4d5f16c9b714d6880612f0f414c28bd, type: 2}
   _wheelFlow: {fileID: 1979633068}
   _gameSettings: {fileID: 11400000, guid: e59ea43fdb39b3b44bf9ed11823a7b8f, type: 2}
   _rewardAmountMap: {fileID: 11400000, guid: 7d4e1a09c3b64f5b8e2a06d9f3418c72, type: 2}

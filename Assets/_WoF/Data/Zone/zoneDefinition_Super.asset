@@ -10,15 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a7c4e0b9f61d842ab3057e6c19f84d2, type: 3}
-  m_Name: zoneType_Normal
-  m_EditorClassIdentifier:
-  _label: ZONE
-  _themeColor: {r: 1, g: 1, b: 1, a: 1}
+  m_Name: zoneDefinition_Super
+  m_EditorClassIdentifier: 
+  _label: SUPER ZONE
+  _themeColor: {r: 1, g: 0.7490196, b: 0.2, a: 1}
   _icon: {fileID: 0}
-  _wheelType: {fileID: 11400000, guid: 5573a78120fee8c43b3c3e969f676f2a, type: 2}
-  _frequency: 1
-  _priority: 0
-  _overrideIndices: []
-  _canExit: 0
+  _wheelType: {fileID: 11400000, guid: 32fd61f297763ad44b96aa5bcc92716a, type: 2}
+  _canExit: 1
   _reservedRewards:
-  - {fileID: 11400000, guid: 1269a7a91fca47c41bda480ae98d8396, type: 2}
+  - {fileID: 11400000, guid: d810e62554e9f0248b2636cdbb263654, type: 2}
+  - {fileID: 11400000, guid: 10fb383e955695f4e8000b0aaf6eadc3, type: 2}

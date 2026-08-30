@@ -20,14 +20,14 @@ namespace WoF.ZoneView
 		[SerializeField]
 		private TextMeshProUGUI _zoneIndexText;
 
-		public void Init(ZoneTypeData zoneTypeData)
+		public void Init(ZoneDefinition zoneDefinition)
 		{
-			_label.text = zoneTypeData.Label;
-			_icon.sprite = zoneTypeData.Icon;
+			_label.text = zoneDefinition.Label;
+			_icon.sprite = zoneDefinition.Icon;
 			
-			_frame.color = zoneTypeData.ThemeColor;
-			_label.color = zoneTypeData.ThemeColor;
-			_zoneIndexText.color = zoneTypeData.ThemeColor;
+			_frame.color = zoneDefinition.ThemeColor;
+			_label.color = zoneDefinition.ThemeColor;
+			_zoneIndexText.color = zoneDefinition.ThemeColor;
 		}
 		
 		public void ApplyStyle(ZoneViewDynamicData style)

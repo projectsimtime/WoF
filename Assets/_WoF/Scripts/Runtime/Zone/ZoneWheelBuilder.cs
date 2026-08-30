@@ -17,46 +17,41 @@ namespace WoF.Zone
 	public class ZoneWheelBuilder
 	{
 		private ZoneRules _zoneRules;
-		private ZoneTypeCalculator _zoneTypeCalculator;
+		private ZoneSchedule _zoneSchedule;
 		private RarityCalculator _rarityCalculator;
 		private int _slotCount;
 
-		private Dictionary<int, int> _zoneOverrides = new();
-		private Dictionary<ZoneTypeData, int> _nextReservedRewardIndexByZoneType = new();
+		private Dictionary<int, int> _zoneOverrideIndices = new();
+		private Dictionary<ZoneDefinition, int> _nextReservedRewardIndexByZoneDefinition = new();
 
-		public ZoneWheelBuilder(ZoneRules zoneRules, ZoneTypeCalculator zoneTypeCalculator, int slotCount)
+		public ZoneWheelBuilder(ZoneRules zoneRules, ZoneSchedule zoneSchedule, int slotCount)
 		{
 			_zoneRules = zoneRules;
-			_zoneTypeCalculator = zoneTypeCalculator;
+			_zoneSchedule = zoneSchedule;
 			_slotCount = slotCount;
 			_rarityCalculator = new RarityCalculator(slotCount);
 
 			for (int i = 0; i < _zoneRules.ZoneOverrides.Length; ++i)
 			{
-				_zoneOverrides.Add(_zoneRules.ZoneOverrides[i].ZoneNumber, i);
+				_zoneOverrideIndices.Add(_zoneRules.ZoneOverrides[i].ZoneNumber, i);
 			}
 		}
 
 		public void Reset()
 		{
-			_nextReservedRewardIndexByZoneType.Clear();
-
-			foreach (ZoneTypeData zoneTypeData in _zoneTypeCalculator.ZoneTypes)
-			{
-				_nextReservedRewardIndexByZoneType.Add(zoneTypeData, 0);
-			}
+			_nextReservedRewardIndexByZoneDefinition.Clear();
 		}
 
 		public ZoneWheelData Build(int zoneIndex)
 		{
 			ZoneWheelData zoneWheelData;
-			ZoneTypeData zoneTypeData = _zoneTypeCalculator.GetZoneTypeDataFromIndex(zoneIndex);
+			ZoneDefinition zoneDefinition = _zoneSchedule.GetZoneDefinition(zoneIndex);
 			RewardDefinition reservedReward = GetReservedReward(zoneIndex);
-			MoveToNextReservedReward(zoneTypeData);
+			AdvanceReservedRewardIndex(zoneDefinition);
 
-			zoneWheelData.WheelType = zoneTypeData.WheelType;
+			zoneWheelData.WheelType = zoneDefinition.WheelType;
 
-			if (_zoneOverrides.TryGetValue(zoneIndex, out int overrideIndex))
+			if (_zoneOverrideIndices.TryGetValue(zoneIndex, out int overrideIndex))
 			{
 				zoneWheelData.Rewards = _zoneRules.ZoneOverrides[overrideIndex].Rewards.ToList();
 				zoneWheelData.ReservedSlotIndex = reservedReward ? zoneWheelData.Rewards.IndexOf(reservedReward) : Int32.MaxValue;
@@ -82,35 +77,36 @@ namespace WoF.Zone
 
 		public RewardDefinition GetReservedReward(int zoneIndex)
 		{
-			ZoneTypeData zoneTypeData = _zoneTypeCalculator.GetZoneTypeDataFromIndex(zoneIndex);
-			RewardDefinition[] reservedRewards = zoneTypeData.ReservedRewards;
+			ZoneDefinition zoneDefinition = _zoneSchedule.GetZoneDefinition(zoneIndex);
+			RewardDefinition[] reservedRewards = zoneDefinition.ReservedRewards;
 
 			if (reservedRewards.Length == 0)
 			{
 				return null;
 			}
 
-			int rewardIndex = _nextReservedRewardIndexByZoneType[zoneTypeData];
+			_nextReservedRewardIndexByZoneDefinition.TryGetValue(zoneDefinition, out int rewardIndex);
 
 			return reservedRewards[rewardIndex % reservedRewards.Length];
 		}
 
-		private void MoveToNextReservedReward(ZoneTypeData zoneTypeData)
+		private void AdvanceReservedRewardIndex(ZoneDefinition zoneDefinition)
 		{
-			if (zoneTypeData.ReservedRewards.Length == 0)
+			if (zoneDefinition.ReservedRewards.Length == 0)
 			{
 				return;
 			}
 
-			++_nextReservedRewardIndexByZoneType[zoneTypeData];
+			_nextReservedRewardIndexByZoneDefinition.TryGetValue(zoneDefinition, out int rewardIndex);
+			_nextReservedRewardIndexByZoneDefinition[zoneDefinition] = rewardIndex + 1;
 		}
 
 		private List<RewardDefinition> GetZoneContents(WheelType wheelType)
 		{
-			Dictionary<RarityDefinition, int> itemRarities = _rarityCalculator.GetItemRarityCount(wheelType);
+			Dictionary<RarityDefinition, int> rewardCountByRarity = _rarityCalculator.GetItemRarityCount(wheelType);
 			List<RewardDefinition> rewards = new List<RewardDefinition>(_slotCount);
 
-			foreach (var item in itemRarities)
+			foreach (var item in rewardCountByRarity)
 			{
 				RarityDefinition rarity = item.Key;
 				int count = item.Value;

@@ -92,6 +92,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _zoneViewPrefab: {fileID: 3641137534190944815, guid: 078a99e7138d8a54d979d19282280e62, type: 3}
-  _displayedZoneTypes:
+  _displayedZoneDefinitions:
   - {fileID: 11400000, guid: 1d6e83b0c749f24aae5301b8f27dc964, type: 2}
   - {fileID: 11400000, guid: 7c2a95f38e04b641bd7fe0329ac68d15, type: 2}

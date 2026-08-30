@@ -5,6 +5,10 @@ namespace WoF
 	[CreateAssetMenu(fileName = "gameSettings_", menuName = "WoF/Game Settings/ New Game Settings", order = 0)]
 	public class GameSettings : ScriptableObject
 	{
+		[Header("Performance")]
+		[SerializeField]
+		private int _targetFrameRate = 60;
+
 		[Header("Slot")]
 		[SerializeField]
 		private int _slotCount = 8;
@@ -46,6 +50,8 @@ namespace WoF
 		private float _bombReactionDuration;
 		[SerializeField]
 		private float _losePanelScaleDuration;
+
+		public int TargetFrameRate => _targetFrameRate;
 
 		public int SlotCount => _slotCount;
 		public float SlotAngle => 360.0f / _slotCount;

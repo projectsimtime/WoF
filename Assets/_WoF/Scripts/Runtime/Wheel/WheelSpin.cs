@@ -24,7 +24,7 @@ namespace WoF.Wheel
             transform.DOKill();
 
             return transform.DOLocalRotate(new Vector3(0.0f, 0.0f, targetAngle), duration, RotateMode.FastBeyond360)
-                .SetEase(Ease.OutCubic);
+                .SetEase(Ease.OutQuad);
         }
 
         public void SetRotation(Vector3 rotation)

@@ -61,6 +61,14 @@ namespace WoF.Wheel
 			return angle;
 		}
 
+		public float CalculateTargetAngleForSlot(int slotIndex)
+		{
+			float edgeBias = _spinEdgeBias;
+			float innerBias = 1.0f - edgeBias;
+
+			return GetAngleFromIndex(slotIndex, Random.Range(innerBias, edgeBias));
+		}
+
 		private int GetRandomSlotIndex(int reservedIndex, bool shouldSkipReservedIndex)
 		{
 			int randomSlotIndex = Random.Range(0, _slotCount);

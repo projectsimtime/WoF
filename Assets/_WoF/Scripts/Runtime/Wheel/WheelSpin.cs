@@ -23,8 +23,9 @@ namespace WoF.Wheel
         {
             transform.DOKill();
 
+            // Lower peak angular velocity reduces slot skipping at 30 FPS.
             return transform.DOLocalRotate(new Vector3(0.0f, 0.0f, targetAngle), duration, RotateMode.FastBeyond360)
-                .SetEase(Ease.OutCubic);
+                .SetEase(Ease.OutSine);
         }
 
         public void SetRotation(Vector3 rotation)

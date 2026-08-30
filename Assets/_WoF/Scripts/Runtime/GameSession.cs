@@ -14,6 +14,9 @@ namespace WoF
 {
 	public class GameSession : MonoBehaviour
 	{
+		private const int FirstRecordingZoneIndex = 29;
+		private const int SecondRecordingZoneIndex = 59;
+
 		[SerializeField]
 		private ZoneRules _zoneRules;
 
@@ -95,10 +98,31 @@ namespace WoF
 			ShowStartScreen();
 		}
 
+		private void Update()
+		{
+			if (Input.GetKeyDown(KeyCode.Keypad2))
+			{
+				StartNewRunAtZone(FirstRecordingZoneIndex);
+			}
+			else if (Input.GetKeyDown(KeyCode.Keypad5))
+			{
+				StartNewRunAtZone(SecondRecordingZoneIndex);
+			}
+			else if (Input.GetKeyDown(KeyCode.Keypad0))
+			{
+				_wheelFlow.ForceBombOnNextSpin();
+			}
+		}
+
 		private void StartNewRun()
 		{
+			StartNewRunAtZone(1);
+		}
+
+		private void StartNewRunAtZone(int zoneIndex)
+		{
 			_startScreen.Hide();
-			ClearRunState();
+			ClearRunState(Mathf.Clamp(zoneIndex, 1, _gameSettings.EndGameZoneIndex));
 			EnterZone();
 		}
 
@@ -107,9 +131,9 @@ namespace WoF
 			_startScreen.Show();
 		}
 
-		private void ClearRunState()
+		private void ClearRunState(int startZoneIndex)
 		{
-			_currentZoneIndex = 1;
+			_currentZoneIndex = startZoneIndex;
 			_isRewardRevealing = false;
 			RefreshExitAvailability();
 

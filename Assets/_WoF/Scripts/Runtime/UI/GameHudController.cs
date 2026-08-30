@@ -29,25 +29,25 @@ namespace WoF.UI
 		{
 			_zoneIndicatorPanelController.Initialize();
 			_gameSession.ZoneEntered += OnZoneEntered;
-			_gameSession.UpcomingZoneChanged += OnUpcomingZoneChanged;
+			_gameSession.UpcomingSpecialZoneChanged += OnUpcomingSpecialZoneChanged;
 			_gameSession.CurrencyChanged += OnCurrencyChanged;
 		}
 
 		private void OnDestroy()
 		{
 			_gameSession.ZoneEntered -= OnZoneEntered;
-			_gameSession.UpcomingZoneChanged -= OnUpcomingZoneChanged;
+			_gameSession.UpcomingSpecialZoneChanged -= OnUpcomingSpecialZoneChanged;
 			_gameSession.CurrencyChanged -= OnCurrencyChanged;
 		}
 
-		private void OnZoneEntered(int zoneIndex, ZoneTypeData zoneTypeData)
+		private void OnZoneEntered(int zoneIndex, ZoneDefinition zoneDefinition)
 		{
-			_currentZonePanelController.SetZoneIndex(zoneIndex, zoneTypeData.ThemeColor);
+			_currentZonePanelController.SetZoneIndex(zoneIndex, zoneDefinition.ThemeColor);
 		}
 
-		private void OnUpcomingZoneChanged(ZoneTypeData zoneTypeData, int zoneIndex, RewardDefinition reservedReward)
+		private void OnUpcomingSpecialZoneChanged(ZoneDefinition zoneDefinition, int zoneIndex, RewardDefinition reservedReward)
 		{
-			_zoneIndicatorPanelController.SetIndicator(zoneTypeData, zoneIndex, reservedReward);
+			_zoneIndicatorPanelController.SetIndicator(zoneDefinition, zoneIndex, reservedReward);
 		}
 
 		private void OnCurrencyChanged(int currencyAmount)

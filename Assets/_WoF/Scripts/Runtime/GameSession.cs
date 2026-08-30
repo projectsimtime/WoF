@@ -52,6 +52,8 @@ namespace WoF
 		public event Action<ZoneDefinition, int, RewardDefinition> UpcomingSpecialZoneChanged;
 		public event Action<int> CurrencyChanged;
 
+		public ZoneSchedule ZoneSchedule => _zoneSchedule;
+
 		private void Awake()
 		{
 			_zoneSchedule = new ZoneSchedule(_zonePattern, _gameSettings.EndGameZoneIndex);

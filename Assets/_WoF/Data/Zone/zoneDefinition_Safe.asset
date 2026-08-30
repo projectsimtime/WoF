@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _label: SAFE ZONE
   _themeColor: {r: 0.34901962, g: 0.87058824, b: 0.2509804, a: 1}
+  _zoneIndicatorColor: {r: 0.6718225, g: 0.8773585, b: 0.63318795, a: 1}
   _icon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
   _wheelType: {fileID: 11400000, guid: c09b9c9aa27efc64791d878e10dcc206, type: 2}
   _canExit: 1

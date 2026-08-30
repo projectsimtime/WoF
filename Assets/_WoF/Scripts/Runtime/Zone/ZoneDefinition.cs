@@ -13,6 +13,8 @@ namespace WoF.Zone
 		[SerializeField]
 		private Color _themeColor;
 		[SerializeField]
+		private Color _zoneIndicatorColor = Color.black;
+		[SerializeField]
 		private Sprite _icon;
 
 		[Header("Gameplay")]
@@ -27,6 +29,7 @@ namespace WoF.Zone
 
 		public string Label => _label;
 		public Color ThemeColor => _themeColor;
+		public Color ZoneIndicatorColor => _zoneIndicatorColor;
 		public Sprite Icon => _icon;
 		public WheelType WheelType => _wheelType;
 		public bool CanExit => _canExit;

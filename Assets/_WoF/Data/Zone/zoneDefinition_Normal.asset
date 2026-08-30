@@ -11,9 +11,10 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a7c4e0b9f61d842ab3057e6c19f84d2, type: 3}
   m_Name: zoneDefinition_Normal
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   _label: ZONE
   _themeColor: {r: 1, g: 1, b: 1, a: 1}
+  _zoneIndicatorColor: {r: 0, g: 0, b: 0, a: 1}
   _icon: {fileID: 0}
   _wheelType: {fileID: 11400000, guid: 5573a78120fee8c43b3c3e969f676f2a, type: 2}
   _canExit: 0

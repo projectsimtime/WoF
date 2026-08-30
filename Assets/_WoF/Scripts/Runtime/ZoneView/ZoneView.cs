@@ -2,6 +2,7 @@
 using TMPro;
 using UnityEngine;
 using WoF.Interface;
+using WoF.Zone;
 using Image = UnityEngine.UI.Image;
 
 namespace WoF.ZoneView
@@ -19,14 +20,14 @@ namespace WoF.ZoneView
 		[SerializeField]
 		private TextMeshProUGUI _zoneIndexText;
 
-		public void Init(ZoneViewStaticData viewStaticData)
+		public void Init(ZoneDefinition zoneDefinition)
 		{
-			_label.text = viewStaticData.Label;
-			_icon.sprite = viewStaticData.Icon;
+			_label.text = zoneDefinition.Label;
+			_icon.sprite = zoneDefinition.Icon;
 			
-			_frame.color = viewStaticData.ThemeColor;
-			_label.color = viewStaticData.ThemeColor;
-			_zoneIndexText.color = viewStaticData.ThemeColor;
+			_frame.color = zoneDefinition.ThemeColor;
+			_label.color = zoneDefinition.ThemeColor;
+			_zoneIndexText.color = zoneDefinition.ThemeColor;
 		}
 		
 		public void ApplyStyle(ZoneViewDynamicData style)

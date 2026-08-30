@@ -11,26 +11,26 @@ namespace WoF.ZoneView
 		private ZoneView _zoneViewPrefab;
 
 		[SerializeField] 
-		private ZoneTypeData[] _displayedZoneTypes;
+		private ZoneDefinition[] _displayedZoneDefinitions;
 
-		private Dictionary<ZoneTypeData, ZoneView> _zoneViews;
+		private Dictionary<ZoneDefinition, ZoneView> _zoneViewByZoneDefinition;
 
 		public void Initialize()
 		{
-			_zoneViews = new();
+			_zoneViewByZoneDefinition = new();
 
-			foreach (ZoneTypeData zoneTypeData in _displayedZoneTypes)
+			foreach (ZoneDefinition zoneDefinition in _displayedZoneDefinitions)
 			{
 				ZoneView zoneView = Instantiate(_zoneViewPrefab, transform);
-				zoneView.Init(zoneTypeData.ViewData);
+				zoneView.Init(zoneDefinition);
 
-				_zoneViews.Add(zoneTypeData, zoneView);
+				_zoneViewByZoneDefinition.Add(zoneDefinition, zoneView);
 			}
 		}
 
-		public void SetIndicator(ZoneTypeData zoneTypeData, int zoneIndex, RewardDefinition reservedReward)
+		public void SetIndicator(ZoneDefinition zoneDefinition, int zoneIndex, RewardDefinition reservedReward)
 		{
-			if (!_zoneViews.TryGetValue(zoneTypeData, out ZoneView zoneView))
+			if (!_zoneViewByZoneDefinition.TryGetValue(zoneDefinition, out ZoneView zoneView))
 			{
 				return;
 			}

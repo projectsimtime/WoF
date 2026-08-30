@@ -15,11 +15,10 @@ namespace WoF
 	public class GameSession : MonoBehaviour
 	{
 		[SerializeField]
-		private ZoneRules _zoneRule;
+		private ZoneRules _zoneRules;
 
 		[SerializeField]
-		[Tooltip("First ones have higher priority. Super zone is before safe zone so at 30 super zone will be selected.")]
-		private ZoneTypeData[] _zoneTypes;
+		private ZonePattern _zonePattern;
 
 		[SerializeField]
 		private WheelFlow _wheelFlow;
@@ -42,23 +41,25 @@ namespace WoF
 		[SerializeField]
 		private StartScreen _startScreen;
 
-		private ZoneTypeCalculator _zoneTypeCalculator;
+		private ZoneSchedule _zoneSchedule;
 		private CurrencyContainer _currencyContainer;
 
-		private int _currentZone;
+		private int _currentZoneIndex;
 		private bool _isWheelSpinning;
 		private bool _isRewardRevealing;
 
-		public event Action<int, ZoneTypeData> ZoneEntered;
-		public event Action<ZoneTypeData, int, RewardDefinition> UpcomingZoneChanged;
+		public event Action<int, ZoneDefinition> ZoneEntered;
+		public event Action<ZoneDefinition, int, RewardDefinition> UpcomingSpecialZoneChanged;
 		public event Action<int> CurrencyChanged;
+
+		public ZoneSchedule ZoneSchedule => _zoneSchedule;
 
 		private void Awake()
 		{
-			_zoneTypeCalculator = new ZoneTypeCalculator(_zoneTypes, _gameSettings.EndGameZoneIndex);
+			_zoneSchedule = new ZoneSchedule(_zonePattern, _gameSettings.EndGameZoneIndex);
 			_currencyContainer = new CurrencyContainer(_gameSettings.StartCurrencyAmount);
 
-			_wheelFlow.Initialize(_zoneRule, _zoneTypeCalculator, _gameSettings, _rewardAmountMap);
+			_wheelFlow.Initialize(_zoneRules, _zoneSchedule, _gameSettings, _rewardAmountMap);
 			_wheelFlow.SpinCompleted += OnSpinComplete;
 			_wheelFlow.SpinStateChanged += OnWheelSpinStateChanged;
 			_reviveFlow.Initialize(_currencyContainer, _gameSettings.InitReviveCost, _gameSettings.ReviveCostScale, _gameSettings.LosePanelScaleDuration);
@@ -108,7 +109,7 @@ namespace WoF
 
 		private void ClearRunState()
 		{
-			_currentZone = 1;
+			_currentZoneIndex = 1;
 			_isRewardRevealing = false;
 			RefreshExitAvailability();
 
@@ -124,16 +125,16 @@ namespace WoF
 		private void EnterZone()
 		{
 			RefreshExitAvailability();
-			_wheelFlow.EnterZone(_currentZone);
+			_wheelFlow.EnterZone(_currentZoneIndex);
 
-			ZoneTypeData zoneTypeData = _zoneTypeCalculator.GetZoneTypeDataFromIndex(_currentZone);
-			ZoneEntered?.Invoke(_currentZone, zoneTypeData);
-			NotifyUpcomingZones();
+			ZoneDefinition currentZoneDefinition = _zoneSchedule.GetZoneDefinition(_currentZoneIndex);
+			ZoneEntered?.Invoke(_currentZoneIndex, currentZoneDefinition);
+			NotifyUpcomingSpecialZones();
 		}
 
 		private void GoToNextZone()
 		{
-			++_currentZone;
+			++_currentZoneIndex;
 
 			if (IsGameFinished())
 			{
@@ -146,7 +147,7 @@ namespace WoF
 
 		private bool IsGameFinished()
 		{
-			return _currentZone > _gameSettings.EndGameZoneIndex;
+			return _currentZoneIndex > _gameSettings.EndGameZoneIndex;
 		}
 
 		private void OnGameFinished()
@@ -154,14 +155,14 @@ namespace WoF
 			_runRewardFlow.OnGameFinished();
 		}
 
-		private void NotifyUpcomingZones()
+		private void NotifyUpcomingSpecialZones()
 		{
-			foreach (ZoneTypeData zoneTypeData in _zoneTypes)
+			foreach (ZoneDefinition zoneDefinition in _zoneSchedule.SpecialZoneDefinitions)
 			{
-				int nextZoneIndex = _zoneTypeCalculator.GetZonesNextIndex(zoneTypeData, _currentZone);
+				int nextZoneIndex = _zoneSchedule.GetNextZoneIndex(zoneDefinition, _currentZoneIndex);
 
-				UpcomingZoneChanged?.Invoke(
-					zoneTypeData,
+				UpcomingSpecialZoneChanged?.Invoke(
+					zoneDefinition,
 					nextZoneIndex,
 					nextZoneIndex == Int32.MaxValue ? null : _wheelFlow.GetReservedReward(nextZoneIndex));
 			}
@@ -182,7 +183,7 @@ namespace WoF
 			}
 			else
 			{
-				int earnedAmount = GetRewardAmount(earnedReward, _currentZone);
+				int earnedAmount = GetRewardAmount(earnedReward, _currentZoneIndex);
 
 				StartCoroutine(RevealReward(earnedReward, earnedAmount));
 			}
@@ -233,7 +234,9 @@ namespace WoF
 
 		private bool CanExitNow()
 		{
-			return _zoneTypeCalculator.GetZoneTypeDataFromIndex(_currentZone).CanExit &&
+			ZoneDefinition currentZoneDefinition = _zoneSchedule.GetZoneDefinition(_currentZoneIndex);
+
+			return currentZoneDefinition && currentZoneDefinition.CanExit &&
 			       !_isWheelSpinning &&
 			       !_isRewardRevealing;
 		}
@@ -248,7 +251,7 @@ namespace WoF
 		// It can be tweaked with your idea as well.
 		private void OnHintRequested()
 		{
-			int nextZoneIndex = _currentZone + 1;
+			int nextZoneIndex = _currentZoneIndex + 1;
 
 			if (nextZoneIndex > _gameSettings.EndGameZoneIndex)
 			{

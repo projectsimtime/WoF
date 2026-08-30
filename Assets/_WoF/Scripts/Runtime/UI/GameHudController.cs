@@ -2,6 +2,7 @@ using UnityEngine;
 using WoF.Currency;
 using WoF.Reward;
 using WoF.Zone;
+using WoF.ZoneProgress;
 using WoF.ZoneView;
 
 namespace WoF.UI
@@ -15,7 +16,7 @@ namespace WoF.UI
 		private ZoneIndicatorPanelController _zoneIndicatorPanelController;
 
 		[SerializeField]
-		private CurrentZonePanelController _currentZonePanelController;
+		private ZoneProgressBarController _zoneProgressBarController;
 
 		[SerializeField]
 		private CurrencyPanelController _currencyPanelController;
@@ -25,29 +26,31 @@ namespace WoF.UI
 			_gameSession = GetComponent<GameSession>();
 		}
 
-		private void Awake()
+		private void Start()
 		{
 			_zoneIndicatorPanelController.Initialize();
+			_zoneProgressBarController.Initialize(_gameSession.ZoneSchedule);
+
 			_gameSession.ZoneEntered += OnZoneEntered;
-			_gameSession.UpcomingZoneChanged += OnUpcomingZoneChanged;
+			_gameSession.UpcomingSpecialZoneChanged += OnUpcomingSpecialZoneChanged;
 			_gameSession.CurrencyChanged += OnCurrencyChanged;
 		}
 
 		private void OnDestroy()
 		{
 			_gameSession.ZoneEntered -= OnZoneEntered;
-			_gameSession.UpcomingZoneChanged -= OnUpcomingZoneChanged;
+			_gameSession.UpcomingSpecialZoneChanged -= OnUpcomingSpecialZoneChanged;
 			_gameSession.CurrencyChanged -= OnCurrencyChanged;
 		}
 
-		private void OnZoneEntered(int zoneIndex, ZoneTypeData zoneTypeData)
+		private void OnZoneEntered(int zoneIndex, ZoneDefinition zoneDefinition)
 		{
-			_currentZonePanelController.SetZoneIndex(zoneIndex, zoneTypeData.ViewData.ThemeColor);
+			_zoneProgressBarController.SetCurrentZone(zoneIndex, zoneDefinition);
 		}
 
-		private void OnUpcomingZoneChanged(ZoneTypeData zoneTypeData, int zoneIndex, RewardDefinition reservedReward)
+		private void OnUpcomingSpecialZoneChanged(ZoneDefinition zoneDefinition, int zoneIndex, RewardDefinition reservedReward)
 		{
-			_zoneIndicatorPanelController.SetIndicator(zoneTypeData, zoneIndex, reservedReward);
+			_zoneIndicatorPanelController.SetIndicator(zoneDefinition, zoneIndex, reservedReward);
 		}
 
 		private void OnCurrencyChanged(int currencyAmount)

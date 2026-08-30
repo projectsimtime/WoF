@@ -9,9 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5c0783f44334087bc5e21f8a09a2d1b, type: 3}
-  m_Name: zoneTypeView_Safe
+  m_Script: {fileID: 11500000, guid: 2a7c4e0b9f61d842ab3057e6c19f84d2, type: 3}
+  m_Name: zoneDefinition_Safe
   m_EditorClassIdentifier: 
   _label: SAFE ZONE
   _themeColor: {r: 0.34901962, g: 0.87058824, b: 0.2509804, a: 1}
+  _zoneIndicatorColor: {r: 0.6718225, g: 0.8773585, b: 0.63318795, a: 1}
   _icon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  _wheelType: {fileID: 11400000, guid: c09b9c9aa27efc64791d878e10dcc206, type: 2}
+  _canExit: 1
+  _reservedRewards: []

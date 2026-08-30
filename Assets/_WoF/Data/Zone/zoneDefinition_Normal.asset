@@ -9,9 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5c0783f44334087bc5e21f8a09a2d1b, type: 3}
-  m_Name: zoneTypeView_Normal
+  m_Script: {fileID: 11500000, guid: 2a7c4e0b9f61d842ab3057e6c19f84d2, type: 3}
+  m_Name: zoneDefinition_Normal
   m_EditorClassIdentifier: 
   _label: ZONE
   _themeColor: {r: 1, g: 1, b: 1, a: 1}
+  _zoneIndicatorColor: {r: 0, g: 0, b: 0, a: 1}
   _icon: {fileID: 0}
+  _wheelType: {fileID: 11400000, guid: 5573a78120fee8c43b3c3e969f676f2a, type: 2}
+  _canExit: 0
+  _reservedRewards:
+  - {fileID: 11400000, guid: 1269a7a91fca47c41bda480ae98d8396, type: 2}
